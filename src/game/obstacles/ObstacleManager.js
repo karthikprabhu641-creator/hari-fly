@@ -11,6 +11,7 @@ import { Obstacle } from './Obstacle';
 export class ObstacleManager {
   constructor(options = {}) {
     this.onScore = options.onScore || (() => {});
+    this.onSpawn = options.onSpawn || (() => {});
     this.poolSize = GAME_CONFIG.OBSTACLES.MAX_POOL_SIZE;
     this.pool = Array.from({ length: this.poolSize }, () => new Obstacle());
 
@@ -48,6 +49,7 @@ export class ObstacleManager {
     const spawnX = GAME_CONFIG.VIEWPORT.WIDTH + 20;
 
     obstacle.init(spawnX, gapTopY, gapSize);
+    this.onSpawn(obstacle);
   }
 
   update(dt, playerX) {

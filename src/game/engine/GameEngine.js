@@ -54,6 +54,7 @@ export class GameEngine {
     this.parallaxBg = new ParallaxBackground();
     this.obstacleManager = new ObstacleManager({
       onScore: (obstacle) => this.handleScoreTrigger(obstacle),
+      onSpawn: (obstacle) => this.collectibleManager.onObstacleSpawned(obstacle),
     });
 
     this.inputManager = new InputManager({
@@ -166,7 +167,7 @@ export class GameEngine {
       audioManager.unlock();
       audioManager.playMusic();
       this.continuesUsed = 0;
-      this.collectibleManager.reset();
+      this.collectibleManager.startNewRun();
       this.fsm.transitionTo(GAME_STATE.PLAYING);
       this.player.flap();
       this.notifyUI();
@@ -196,7 +197,6 @@ export class GameEngine {
     if (this.fsm.is(GAME_STATE.PLAYING)) {
       this.scoreSystem.increment();
       this.powerUpManager.onObstaclePassed(this.player.x, obstacle);
-      this.collectibleManager.onObstaclePassed(this.player.x, obstacle);
     }
   }
 
@@ -231,7 +231,7 @@ export class GameEngine {
     this.particleSystem.reset();
     this.parallaxBg.reset();
     this.powerUpManager.reset();
-    this.collectibleManager.reset();
+    this.collectibleManager.startNewRun();
     this.weatherSystem.reset();
     this.canvasRenderer.reset();
     this.continuesUsed = 0;
@@ -258,7 +258,7 @@ export class GameEngine {
     this.obstacleManager.reset();
     this.powerUpManager.reset();
     this.powerUpManager.grantCollisionGrace(GAME_CONFIG.CURRENCY.CONTINUE_PROTECTION_DURATION);
-    this.collectibleManager.reset();
+    this.collectibleManager.startNewRun();
     this.canvasRenderer.reset();
     this.fsm.transitionTo(GAME_STATE.PLAYING);
     this.loop.resume();

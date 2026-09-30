@@ -6,7 +6,6 @@ import { GAME_CONFIG } from '../../config/gameConfig';
 import { safeStorage } from '../../utils/storage';
 import { assetManager } from '../../assets/AssetManager';
 import { checkCircleRectCollision } from '../collision/Hitbox';
-import { randomRange } from '../../utils/math';
 
 const COLLECTIBLE_TYPES = {
   COIN: 'coin',
@@ -26,6 +25,7 @@ export class CollectibleManager {
     );
     this.coins = safeStorage.getNumber(GAME_CONFIG.CURRENCY.COINS_STORAGE_KEY, 0);
     this.keys = safeStorage.getNumber(GAME_CONFIG.CURRENCY.KEYS_STORAGE_KEY, 0);
+    this.pipesSeen = 0;
     this.onChange = options.onChange || (() => {});
   }
 
@@ -33,14 +33,14 @@ export class CollectibleManager {
     return { active: false, type: null, x: 0, y: 0, radius: 0, pulse: 0 };
   }
 
-  onObstaclePassed(playerX, obstacle) {
-    const roll = Math.random();
-    let type = null;
-    if (roll < GAME_CONFIG.CURRENCY.KEY_SPAWN_CHANCE) {
-      type = COLLECTIBLE_TYPES.KEY;
-    } else if (roll < GAME_CONFIG.CURRENCY.KEY_SPAWN_CHANCE + GAME_CONFIG.CURRENCY.COIN_SPAWN_CHANCE) {
-      type = COLLECTIBLE_TYPES.COIN;
-    }
+  onObstacleSpawned(obstacle) {
+    this.pipesSeen += 1;
+    const isKeyPipe = this.pipesSeen % GAME_CONFIG.CURRENCY.KEY_EVERY_PIPES === 0;
+    const type = isKeyPipe
+      ? COLLECTIBLE_TYPES.KEY
+      : Math.random() < GAME_CONFIG.CURRENCY.COIN_SPAWN_CHANCE
+        ? COLLECTIBLE_TYPES.COIN
+        : null;
     if (!type) return;
 
     const collectible = this.pool.find((item) => !item.active);
@@ -51,14 +51,8 @@ export class CollectibleManager {
     collectible.radius = type === COLLECTIBLE_TYPES.KEY
       ? GAME_CONFIG.CURRENCY.KEY_RADIUS
       : GAME_CONFIG.CURRENCY.RADIUS;
-    collectible.x = Math.min(
-      GAME_CONFIG.VIEWPORT.WIDTH - collectible.radius - 8,
-      Math.max(playerX + 35, obstacle.x + obstacle.width + 20)
-    );
-    const gapPadding = collectible.radius + 8;
-    const gapTop = obstacle.gapTopY + gapPadding;
-    const gapBottom = obstacle.gapTopY + obstacle.gapSize - gapPadding;
-    collectible.y = randomRange(gapTop, Math.max(gapTop, gapBottom));
+    collectible.x = obstacle.x + obstacle.width / 2;
+    collectible.y = obstacle.gapTopY + obstacle.gapSize / 2;
     collectible.pulse = Math.random() * Math.PI * 2;
   }
 
@@ -127,7 +121,7 @@ export class CollectibleManager {
       ctx.globalAlpha = 1;
       const image = assetManager.getImage(`collectible.${collectible.type}`);
       if (image) {
-        const size = radius * 2.4;
+        const size = radius * 2.5;
         ctx.shadowColor = color;
         ctx.shadowBlur = 6;
         ctx.drawImage(image, collectible.x - size / 2, collectible.y - size / 2, size, size);
@@ -141,5 +135,10 @@ export class CollectibleManager {
       collectible.active = false;
       collectible.type = null;
     });
+  }
+
+  startNewRun() {
+    this.reset();
+    this.pipesSeen = 0;
   }
 }
