@@ -1,5 +1,5 @@
 /* =========================================================
-   HRAI FLY 2 — CORE DESIGN SYSTEM & MOBILE-FIRST STYLES
+  HARI.FLY — CORE DESIGN SYSTEM & MOBILE-FIRST STYLES
    ========================================================= */
 
 :root {
@@ -838,7 +838,6 @@ html, body {
   gap: 16px;
 }
 
-.main-menu-wordmark,
 .loading-wordmark {
   color: #f0f5e9;
   font-family: var(--font-display);
@@ -846,12 +845,10 @@ html, body {
   font-weight: 900;
 }
 
-.main-menu-wordmark strong,
 .loading-wordmark strong {
   color: #b7e45b;
 }
 
-.main-menu-ready,
 .loading-status {
   display: flex;
   align-items: center;
@@ -861,7 +858,6 @@ html, body {
   font-weight: 800;
 }
 
-.main-menu-ready i,
 .loading-status i,
 .now-playing-dot {
   width: 7px;
@@ -912,7 +908,6 @@ html, body {
   padding-block: 22px;
 }
 
-.main-menu-kicker,
 .loading-kicker {
   color: #b7e45b;
   font-size: 0.72rem;
@@ -931,14 +926,6 @@ html, body {
 
 .main-menu-title span {
   color: #b7e45b;
-}
-
-.main-menu-description {
-  max-width: 390px;
-  margin-top: 22px;
-  color: #c2d1c3;
-  font-size: 1.02rem;
-  line-height: 1.55;
 }
 
 .main-menu-best {
@@ -960,11 +947,6 @@ html, body {
   font-family: var(--font-display);
   font-size: 1.7rem;
   line-height: 1;
-}
-
-.main-menu-best small {
-  color: rgba(199, 215, 198, 0.68);
-  font-size: 0.72rem;
 }
 
 .main-menu-start {
@@ -1047,36 +1029,6 @@ html, body {
   animation: menuBirdFloat 3.6s ease-in-out infinite;
 }
 
-.main-menu-flight-tag,
-.main-menu-coordinate,
-.main-menu-bird-caption {
-  position: absolute;
-  color: #deebd7;
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
-.main-menu-flight-tag {
-  top: 13%;
-  right: 2%;
-  padding: 8px 10px;
-  border-left: 2px solid #b7e45b;
-  background: rgba(7, 21, 22, 0.68);
-}
-
-.main-menu-bird-caption {
-  right: 3%;
-  bottom: 12%;
-  color: #b7e45b;
-}
-
-.main-menu-coordinate {
-  bottom: 4%;
-  left: 2%;
-  color: rgba(216, 232, 207, 0.6);
-  font-size: 0.6rem;
-}
-
 .main-menu-footer {
   display: flex;
   align-items: center;
@@ -1146,12 +1098,6 @@ html, body {
 .main-menu-now-playing strong {
   color: #e8f0e2;
   font-size: 0.74rem;
-}
-
-.main-menu-footer-note {
-  color: rgba(216, 232, 207, 0.46);
-  font-size: 0.62rem;
-  font-weight: 800;
 }
 
 /* Humorous pre-flight loading scene */
@@ -1316,11 +1262,6 @@ html, body {
     padding: max(14px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
   }
 
-  .main-menu-ready,
-  .main-menu-footer-note {
-    display: none;
-  }
-
   .main-menu-hero {
     grid-template-columns: 1fr;
     gap: 0;
@@ -1334,12 +1275,6 @@ html, body {
   .main-menu-title {
     margin-top: 11px;
     font-size: 4.2rem;
-  }
-
-  .main-menu-description {
-    max-width: 330px;
-    margin-top: 13px;
-    font-size: 0.9rem;
   }
 
   .main-menu-best {
@@ -1363,23 +1298,6 @@ html, body {
   .main-menu-bird {
     width: min(100%, 290px);
     height: 240px;
-  }
-
-  .main-menu-flight-tag {
-    top: 8%;
-    right: 0;
-    font-size: 0.58rem;
-  }
-
-  .main-menu-bird-caption {
-    right: 1%;
-    bottom: 7%;
-    font-size: 0.58rem;
-  }
-
-  .main-menu-coordinate {
-    bottom: 1%;
-    font-size: 0.52rem;
   }
 
   .main-menu-footer {

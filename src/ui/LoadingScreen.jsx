@@ -22,7 +22,7 @@ export function LoadingScreen({ progress = 0 }) {
   return (
     <main className="loading-screen" role="status" aria-live="polite">
       <div className="loading-topbar">
-        <span className="loading-wordmark">HRAI <strong>FLY</strong></span>
+        <span className="loading-wordmark">HARI<strong>.FLY</strong></span>
         <span className="loading-status"><i /> PRE-FLIGHT CHECK</span>
       </div>
 
