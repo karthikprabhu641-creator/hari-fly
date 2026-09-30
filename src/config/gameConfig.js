@@ -84,6 +84,17 @@ export const GAME_CONFIG = {
     COLLISION_GRACE_DURATION: 0.35,
   },
 
+  CURRENCY: {
+    POOL_SIZE: 10,
+    COIN_SPAWN_CHANCE: 0.62,
+    KEY_SPAWN_CHANCE: 0.055,
+    RADIUS: 13,
+    KEY_RADIUS: 14,
+    CONTINUE_PROTECTION_DURATION: 1.5,
+    COINS_STORAGE_KEY: 'hari_fly_coins',
+    KEYS_STORAGE_KEY: 'hari_fly_keys',
+  },
+
   // Audio Defaults
   AUDIO: {
     DEFAULT_BGM_VOLUME: 0.55,

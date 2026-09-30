@@ -177,6 +177,11 @@ export class PowerUpManager {
     return true;
   }
 
+  grantCollisionGrace(duration) {
+    this.collisionGraceRemaining = Math.max(this.collisionGraceRemaining, duration);
+    this.onChange();
+  }
+
   getTimeScale() {
     return this.slowMotionRemaining > 0
       ? GAME_CONFIG.POWERUPS.SLOW_SPEED_MULTIPLIER

@@ -6,6 +6,8 @@
  */
 
 import birdImage from '../../image/bird-transparent.png';
+import coinImage from '../../image/coin.png';
+import keyImage from '../../image/key.png';
 
 export const ASSET_MANIFEST = {
   images: {
@@ -17,6 +19,26 @@ export const ASSET_MANIFEST = {
       format: 'png',
       width: 46,
       height: 46,
+      hasAlpha: true,
+    },
+    'collectible.coin': {
+      id: 'collectible.coin',
+      name: 'Coin',
+      src: coinImage,
+      type: 'image',
+      format: 'png',
+      width: 48,
+      height: 48,
+      hasAlpha: true,
+    },
+    'collectible.key': {
+      id: 'collectible.key',
+      name: 'Key',
+      src: keyImage,
+      type: 'image',
+      format: 'png',
+      width: 48,
+      height: 48,
       hasAlpha: true,
     },
     // Placeholders for future sprite sheets or obstacle custom textures

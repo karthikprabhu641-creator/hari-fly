@@ -7,12 +7,13 @@
 import { GAME_CONFIG } from '../../config/gameConfig';
 
 export class CanvasRenderer {
-  constructor(viewport, playerRenderer, parallaxBg, weatherSystem, powerUpManager) {
+  constructor(viewport, playerRenderer, parallaxBg, weatherSystem, powerUpManager, collectibleManager) {
     this.viewport = viewport;
     this.playerRenderer = playerRenderer;
     this.parallaxBg = parallaxBg;
     this.weatherSystem = weatherSystem;
     this.powerUpManager = powerUpManager;
+    this.collectibleManager = collectibleManager;
 
     // Screen Shake state
     this.shakeTimer = 0;
@@ -75,6 +76,7 @@ export class CanvasRenderer {
 
     // 6. Weather and collectibles remain canvas-only gameplay layers.
     this.weatherSystem.render(ctx);
+    this.collectibleManager.render(ctx);
     this.powerUpManager.render(ctx);
 
     // 7. Render particles behind the player so they never cover the photo.

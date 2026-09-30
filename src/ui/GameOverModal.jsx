@@ -8,13 +8,19 @@ import React from 'react';
 import { useAudio } from '../hooks/useAudio';
 import birdImage from '../../image/bird-transparent.png';
 
-export function GameOverModal({ score, bestScore, isNewBest, onRestart, onGoToMenu }) {
+export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0, nextContinueCost = 1, onContinue, onRestart, onGoToMenu }) {
   const { playClick } = useAudio();
 
   const handleRestart = (e) => {
     e.stopPropagation();
     playClick();
     onRestart();
+  };
+
+  const handleContinue = (e) => {
+    e.stopPropagation();
+    playClick();
+    onContinue();
   };
 
   const handleMenu = (e) => {
@@ -56,6 +62,30 @@ export function GameOverModal({ score, bestScore, isNewBest, onRestart, onGoToMe
           </div>
         </div>
 
+        <div className="game-over-wallet" aria-label={`Coins ${coins}, keys ${keys}`}>
+          <div className="hud-wallet-item">
+            <span className="hud-currency-mark hud-currency-coin" aria-hidden="true">C</span>
+            <span>COINS {coins}</span>
+          </div>
+          <div className="hud-wallet-item">
+            <span className="hud-currency-mark hud-currency-key" aria-hidden="true">K</span>
+            <span>KEYS {keys}</span>
+          </div>
+        </div>
+
+        <button
+          className="game-over-continue-button"
+          onClick={handleContinue}
+          disabled={keys < nextContinueCost}
+          id="game-over-continue-btn"
+        >
+          <span>CONTINUE</span>
+          <strong>{`${nextContinueCost} ${nextContinueCost === 1 ? 'KEY' : 'KEYS'}`}</strong>
+        </button>
+        {keys < nextContinueCost && (
+          <p className="game-over-continue-hint">Collect more keys to continue.</p>
+        )}
+
         <button
           className="game-over-retry-button"
           onClick={handleRestart}
@@ -76,7 +106,7 @@ export function GameOverModal({ score, bestScore, isNewBest, onRestart, onGoToMe
         </button>
 
         <div className="game-over-divider" />
-        <p className="game-over-hint">Tap or press Space to continue</p>
+        <p className="game-over-hint">Tap or press Space to restart</p>
       </div>
     </div>
   );

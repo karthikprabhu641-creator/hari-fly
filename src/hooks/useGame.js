@@ -24,6 +24,7 @@ export function useGame(engine) {
     restart: () => engine?.restart(),
     pause: () => engine?.togglePause(),
     resume: () => engine?.resume(),
+    continueRun: () => engine?.continueRun(),
     goToMenu: () => engine?.goToMenu(),
   };
 }

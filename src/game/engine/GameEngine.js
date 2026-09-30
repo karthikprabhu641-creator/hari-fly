@@ -10,6 +10,7 @@ import { GAME_STATE } from '../state/GameState';
 import { StateMachine } from '../state/StateMachine';
 import { eventBus, GAME_EVENTS } from '../systems/EventBus';
 import { ScoreSystem } from '../systems/ScoreSystem';
+import { CollectibleManager } from '../systems/CollectibleManager';
 import { InputManager } from '../systems/InputManager';
 import { ParticleSystem } from '../systems/ParticleSystem';
 import { PhysicsSystem } from '../physics/PhysicsSystem';
@@ -43,6 +44,10 @@ export class GameEngine {
       onChange: () => this.notifyUI(),
       onScoreMultiplierChange: (multiplier) => this.scoreSystem.setMultiplier(multiplier),
     });
+    this.collectibleManager = new CollectibleManager({
+      onChange: () => this.notifyUI(),
+    });
+    this.continuesUsed = 0;
 
     this.player = new Player();
     this.playerRenderer = new PlayerRenderer({ assetId: 'player.default' });
@@ -73,7 +78,8 @@ export class GameEngine {
       this.playerRenderer,
       this.parallaxBg,
       this.weatherSystem,
-      this.powerUpManager
+      this.powerUpManager,
+      this.collectibleManager
     );
 
     // Attach input listeners to canvas
@@ -159,6 +165,8 @@ export class GameEngine {
       // First tap begins game immediately with a flap
       audioManager.unlock();
       audioManager.playMusic();
+      this.continuesUsed = 0;
+      this.collectibleManager.reset();
       this.fsm.transitionTo(GAME_STATE.PLAYING);
       this.player.flap();
       this.notifyUI();
@@ -188,6 +196,7 @@ export class GameEngine {
     if (this.fsm.is(GAME_STATE.PLAYING)) {
       this.scoreSystem.increment();
       this.powerUpManager.onObstaclePassed(this.player.x, obstacle);
+      this.collectibleManager.onObstaclePassed(this.player.x, obstacle);
     }
   }
 
@@ -222,8 +231,10 @@ export class GameEngine {
     this.particleSystem.reset();
     this.parallaxBg.reset();
     this.powerUpManager.reset();
+    this.collectibleManager.reset();
     this.weatherSystem.reset();
     this.canvasRenderer.reset();
+    this.continuesUsed = 0;
 
     this.loop.resume();
     audioManager.restartMusic();
@@ -231,6 +242,30 @@ export class GameEngine {
     this.fsm.transitionTo(GAME_STATE.PLAYING);
     this.player.flap();
     this.notifyUI();
+  }
+
+  getContinueCost() {
+    return this.continuesUsed * 2 + 1;
+  }
+
+  continueRun() {
+    if (!this.fsm.is(GAME_STATE.GAME_OVER)) return false;
+    if (!this.collectibleManager.spendKeys(this.getContinueCost())) return false;
+
+    this.continuesUsed += 1;
+    this.gameOverTime = 0;
+    this.player.reset();
+    this.obstacleManager.reset();
+    this.powerUpManager.reset();
+    this.powerUpManager.grantCollisionGrace(GAME_CONFIG.CURRENCY.CONTINUE_PROTECTION_DURATION);
+    this.collectibleManager.reset();
+    this.canvasRenderer.reset();
+    this.fsm.transitionTo(GAME_STATE.PLAYING);
+    this.loop.resume();
+    audioManager.playMusic();
+    this.player.flap();
+    this.notifyUI();
+    return true;
   }
 
   goToMenu() {
@@ -243,8 +278,10 @@ export class GameEngine {
     this.particleSystem.reset();
     this.parallaxBg.reset();
     this.powerUpManager.reset();
+    this.collectibleManager.reset();
     this.weatherSystem.reset();
     this.canvasRenderer.reset();
+    this.continuesUsed = 0;
 
     this.loop.resume();
     this.fsm.transitionTo(GAME_STATE.MAIN_MENU);
@@ -277,6 +314,7 @@ export class GameEngine {
       // 2. Obstacles
       this.obstacleManager.update(gameplayDt, this.player.x);
       this.powerUpManager.update(gameplayDt, dt, this.player);
+      this.collectibleManager.update(gameplayDt, this.player);
 
       // 3. Parallax background
       this.parallaxBg.update(gameplayDt, GAME_CONFIG.OBSTACLES.SPEED);
@@ -338,6 +376,8 @@ export class GameEngine {
       bestScore: this.scoreSystem.getBestScore(),
       isNewBest: this.scoreSystem.isHighScoreBroken(),
       powerUps: this.powerUpManager.getUiState(),
+      ...this.collectibleManager.getWallet(),
+      nextContinueCost: this.getContinueCost(),
     };
   }
 
