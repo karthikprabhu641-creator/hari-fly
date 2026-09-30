@@ -36,7 +36,7 @@ export const ASSET_MANIFEST = {
       id: 'audio.bgm_udta',
       title: 'Udta Hi Phiru',
       artist: 'Bollywood Classic',
-      src: '/assets/audio/udta_hi_phiru.mpeg',
+      src: `${import.meta.env.BASE_URL}assets/audio/udta_hi_phiru.mpeg`,
       loop: true,
       format: 'mpeg',
     },
