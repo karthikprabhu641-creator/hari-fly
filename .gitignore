@@ -4,4 +4,6 @@ dist/
 .env.*.local
 server/data/
 *.db
-
+*.db-journal
+.DS_Store
+Thumbs.db
