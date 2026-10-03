@@ -26,6 +26,7 @@ import { Viewport } from './Viewport';
 import { GameLoop } from './GameLoop';
 import { assetManager } from '../../assets/AssetManager';
 import { audioManager } from '../../audio/AudioManager';
+import { getPilotUsername, submitScore } from '../../services/leaderboardService';
 import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
 
 export class GameEngine {
@@ -90,14 +91,18 @@ export class GameEngine {
     // Attach input listeners to canvas
     this.inputManager.attach(canvas);
 
-    // Setup internal event subscriptions
-    this.setupEventListeners();
+    // Setup internal event subscriptions only once
+    if (!this.initialized) {
+      this.setupEventListeners();
+    }
 
     // Setup Game Loop
-    this.loop = new GameLoop(
-      (dt) => this.update(dt),
-      () => this.render()
-    );
+    if (!this.loop) {
+      this.loop = new GameLoop(
+        (dt) => this.update(dt),
+        () => this.render()
+      );
+    }
 
     // Initial resize based on parent container
     const parent = canvas.parentElement || document.body;
@@ -106,20 +111,25 @@ export class GameEngine {
     // Start loop
     this.loop.start();
 
-    // Keep the flight intro on a fixed four-second timeline, even on cached assets.
-    const loadingStartedAt = performance.now();
-    await assetManager.preload((progress) => {
-      this.loadingProgress = progress;
-      this.notifyUI();
-    });
-    const remainingLoadingTime = 4000 - (performance.now() - loadingStartedAt);
-    if (remainingLoadingTime > 0) {
-      await new Promise((resolve) => window.setTimeout(resolve, remainingLoadingTime));
-    }
+    if (!this.initialized) {
+      this.initialized = true;
+      const loadingStartedAt = performance.now();
+      await assetManager.preload((progress) => {
+        this.loadingProgress = progress;
+        this.notifyUI();
+      });
+      const remainingLoadingTime = 350 - (performance.now() - loadingStartedAt);
+      if (remainingLoadingTime > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, remainingLoadingTime));
+      }
 
-    // Transition from LOADING to MAIN_MENU
-    if (this.fsm.is(GAME_STATE.LOADING)) {
-      this.fsm.transitionTo(GAME_STATE.MAIN_MENU);
+      // Transition from LOADING to MAIN_MENU
+      if (this.fsm.is(GAME_STATE.LOADING)) {
+        this.fsm.transitionTo(GAME_STATE.MAIN_MENU);
+        this.notifyUI();
+      }
+    } else {
+      // Re-attached in existing state
       this.notifyUI();
     }
   }
@@ -144,6 +154,13 @@ export class GameEngine {
 
       this.fsm.transitionTo(GAME_STATE.GAME_OVER);
       this.notifyUI();
+
+      // Submit score to global leaderboard
+      const finalScore = this.scoreSystem.getScore();
+      const pilotName = getPilotUsername();
+      if (finalScore > 0 && pilotName) {
+        submitScore(pilotName, finalScore, this.selectedMapId).catch(() => {});
+      }
     });
 
     // 2. Flap VFX / Audio
@@ -304,6 +321,12 @@ export class GameEngine {
     this.notifyUI();
   }
 
+  spendCoins(amount) {
+    const ok = this.collectibleManager.spendCoins(amount);
+    if (ok) this.notifyUI();
+    return ok;
+  }
+
   update(dt) {
     const state = this.fsm.getState();
 
@@ -398,15 +421,18 @@ export class GameEngine {
     };
   }
 
-  destroy() {
+  detachCanvas() {
     if (this.loop) {
       this.loop.stop();
     }
-    audioManager.pauseMusic();
     if (this.inputManager) {
       this.inputManager.detach();
     }
+  }
+
+  destroy() {
+    this.detachCanvas();
+    audioManager.pauseMusic();
     this.unsubscribers.forEach((unsub) => unsub());
-    this.uiListeners.clear();
   }
 }

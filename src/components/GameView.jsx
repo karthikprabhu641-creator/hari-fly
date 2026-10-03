@@ -48,7 +48,7 @@ export function GameView() {
 
       {/* Main Menu Modal */}
       {gameState === 'MAIN_MENU' && (
-        <MainMenu
+      <MainMenu
           bestScore={bestScore}
           coins={coins}
           keys={keys}
@@ -57,6 +57,7 @@ export function GameView() {
           onStart={() => engine.handleFlapInput()}
           onOpenSettings={() => setShowSettings(true)}
           onClaimReward={(reward) => engine.claimLuckyReward(reward)}
+          onSpendCoins={(amount) => engine.spendCoins(amount)}
         />
       )}
 

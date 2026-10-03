@@ -42,7 +42,9 @@ export function GameCanvas({ engine }) {
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      engine.destroy();
+      if (engine.detachCanvas) {
+        engine.detachCanvas();
+      }
     };
   }, [engine]);
 

@@ -102,6 +102,14 @@ export class CollectibleManager {
     return true;
   }
 
+  spendCoins(amount) {
+    if (this.coins < amount) return false;
+    this.coins -= amount;
+    safeStorage.setNumber(GAME_CONFIG.CURRENCY.COINS_STORAGE_KEY, this.coins);
+    this.onChange();
+    return true;
+  }
+
   addReward({ coins = 0, keys = 0 }) {
     if (coins > 0) {
       this.coins += coins;

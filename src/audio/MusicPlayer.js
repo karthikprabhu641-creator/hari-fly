@@ -3,7 +3,15 @@
  * between tracks. Only the active track is loaded into the audio element.
  */
 
-import { GAMEPLAY_MUSIC_MODES, GAMEPLAY_SONGS } from '../config/audioConfig';
+import { GAMEPLAY_MUSIC_MODES, GAMEPLAY_SONGS, SONG_UNLOCK_STORAGE_KEY } from '../config/audioConfig';
+import { safeStorage } from '../utils/storage';
+
+function isTrackUnlocked(track) {
+  if (!track) return false;
+  if (!track.price || track.price === 0) return true;
+  const unlocked = safeStorage.getItem(SONG_UNLOCK_STORAGE_KEY, []);
+  return Array.isArray(unlocked) && unlocked.includes(track.id);
+}
 
 export class MusicPlayer {
   constructor() {
@@ -36,7 +44,10 @@ export class MusicPlayer {
   }
 
   getCurrentTrack() {
-    return this.playlist[this.currentIndex] || null;
+    const track = this.playlist[this.currentIndex];
+    if (track && isTrackUnlocked(track)) return track;
+    // Find first unlocked track
+    return this.playlist.find(isTrackUnlocked) || this.playlist[0] || null;
   }
 
   getMode() {
@@ -44,7 +55,11 @@ export class MusicPlayer {
   }
 
   getFavoriteTrack() {
-    return this.playlist.find((track) => track.id === this.favoriteTrackId)
+    const favorite = this.playlist.find((track) => track.id === this.favoriteTrackId);
+    if (favorite && isTrackUnlocked(favorite)) {
+      return favorite;
+    }
+    return this.playlist.find(isTrackUnlocked)
       || this.playlist[0]
       || null;
   }
@@ -164,7 +179,14 @@ export class MusicPlayer {
     this.gapTimer = window.setTimeout(() => {
       if (generation !== this.playbackGeneration || !this.isPlaying) return;
       if (this.mode === GAMEPLAY_MUSIC_MODES.PLAY_ALL) {
-        this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
+        // Find next unlocked track index
+        let nextIdx = (this.currentIndex + 1) % this.playlist.length;
+        let attempts = 0;
+        while (!isTrackUnlocked(this.playlist[nextIdx]) && attempts < this.playlist.length) {
+          nextIdx = (nextIdx + 1) % this.playlist.length;
+          attempts++;
+        }
+        this.currentIndex = nextIdx;
       }
       this.play();
     }, 1000);

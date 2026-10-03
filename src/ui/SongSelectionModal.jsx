@@ -2,13 +2,34 @@
  * Song Selection Modal Component
  * UI for selecting gameplay music modes (Favorite vs Play All),
  * picking favorite track, auditioning/previewing songs, and selecting Game Over music.
+ * Locked songs (price > 0) require 30 coins to unlock.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../hooks/useAudio';
-import { GAMEPLAY_MUSIC_MODES } from '../config/audioConfig';
+import { GAMEPLAY_MUSIC_MODES, SONG_UNLOCK_STORAGE_KEY } from '../config/audioConfig';
+import { safeStorage } from '../utils/storage';
+import coinImage from '../../image/coin.png';
 
-export function SongSelectionModal({ onClose }) {
+/** Returns true if a song is unlocked (free or already purchased). */
+function getUnlockedIds() {
+  return safeStorage.getItem(SONG_UNLOCK_STORAGE_KEY, []);
+}
+
+function isSongUnlocked(songId, price) {
+  if (price === 0) return true;
+  const unlocked = getUnlockedIds();
+  return Array.isArray(unlocked) && unlocked.includes(songId);
+}
+
+function unlockSong(songId) {
+  const unlocked = getUnlockedIds();
+  const set = new Set(Array.isArray(unlocked) ? unlocked : []);
+  set.add(songId);
+  safeStorage.setItem(SONG_UNLOCK_STORAGE_KEY, [...set]);
+}
+
+export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
   const {
     playlist,
     gameplayMode,
@@ -21,6 +42,8 @@ export function SongSelectionModal({ onClose }) {
   } = useAudio();
 
   const [previewTrackId, setPreviewTrackId] = useState(null);
+  const [unlockedIds, setUnlockedIds] = useState(() => getUnlockedIds());
+  const [purchaseError, setPurchaseError] = useState(null); // trackId that failed (insufficient coins)
   const audioPreviewRef = useRef(null);
 
   // Stop preview audio when modal unmounts
@@ -45,6 +68,13 @@ export function SongSelectionModal({ onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [playClick]);
 
+  // Clear purchase error after 2s
+  useEffect(() => {
+    if (!purchaseError) return;
+    const t = setTimeout(() => setPurchaseError(null), 2000);
+    return () => clearTimeout(t);
+  }, [purchaseError]);
+
   const handleClose = () => {
     if (audioPreviewRef.current) {
       audioPreviewRef.current.pause();
@@ -67,11 +97,13 @@ export function SongSelectionModal({ onClose }) {
     });
   };
 
-  const handleSelectFavorite = (trackId) => {
+  const handleSelectFavorite = (track) => {
+    const unlocked = isSongUnlocked(track.id, track.price);
+    if (!unlocked) return; // Can't select locked song
     playClick();
     setGameplayMusicPreferences({
       mode: gameplayMode,
-      favoriteTrackId: trackId,
+      favoriteTrackId: track.id,
     });
   };
 
@@ -81,18 +113,13 @@ export function SongSelectionModal({ onClose }) {
   };
 
   const handleTogglePreview = (track) => {
+    // Can preview locked songs too (15s auto-stop would be nice, but just allow full for now)
     playClick();
     if (previewTrackId === track.id) {
-      // Pause
-      if (audioPreviewRef.current) {
-        audioPreviewRef.current.pause();
-      }
+      if (audioPreviewRef.current) audioPreviewRef.current.pause();
       setPreviewTrackId(null);
     } else {
-      // Play new preview
-      if (audioPreviewRef.current) {
-        audioPreviewRef.current.pause();
-      }
+      if (audioPreviewRef.current) audioPreviewRef.current.pause();
       const audio = new Audio(track.src);
       audio.volume = 0.7;
       audio.play().catch((err) => console.warn('Preview play error:', err));
@@ -100,6 +127,24 @@ export function SongSelectionModal({ onClose }) {
       audioPreviewRef.current = audio;
       setPreviewTrackId(track.id);
     }
+  };
+
+  const handleUnlockSong = (e, track) => {
+    e.stopPropagation();
+    playClick();
+    if (coins < track.price) {
+      setPurchaseError(track.id);
+      return;
+    }
+    const ok = onSpendCoins?.(track.price);
+    if (!ok) {
+      setPurchaseError(track.id);
+      return;
+    }
+    unlockSong(track.id);
+    setUnlockedIds(getUnlockedIds());
+    // Auto-select as favourite after unlocking
+    setGameplayMusicPreferences({ mode: gameplayMode, favoriteTrackId: track.id });
   };
 
   return (
@@ -124,6 +169,12 @@ export function SongSelectionModal({ onClose }) {
               <h1 className="song-select-title">SOUNDTRACK MENU</h1>
               <p className="song-select-subtitle">Select music mode and set your favorite flight songs</p>
             </div>
+          </div>
+
+          {/* Coin balance display */}
+          <div className="song-select-wallet">
+            <img src={coinImage} alt="coins" className="song-select-coin-img" />
+            <span className="song-select-coin-count">{coins}</span>
           </div>
         </header>
 
@@ -158,7 +209,7 @@ export function SongSelectionModal({ onClose }) {
                 <div className="music-mode-card-icon">🔀</div>
                 <div className="music-mode-card-info">
                   <h3>Play All Songs</h3>
-                  <p>Rotate and shuffle through all songs during gameplay</p>
+                  <p>Rotate and shuffle through all unlocked songs during gameplay</p>
                 </div>
                 <div className="music-mode-card-radio">
                   <span className="radio-circle" />
@@ -178,64 +229,87 @@ export function SongSelectionModal({ onClose }) {
 
             <div className="song-cards-list">
               {playlist.map((track) => {
+                const isUnlocked = isSongUnlocked(track.id, track.price);
                 const isFavorite = favoriteTrack?.id === track.id;
                 const isPreviewing = previewTrackId === track.id;
+                const hasError = purchaseError === track.id;
+                const canAfford = coins >= (track.price || 0);
 
                 return (
                   <div
                     key={track.id}
-                    className={`song-card${isFavorite ? ' is-favorite' : ''}`}
-                    onClick={() => handleSelectFavorite(track.id)}
+                    className={`song-card${isFavorite ? ' is-favorite' : ''}${!isUnlocked ? ' is-locked' : ''}`}
+                    onClick={() => isUnlocked && handleSelectFavorite(track)}
                     role="button"
                     tabIndex={0}
                   >
                     <div className="song-card-left">
-                      <div className="song-card-disc-icon">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                        </svg>
+                      {/* Lock / disc icon */}
+                      <div className={`song-card-disc-icon${!isUnlocked ? ' locked' : ''}`}>
+                        {isUnlocked ? (
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                          </svg>
+                        )}
                       </div>
                       <div className="song-card-meta">
                         <span className="song-card-title">{track.name}</span>
-                        <span className="song-card-artist">{track.artist || 'Gameplay Music'}</span>
+                        <span className="song-card-artist">
+                          {isUnlocked
+                            ? (track.price === 0 ? '🎁 Free' : track.artist || 'Gameplay Music')
+                            : `🔒 Locked · ${track.price} coins`}
+                        </span>
                       </div>
                     </div>
 
                     <div className="song-card-right">
-                      {/* Preview Button */}
-                      <button
-                        type="button"
-                        className={`song-preview-btn${isPreviewing ? ' is-playing' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTogglePreview(track);
-                        }}
-                        aria-label={isPreviewing ? `Pause ${track.name}` : `Preview ${track.name}`}
-                      >
-                        {isPreviewing ? (
-                          <>
-                            <span className="pause-icon">⏸</span>
-                            <span>PLAYING</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="play-icon">▶</span>
-                            <span>PREVIEW</span>
-                          </>
-                        )}
-                      </button>
+                      {isUnlocked ? (
+                        <>
+                          {/* Preview Button */}
+                          <button
+                            type="button"
+                            className={`song-preview-btn${isPreviewing ? ' is-playing' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); handleTogglePreview(track); }}
+                            aria-label={isPreviewing ? `Pause ${track.name}` : `Preview ${track.name}`}
+                          >
+                            {isPreviewing ? (
+                              <><span className="pause-icon">⏸</span><span>PLAYING</span></>
+                            ) : (
+                              <><span className="play-icon">▶</span><span>PREVIEW</span></>
+                            )}
+                          </button>
 
-                      {/* Favorite Badge / Button */}
-                      <button
-                        type="button"
-                        className={`song-fav-btn${isFavorite ? ' is-active' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectFavorite(track.id);
-                        }}
-                      >
-                        {isFavorite ? '★ FAVOURITE' : 'SET FAVOURITE'}
-                      </button>
+                          {/* Favourite Button */}
+                          <button
+                            type="button"
+                            className={`song-fav-btn${isFavorite ? ' is-active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); handleSelectFavorite(track); }}
+                          >
+                            {isFavorite ? '★ FAVOURITE' : 'SET FAVOURITE'}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="song-unlock-area">
+                          {hasError && (
+                            <span className="song-unlock-error">
+                              {canAfford ? 'Purchase failed' : 'Not enough coins!'}
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            className={`song-unlock-btn${!canAfford ? ' cant-afford' : ''}`}
+                            onClick={(e) => handleUnlockSong(e, track)}
+                            aria-label={`Unlock ${track.name} for ${track.price} coins`}
+                          >
+                            <img src={coinImage} alt="coin" className="unlock-btn-coin" />
+                            <span>UNLOCK · {track.price}</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -276,7 +350,7 @@ export function SongSelectionModal({ onClose }) {
             onClick={handleBack}
             id="song-select-done-btn"
           >
-            CONFIRM & CLOSE
+            CONFIRM &amp; CLOSE
           </button>
         </footer>
       </div>

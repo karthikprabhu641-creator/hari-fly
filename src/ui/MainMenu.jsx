@@ -1,7 +1,8 @@
 /**
  * Main Menu Screen
  * Displayed on launch and after returning from game over.
- * Features custom bird avatar preview, best score, audio controls, and start action.
+ * Features custom bird avatar preview, pilot call-sign registration,
+ * best score, audio controls, modes selection, soundtrack shop, and live leaderboard.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -12,6 +13,8 @@ import birdImage from '../../image/bird-transparent.png';
 import { WalletDisplay } from './WalletDisplay';
 import { ModesModal } from './ModesModal';
 import { SongSelectionModal } from './SongSelectionModal';
+import { LeaderboardModal } from './LeaderboardModal';
+import { PilotUsernameModal } from './PilotUsernameModal';
 import {
   LuckyWheelModal,
   LUCKY_WHEEL_COOLDOWN_MS,
@@ -19,6 +22,7 @@ import {
   formatCooldown,
 } from './LuckyWheelModal';
 import { safeStorage } from '../utils/storage';
+import { getPilotUsername } from '../services/leaderboardService';
 
 export function MainMenu({
   bestScore,
@@ -29,10 +33,15 @@ export function MainMenu({
   onStart,
   onOpenSettings,
   onClaimReward,
+  onSpendCoins,
 }) {
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showPilotModal, setShowPilotModal] = useState(false);
+  const [pilotUsername, setPilotUsername] = useState(() => getPilotUsername());
+  const [pilotWarning, setPilotWarning] = useState(false);
 
   const [wheelCooldownRemaining, setWheelCooldownRemaining] = useState(() => {
     const last = safeStorage.getNumber(LUCKY_WHEEL_STORAGE_KEY, 0);
@@ -59,6 +68,16 @@ export function MainMenu({
   const handleStart = (e) => {
     e.stopPropagation();
     playClick();
+
+    // Enforce pilot call-sign requirement before takeoff
+    const currentName = getPilotUsername();
+    if (!currentName || currentName.trim().length < 2) {
+      setPilotWarning(true);
+      setShowPilotModal(true);
+      return;
+    }
+
+    setPilotWarning(false);
     onStart();
   };
 
@@ -74,19 +93,7 @@ export function MainMenu({
     setShowModes(true);
   };
 
-  const handleCloseModes = () => {
-    setShowModes(false);
-  };
-
-  const handleOpenSongSelection = (e) => {
-    e.stopPropagation();
-    playClick();
-    setShowSongSelection(true);
-  };
-
-  const handleCloseSongSelection = () => {
-    setShowSongSelection(false);
-  };
+  const handleCloseModes = () => setShowModes(false);
 
   const handleOpenLuckyWheel = (e) => {
     e.stopPropagation();
@@ -94,8 +101,33 @@ export function MainMenu({
     setShowLuckyWheel(true);
   };
 
-  const handleCloseLuckyWheel = () => {
-    setShowLuckyWheel(false);
+  const handleCloseLuckyWheel = () => setShowLuckyWheel(false);
+
+  const handleOpenSongSelection = (e) => {
+    e.stopPropagation();
+    playClick();
+    setShowSongSelection(true);
+  };
+
+  const handleCloseSongSelection = () => setShowSongSelection(false);
+
+  const handleOpenLeaderboard = (e) => {
+    e.stopPropagation();
+    playClick();
+    setShowLeaderboard(true);
+  };
+
+  const handleCloseLeaderboard = () => setShowLeaderboard(false);
+
+  const handleOpenPilotModal = (e) => {
+    e.stopPropagation();
+    playClick();
+    setShowPilotModal(true);
+  };
+
+  const handlePilotSave = (savedName) => {
+    setPilotUsername(savedName);
+    setPilotWarning(false);
   };
 
   const currentMap = MAP_LIST.find((map) => map.id === selectedMapId) || MAP_LIST[0];
@@ -149,13 +181,46 @@ export function MainMenu({
           </div>
 
           <div className="main-menu-actions">
+            {/* Pilot Call-Sign Requirement Card */}
+            <div
+              className={`main-menu-pilot-card${pilotUsername ? ' has-name' : ' is-empty'}${pilotWarning ? ' shake-warning' : ''}`}
+              onClick={handleOpenPilotModal}
+              role="button"
+              tabIndex={0}
+              id="main-menu-pilot-card"
+            >
+              <div className="pilot-card-header">
+                <span className="pilot-card-badge">
+                  {pilotUsername ? '👨‍✈️ PILOT CALL-SIGN' : '⚠️ PILOT CALL-SIGN (REQUIRED)'}
+                </span>
+                {pilotUsername && <span className="pilot-card-edit-hint">EDIT ✎</span>}
+              </div>
+
+              {pilotUsername ? (
+                <div className="pilot-card-name-row">
+                  <span className="pilot-card-at">@</span>
+                  <span className="pilot-card-name">{pilotUsername}</span>
+                  <span className="pilot-card-verified-tag">READY TO FLY ✓</span>
+                </div>
+              ) : (
+                <div className="pilot-card-prompt-row">
+                  <span className="pilot-prompt-text">Tap to enter your call-sign...</span>
+                  <span className="pilot-prompt-arrow">➔</span>
+                </div>
+              )}
+
+              {pilotWarning && (
+                <p className="pilot-warning-hint">Call-sign required before flight takeoff!</p>
+              )}
+            </div>
+
             {/* Primary Action: Start Flying */}
             <button className="main-menu-start" onClick={handleStart} id="start-game-btn">
               <span>START FLYING</span>
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
             </button>
 
-            {/* Secondary Action 1: Game Modes */}
+            {/* Modes */}
             <button
               className="main-menu-modes-btn"
               onClick={handleOpenModes}
@@ -175,7 +240,7 @@ export function MainMenu({
               <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
             </button>
 
-            {/* Secondary Action 2: Soundtrack / Song Selection (Placed right below MODES button) */}
+            {/* Soundtrack */}
             <button
               className="main-menu-modes-btn main-menu-music-btn"
               onClick={handleOpenSongSelection}
@@ -193,6 +258,29 @@ export function MainMenu({
                 <span className="main-menu-modes-current">
                   {gameplayMode === GAMEPLAY_MUSIC_MODES.PLAY_ALL ? 'Play All Songs' : (favoriteTrack?.name || 'Blue Eyes')}
                 </span>
+              </span>
+              <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+            </button>
+
+            {/* Leaderboard */}
+            <button
+              className="main-menu-modes-btn main-menu-leaderboard-btn"
+              onClick={handleOpenLeaderboard}
+              id="main-menu-leaderboard-btn"
+              type="button"
+              aria-label="Open Leaderboard"
+            >
+              <span className="main-menu-modes-icon main-menu-leaderboard-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
+                  <rect x="7" y="14" width="2" height="4" rx="1"/>
+                  <rect x="11" y="11" width="2" height="7" rx="1"/>
+                  <rect x="15" y="8" width="2" height="10" rx="1"/>
+                </svg>
+              </span>
+              <span className="main-menu-modes-label-group">
+                <span className="main-menu-modes-title">LEADERBOARD</span>
+                <span className="main-menu-modes-current">Global Rankings</span>
               </span>
               <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
             </button>
@@ -230,6 +318,27 @@ export function MainMenu({
       {showSongSelection && (
         <SongSelectionModal
           onClose={handleCloseSongSelection}
+          coins={coins}
+          onSpendCoins={onSpendCoins}
+        />
+      )}
+
+      {showLeaderboard && (
+        <LeaderboardModal
+          onClose={handleCloseLeaderboard}
+          onOpenPilotEdit={() => {
+            setShowLeaderboard(false);
+            setShowPilotModal(true);
+          }}
+        />
+      )}
+
+      {showPilotModal && (
+        <PilotUsernameModal
+          isOpen={showPilotModal}
+          onClose={() => setShowPilotModal(false)}
+          onSave={handlePilotSave}
+          isMandatory={pilotWarning}
         />
       )}
 
@@ -244,4 +353,3 @@ export function MainMenu({
     </div>
   );
 }
-

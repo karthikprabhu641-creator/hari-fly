@@ -9,6 +9,7 @@ import { useAudio } from '../hooks/useAudio';
 import birdImage from '../../image/bird-transparent.png';
 import keyImage from '../../image/key.png';
 import { WalletDisplay } from './WalletDisplay';
+import { getPilotUsername } from '../services/leaderboardService';
 
 export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0, nextContinueCost = 1, onContinue, onRestart, onGoToMenu }) {
   const { playClick } = useAudio();
@@ -62,6 +63,12 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
               <span className="game-over-new-best">NEW RECORD</span>
             )}
           </div>
+        </div>
+
+        <div className="game-over-pilot-sync-badge">
+          <span className="sync-badge-icon">🏆</span>
+          <span className="sync-badge-user">@{getPilotUsername() || 'Pilot'}</span>
+          <span className="sync-badge-check">LEADERBOARD RECORDED ✓</span>
         </div>
 
         <WalletDisplay coins={coins} keys={keys} className="game-over-wallet" />
