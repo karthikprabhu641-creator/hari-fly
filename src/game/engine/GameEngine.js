@@ -26,6 +26,7 @@ import { Viewport } from './Viewport';
 import { GameLoop } from './GameLoop';
 import { assetManager } from '../../assets/AssetManager';
 import { audioManager } from '../../audio/AudioManager';
+import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
 
 export class GameEngine {
   constructor() {
@@ -52,6 +53,9 @@ export class GameEngine {
     this.player = new Player();
     this.playerRenderer = new PlayerRenderer({ assetId: 'player.default' });
     this.parallaxBg = new ParallaxBackground();
+    this.selectedMapId = getSelectedMapId();
+    this.parallaxBg.setMap(this.selectedMapId);
+    this.weatherSystem.setMap(this.selectedMapId);
     this.obstacleManager = new ObstacleManager({
       onScore: (obstacle) => this.handleScoreTrigger(obstacle),
       onSpawn: (obstacle) => this.collectibleManager.onObstacleSpawned(obstacle),
@@ -102,13 +106,13 @@ export class GameEngine {
     // Start loop
     this.loop.start();
 
-    // Keep the loading scene visible long enough to read, even on cached assets.
+    // Keep the flight intro on a fixed four-second timeline, even on cached assets.
     const loadingStartedAt = performance.now();
     await assetManager.preload((progress) => {
       this.loadingProgress = progress;
       this.notifyUI();
     });
-    const remainingLoadingTime = 1400 - (performance.now() - loadingStartedAt);
+    const remainingLoadingTime = 4000 - (performance.now() - loadingStartedAt);
     if (remainingLoadingTime > 0) {
       await new Promise((resolve) => window.setTimeout(resolve, remainingLoadingTime));
     }
@@ -288,6 +292,18 @@ export class GameEngine {
     this.notifyUI();
   }
 
+  setMap(mapId) {
+    this.selectedMapId = saveSelectedMap(mapId);
+    this.parallaxBg.setMap(this.selectedMapId);
+    this.weatherSystem.setMap(this.selectedMapId);
+    this.notifyUI();
+  }
+
+  claimLuckyReward({ coins = 0, keys = 0 }) {
+    this.collectibleManager.addReward({ coins, keys });
+    this.notifyUI();
+  }
+
   update(dt) {
     const state = this.fsm.getState();
 
@@ -371,6 +387,7 @@ export class GameEngine {
   getUIState() {
     return {
       gameState: this.fsm.getState(),
+      selectedMapId: this.selectedMapId,
       loadingProgress: this.loadingProgress,
       score: this.scoreSystem.getScore(),
       bestScore: this.scoreSystem.getBestScore(),

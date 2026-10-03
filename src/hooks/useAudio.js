@@ -43,5 +43,7 @@ export function useAudio() {
     setSfxVolume: (v) => audioManager.setSfxVolume(v),
     toggleMute: () => audioManager.toggleMute(),
     playClick: () => audioManager.playClick(),
+    playWheelTick: () => audioManager.playWheelTick(),
+    playRewardChime: () => audioManager.playRewardChime(),
   };
 }

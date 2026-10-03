@@ -1,58 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import birdImage from '../../image/bird-transparent.png';
+import { audioManager } from '../audio/AudioManager';
 
-const LOADING_LINES = [
-  'Checking if the bird has a pilot license.',
-  'Teaching the pipes to stay in their lane.',
-  'Negotiating a reasonable amount of gravity.',
-  'The bird asked for one more minute.',
-];
+const PARTICLES = Array.from({ length: 28 }, (_, index) => {
+  const x = (index * 47 + 13) % 100;
+  const y = (index * 31 + 9) % 100;
+  return {
+    left: `${x}%`,
+    top: `${y}%`,
+    '--drift-x': `${(x - 50) * 1.5}vw`,
+    '--drift-y': `${(y - 50) * 1.5}vh`,
+    '--delay': `${(index % 9) * -0.37}s`,
+    '--duration': `${3.2 + (index % 6) * 0.48}s`,
+  };
+});
 
-export function LoadingScreen({ progress = 0 }) {
-  const [lineIndex, setLineIndex] = useState(0);
-  const percentage = Math.round(progress * 100);
-
+export function LoadingScreen() {
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setLineIndex((current) => (current + 1) % LOADING_LINES.length);
-    }, 1200);
-    return () => window.clearInterval(timer);
+    audioManager.playIntroWind(1.05, 0.12);
+    const cues = [
+      window.setTimeout(() => audioManager.playIntroWhoosh(), 520),
+      window.setTimeout(() => audioManager.playIntroWind(1.55, 0.2), 2050),
+      window.setTimeout(() => audioManager.playIntroTakeoff(), 3370),
+    ];
+    return () => cues.forEach((cue) => window.clearTimeout(cue));
   }, []);
 
   return (
-    <main className="loading-screen" role="status" aria-live="polite">
-      <div className="loading-topbar">
-        <span className="loading-wordmark">HARI<strong>.FLY</strong></span>
-        <span className="loading-status"><i /> PRE-FLIGHT CHECK</span>
+    <main className="loading-screen" role="status" aria-label="Flight initializing">
+      <div className="loading-sky" aria-hidden="true">
+        <span className="loading-moonlight" />
+        <span className="loading-cloud loading-cloud-far" />
+        <span className="loading-cloud loading-cloud-near" />
+        <span className="loading-mountain loading-mountain-far" />
+        <span className="loading-mountain loading-mountain-near" />
+        <span className="loading-wind-ring" />
+        <span className="loading-wind-ring loading-wind-ring-front" />
+        <div className="loading-streaks">
+          {Array.from({ length: 12 }, (_, index) => <i key={index} style={{ '--angle': `${index * 30}deg` }} />)}
+        </div>
+        <div className="loading-particles">
+          {PARTICLES.map((particle, index) => <i key={index} style={particle} />)}
+        </div>
+        <span className="loading-flash" />
       </div>
 
-      <section className="loading-content">
-        <div className="loading-bird-stage">
-          <span className="loading-orbit loading-orbit-back" />
-          <span className="loading-orbit loading-orbit-front" />
-          <img className="loading-bird" src={birdImage} alt="Your very qualified bird pilot" />
-          <span className="loading-speech">I meant to do that.</span>
-        </div>
-
-        <p className="loading-kicker">PLEASE HOLD YOUR WINGS</p>
-        <h1 className="loading-joke" key={lineIndex}>{LOADING_LINES[lineIndex]}</h1>
-        <div
-          className="loading-progress-track"
-          role="progressbar"
-          aria-label="Loading game assets"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={percentage}
-        >
-          <span style={{ width: `${percentage}%` }} />
-        </div>
-        <div className="loading-progress-caption">
-          <span>Getting the runway ready</span>
-          <strong>{percentage}%</strong>
-        </div>
-      </section>
-
-      <p className="loading-footnote">No birds were given a map. They seem confident anyway.</p>
+      <span className="loading-eyebrow">FLIGHT INITIALIZING</span>
+      <img className="loading-bird" src={birdImage} alt="" />
+      <div className="loading-copy" aria-live="polite">
+        <p className="loading-message loading-message-prepare">PREPARING FOR TAKEOFF</p>
+        <p className="loading-message loading-message-ready">READY TO FLY</p>
+      </div>
     </main>
   );
 }

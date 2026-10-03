@@ -9,6 +9,7 @@
 
 import { GAME_CONFIG } from '../../config/gameConfig';
 import { ENVIRONMENTS, EnvironmentSystem } from '../environment/EnvironmentSystem';
+import { DEFAULT_MAP_ID, getMap } from '../../config/mapConfig';
 
 export class ParallaxBackground {
   constructor() {
@@ -21,6 +22,7 @@ export class ParallaxBackground {
     this.mountainOffset = 0;
     this.groundOffset = 0;
     this.environmentSystem = new EnvironmentSystem();
+    this.map = getMap(DEFAULT_MAP_ID);
 
     // Distant cloud definitions
     this.clouds = [
@@ -68,6 +70,10 @@ export class ParallaxBackground {
     return this.environmentSystem.setScore(score);
   }
 
+  setMap(mapId) {
+    this.map = getMap(mapId);
+  }
+
   reset(score = 0) {
     this.cloudOffset = 0;
     this.mountainOffset = 0;
@@ -78,31 +84,30 @@ export class ParallaxBackground {
   renderEnvironment(ctx, environment) {
     this.renderSky(ctx, environment);
 
-    if (environment === ENVIRONMENTS.NIGHT) {
+    if (environment === ENVIRONMENTS.NIGHT || this.map.theme === 'night') {
       this.renderNightDetails(ctx);
     }
 
     this.renderClouds(ctx, environment);
     this.renderMountains(ctx, environment);
+    this.renderMapDetails(ctx);
   }
 
   renderGround(ctx) {
     ctx.save();
 
-    // 1. Ground dirt body
     const dirtGrad = ctx.createLinearGradient(0, this.groundY, 0, this.height);
-    dirtGrad.addColorStop(0, '#ded895');
-    dirtGrad.addColorStop(0.15, '#d3ca79');
-    dirtGrad.addColorStop(1, '#9e9445');
+    dirtGrad.addColorStop(0, this.map.ground[0]);
+    dirtGrad.addColorStop(0.15, this.map.ground[0]);
+    dirtGrad.addColorStop(1, this.map.ground[1]);
 
     ctx.fillStyle = dirtGrad;
     ctx.fillRect(0, this.groundY, this.width, this.groundHeight);
 
-    // 2. Top grass border
-    ctx.fillStyle = '#73bf2e';
+    ctx.fillStyle = this.map.land;
     ctx.fillRect(0, this.groundY, this.width, 14);
 
-    ctx.fillStyle = '#558a22';
+    ctx.fillStyle = this.map.ground[1];
     ctx.fillRect(0, this.groundY + 14, this.width, 3);
 
     // 3. Scrolling decorative diagonal hash stripes
@@ -111,7 +116,7 @@ export class ParallaxBackground {
     ctx.rect(0, this.groundY + 17, this.width, 18);
     ctx.clip();
 
-    ctx.strokeStyle = '#b8af5c';
+    ctx.strokeStyle = this.map.ground[0];
     ctx.lineWidth = 3;
     const stripeSpacing = 20;
     const startX = -stripeSpacing - this.groundOffset;
@@ -125,7 +130,7 @@ export class ParallaxBackground {
     ctx.restore();
 
     // Top border line
-    ctx.strokeStyle = '#385514';
+    ctx.strokeStyle = this.map.ground[1];
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(0, this.groundY);
@@ -137,26 +142,25 @@ export class ParallaxBackground {
 
   renderSky(ctx, environment) {
     const sky = ctx.createLinearGradient(0, 0, 0, this.groundY);
-
-    if (environment === ENVIRONMENTS.NIGHT) {
-      sky.addColorStop(0, '#020617');
-      sky.addColorStop(0.55, '#0f172a');
-      sky.addColorStop(0.85, '#1e293b');
-      sky.addColorStop(1, '#334155');
-    } else if (environment === ENVIRONMENTS.SUNSET) {
-      sky.addColorStop(0, '#312e81');
-      sky.addColorStop(0.42, '#be185d');
-      sky.addColorStop(0.78, '#fb7185');
-      sky.addColorStop(1, '#fdba74');
-    } else {
-      sky.addColorStop(0, '#38bdf8');
-      sky.addColorStop(0.55, '#7dd3fc');
-      sky.addColorStop(0.85, '#bae6fd');
-      sky.addColorStop(1, '#fed7aa');
-    }
+    sky.addColorStop(0, this.map.sky[0]);
+    sky.addColorStop(0.58, this.map.sky[1]);
+    sky.addColorStop(1, this.map.sky[2]);
 
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, this.width, this.groundY);
+
+    if (environment !== ENVIRONMENTS.MORNING) {
+      const tint = ctx.createLinearGradient(0, 0, 0, this.groundY);
+      if (environment === ENVIRONMENTS.NIGHT) {
+        tint.addColorStop(0, 'rgba(5, 10, 38, 0.68)');
+        tint.addColorStop(1, 'rgba(19, 29, 59, 0.26)');
+      } else {
+        tint.addColorStop(0, 'rgba(69, 24, 83, 0.2)');
+        tint.addColorStop(1, 'rgba(255, 135, 99, 0.2)');
+      }
+      ctx.fillStyle = tint;
+      ctx.fillRect(0, 0, this.width, this.groundY);
+    }
   }
 
   renderNightDetails(ctx) {
@@ -181,12 +185,14 @@ export class ParallaxBackground {
   }
 
   renderClouds(ctx, environment) {
-    if (environment === ENVIRONMENTS.NIGHT) return;
+    if (this.map.id === 'night-city') return;
 
     ctx.save();
-    ctx.fillStyle = environment === ENVIRONMENTS.SUNSET
+    ctx.fillStyle = this.map.id === 'sunset-valley'
       ? 'rgba(255, 226, 210, 0.28)'
-      : 'rgba(255, 255, 255, 0.75)';
+      : this.map.id === 'snowfall'
+        ? 'rgba(245, 252, 255, 0.68)'
+        : 'rgba(255, 255, 255, 0.68)';
 
     this.clouds.forEach((cloud) => {
       let renderX = (cloud.x - this.cloudOffset * cloud.speed + this.width) % this.width;
@@ -209,13 +215,24 @@ export class ParallaxBackground {
   }
 
   renderMountains(ctx, environment) {
+    if (this.map.id === 'night-city') {
+      this.renderCityscape(ctx);
+      return;
+    }
+
+    if (this.map.id === 'snowfall') {
+      this.renderSnowyMountains(ctx);
+      return;
+    }
+
+    if (this.map.id === 'jungle') {
+      this.renderJungleCanopy(ctx);
+      return;
+    }
+
     ctx.save();
-    ctx.fillStyle = environment === ENVIRONMENTS.NIGHT
-      ? '#0f172a'
-      : environment === ENVIRONMENTS.SUNSET
-        ? '#7f1d5a'
-        : '#6ee7b7';
-    ctx.globalAlpha = environment === ENVIRONMENTS.NIGHT ? 0.72 : 0.35;
+    ctx.fillStyle = this.map.land;
+    ctx.globalAlpha = environment === ENVIRONMENTS.NIGHT ? 0.7 : 0.42;
 
     const base = this.groundY;
     const mWidth = this.width;
@@ -235,6 +252,104 @@ export class ParallaxBackground {
     ctx.closePath();
     ctx.fill();
 
+    ctx.restore();
+  }
+
+  renderCityscape(ctx) {
+    const heights = [32, 54, 37, 72, 44, 60, 35, 68, 48, 58];
+    const base = this.groundY;
+    const blockWidth = this.width / heights.length;
+    ctx.save();
+    heights.forEach((height, index) => {
+      const x = (index * blockWidth - this.mountainOffset * 0.45 + this.width * 2) % this.width;
+      ctx.fillStyle = index % 2 ? '#17243d' : '#202b48';
+      ctx.fillRect(x, base - height, blockWidth + 1, height);
+      ctx.fillStyle = 'rgba(250, 217, 130, 0.76)';
+      for (let row = 0; row < Math.floor(height / 16); row += 1) {
+        for (let column = 0; column < 2; column += 1) {
+          if ((index + row + column) % 3 !== 0) {
+            ctx.fillRect(x + 5 + column * 9, base - height + 8 + row * 13, 3, 4);
+          }
+        }
+      }
+    });
+    ctx.restore();
+  }
+
+  renderSnowyMountains(ctx) {
+    const base = this.groundY;
+    const peaks = [0.1, 0.27, 0.44, 0.63, 0.8, 0.97];
+    ctx.save();
+    peaks.forEach((ratio, index) => {
+      const x = (ratio * this.width - this.mountainOffset * 0.35 + this.width * 2) % this.width;
+      const peakHeight = index % 2 ? 72 : 112;
+      ctx.fillStyle = index % 2 ? '#91b9cd' : '#789eb7';
+      ctx.beginPath();
+      ctx.moveTo(x - 58, base);
+      ctx.lineTo(x, base - peakHeight);
+      ctx.lineTo(x + 58, base);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#f3fbff';
+      ctx.beginPath();
+      ctx.moveTo(x - 17, base - peakHeight + 32);
+      ctx.lineTo(x, base - peakHeight);
+      ctx.lineTo(x + 19, base - peakHeight + 35);
+      ctx.lineTo(x + 5, base - peakHeight + 27);
+      ctx.lineTo(x - 3, base - peakHeight + 38);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  renderJungleCanopy(ctx) {
+    const base = this.groundY;
+    ctx.save();
+    ctx.fillStyle = '#174b3a';
+    for (let index = 0; index < 7; index += 1) {
+      const x = (index * 66 - this.mountainOffset * 0.6 + this.width * 2) % this.width;
+      const height = index % 2 ? 90 : 122;
+      ctx.fillRect(x, base - height, 12, height);
+      ctx.beginPath();
+      ctx.ellipse(x + 6, base - height, 38, 24, 0, 0, Math.PI * 2);
+      ctx.ellipse(x - 11, base - height + 14, 26, 18, -0.45, 0, Math.PI * 2);
+      ctx.ellipse(x + 24, base - height + 16, 29, 18, 0.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(47, 105, 65, 0.85)';
+    ctx.lineWidth = 4;
+    for (let vine = 0; vine < 3; vine += 1) {
+      const x = ((vine + 1) * this.width / 4 - this.cloudOffset * 0.25 + this.width) % this.width;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.bezierCurveTo(x - 18, 42, x + 20, 74, x + 4, 116);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  renderMapDetails(ctx) {
+    if (this.map.id !== 'skyland') return;
+    const islands = [
+      { x: 58, y: this.groundY * 0.34, width: 34 },
+      { x: 286, y: this.groundY * 0.43, width: 25 },
+    ];
+    ctx.save();
+    islands.forEach(({ x, y, width }) => {
+      const driftX = (x - this.mountainOffset * 0.24 + this.width * 2) % this.width;
+      ctx.fillStyle = '#71bd78';
+      ctx.beginPath();
+      ctx.ellipse(driftX, y, width, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#6c9a6b';
+      ctx.beginPath();
+      ctx.moveTo(driftX - width * 0.72, y + 4);
+      ctx.lineTo(driftX + width * 0.72, y + 4);
+      ctx.lineTo(driftX, y + 18);
+      ctx.closePath();
+      ctx.fill();
+    });
     ctx.restore();
   }
 }

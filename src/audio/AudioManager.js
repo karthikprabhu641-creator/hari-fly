@@ -158,6 +158,26 @@ class AudioManager {
     this.sfx?.playClick();
   }
 
+  playWheelTick() {
+    this.sfx?.playWheelTick();
+  }
+
+  playRewardChime() {
+    this.sfx?.playRewardChime();
+  }
+
+  playIntroWind(duration, intensity) {
+    this.sfx?.playWind(duration, intensity);
+  }
+
+  playIntroWhoosh() {
+    this.sfx?.playWhoosh();
+  }
+
+  playIntroTakeoff() {
+    this.sfx?.playTakeoff();
+  }
+
   // Music Methods
   playMusic() {
     this.stopOutMusic();

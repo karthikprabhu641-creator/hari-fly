@@ -102,6 +102,18 @@ export class CollectibleManager {
     return true;
   }
 
+  addReward({ coins = 0, keys = 0 }) {
+    if (coins > 0) {
+      this.coins += coins;
+      safeStorage.setNumber(GAME_CONFIG.CURRENCY.COINS_STORAGE_KEY, this.coins);
+    }
+    if (keys > 0) {
+      this.keys += keys;
+      safeStorage.setNumber(GAME_CONFIG.CURRENCY.KEYS_STORAGE_KEY, this.keys);
+    }
+    this.onChange();
+  }
+
   getWallet() {
     return { coins: this.coins, keys: this.keys };
   }

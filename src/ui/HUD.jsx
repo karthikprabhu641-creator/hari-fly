@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useAudio } from '../hooks/useAudio';
+import { WalletDisplay } from './WalletDisplay';
 
 export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpenSettings }) {
   const { isMuted, toggleMute, playClick } = useAudio();
@@ -86,16 +87,7 @@ export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpen
       </div>
       </header>
 
-      <div className="hud-wallet" aria-label={`Coins ${coins}, keys ${keys}`}>
-        <div className="hud-wallet-item">
-          <span className="hud-currency-mark hud-currency-coin" aria-hidden="true">C</span>
-          <span>COIN {coins}</span>
-        </div>
-        <div className="hud-wallet-item">
-          <span className="hud-currency-mark hud-currency-key" aria-hidden="true">K</span>
-          <span>KEY {keys}</span>
-        </div>
-      </div>
+      <WalletDisplay coins={coins} keys={keys} className="hud-wallet" />
 
       {powerUps.length > 0 && (
         <div className="hud-powerup-stack" aria-label="Active power-ups">

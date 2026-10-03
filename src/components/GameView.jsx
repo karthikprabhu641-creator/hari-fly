@@ -19,7 +19,7 @@ export function GameView() {
   const engine = useMemo(() => new GameEngine(), []);
 
   // React UI state synchronized through observer
-  const { gameState, loadingProgress, score, bestScore, isNewBest, powerUps, coins, keys, nextContinueCost, restart, pause, resume, continueRun, goToMenu } = useGame(engine);
+  const { gameState, loadingProgress, score, bestScore, isNewBest, powerUps, coins, keys, nextContinueCost, selectedMapId, restart, pause, resume, continueRun, goToMenu } = useGame(engine);
 
   // Audio settings modal state
   const [showSettings, setShowSettings] = useState(false);
@@ -50,8 +50,13 @@ export function GameView() {
       {gameState === 'MAIN_MENU' && (
         <MainMenu
           bestScore={bestScore}
+          coins={coins}
+          keys={keys}
+          selectedMapId={selectedMapId}
+          onSelectMap={(mapId) => engine.setMap(mapId)}
           onStart={() => engine.handleFlapInput()}
           onOpenSettings={() => setShowSettings(true)}
+          onClaimReward={(reward) => engine.claimLuckyReward(reward)}
         />
       )}
 

@@ -32,6 +32,12 @@ export const GAMEPLAY_SONGS = [
     artist: 'Gameplay Music',
     src: `${import.meta.env.BASE_URL}music/udta%20hi%20phiru.mpeg`,
   },
+  {
+    id: 'ninja-hattori',
+    name: 'Ninja Hattori',
+    artist: 'Gameplay Music',
+    src: `${import.meta.env.BASE_URL}music/ninja%20hattori.mpeg`,
+  },
 ];
 
 export const GAME_OVER_SONGS = [

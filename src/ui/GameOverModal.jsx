@@ -7,6 +7,8 @@
 import React from 'react';
 import { useAudio } from '../hooks/useAudio';
 import birdImage from '../../image/bird-transparent.png';
+import keyImage from '../../image/key.png';
+import { WalletDisplay } from './WalletDisplay';
 
 export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0, nextContinueCost = 1, onContinue, onRestart, onGoToMenu }) {
   const { playClick } = useAudio();
@@ -62,16 +64,7 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
           </div>
         </div>
 
-        <div className="game-over-wallet" aria-label={`Coins ${coins}, keys ${keys}`}>
-          <div className="hud-wallet-item">
-            <span className="hud-currency-mark hud-currency-coin" aria-hidden="true">C</span>
-            <span>COINS {coins}</span>
-          </div>
-          <div className="hud-wallet-item">
-            <span className="hud-currency-mark hud-currency-key" aria-hidden="true">K</span>
-            <span>KEYS {keys}</span>
-          </div>
-        </div>
+        <WalletDisplay coins={coins} keys={keys} className="game-over-wallet" />
 
         <button
           className="game-over-continue-button"
@@ -80,10 +73,10 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
           id="game-over-continue-btn"
         >
           <span>CONTINUE</span>
-          <strong>{`${nextContinueCost} ${nextContinueCost === 1 ? 'KEY' : 'KEYS'}`}</strong>
+          <strong><img src={keyImage} alt="" /> {nextContinueCost}</strong>
         </button>
         {keys < nextContinueCost && (
-          <p className="game-over-continue-hint">Collect more keys to continue.</p>
+          <p className="game-over-continue-hint">Collect more to continue.</p>
         )}
 
         <button
