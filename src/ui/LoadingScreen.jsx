@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import birdImage from '../../image/bird-transparent.png';
 import { audioManager } from '../audio/AudioManager';
 
-const PARTICLES = Array.from({ length: 28 }, (_, index) => {
+const PARTICLES = Array.from({ length: 36 }, (_, index) => {
   const x = (index * 47 + 13) % 100;
   const y = (index * 31 + 9) % 100;
   return {
@@ -15,19 +15,30 @@ const PARTICLES = Array.from({ length: 28 }, (_, index) => {
   };
 });
 
-export function LoadingScreen() {
+export function LoadingScreen({ onSkip }) {
   useEffect(() => {
+    // 5-second audio timeline
     audioManager.playIntroWind(1.05, 0.12);
     const cues = [
       window.setTimeout(() => audioManager.playIntroWhoosh(), 520),
       window.setTimeout(() => audioManager.playIntroWind(1.55, 0.2), 2050),
-      window.setTimeout(() => audioManager.playIntroTakeoff(), 3370),
+      window.setTimeout(() => audioManager.playIntroTakeoff(), 3800),
     ];
     return () => cues.forEach((cue) => window.clearTimeout(cue));
   }, []);
 
+  const handleSkip = () => {
+    if (typeof onSkip === 'function') onSkip();
+  };
+
   return (
-    <main className="loading-screen" role="status" aria-label="Flight initializing">
+    <main
+      className="loading-screen"
+      role="status"
+      aria-label="Flight initializing"
+      onClick={handleSkip}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="loading-sky" aria-hidden="true">
         <span className="loading-moonlight" />
         <span className="loading-cloud loading-cloud-far" />
@@ -37,20 +48,23 @@ export function LoadingScreen() {
         <span className="loading-wind-ring" />
         <span className="loading-wind-ring loading-wind-ring-front" />
         <div className="loading-streaks">
-          {Array.from({ length: 12 }, (_, index) => <i key={index} style={{ '--angle': `${index * 30}deg` }} />)}
+          {Array.from({ length: 16 }, (_, index) => <i key={index} style={{ '--angle': `${index * 22.5}deg` }} />)}
         </div>
         <div className="loading-particles">
           {PARTICLES.map((particle, index) => <i key={index} style={particle} />)}
         </div>
         <span className="loading-flash" />
+        <span className="loading-flash-2" />
       </div>
 
       <span className="loading-eyebrow">FLIGHT INITIALIZING</span>
       <img className="loading-bird" src={birdImage} alt="" />
       <div className="loading-copy" aria-live="polite">
         <p className="loading-message loading-message-prepare">PREPARING FOR TAKEOFF</p>
-        <p className="loading-message loading-message-ready">READY TO FLY</p>
+        <p className="loading-message loading-message-ready">ENGINES ONLINE ✓</p>
+        <p className="loading-message loading-message-launch">READY TO FLY 🚀</p>
       </div>
+      <span className="loading-skip-hint">Tap to skip</span>
     </main>
   );
-}
+}

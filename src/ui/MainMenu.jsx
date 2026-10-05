@@ -34,6 +34,7 @@ export function MainMenu({
   onOpenSettings,
   onClaimReward,
   onSpendCoins,
+  onSpendKeys,
 }) {
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
@@ -193,7 +194,7 @@ export function MainMenu({
                 <span className="pilot-card-badge">
                   {pilotUsername ? '👨‍✈️ PILOT CALL-SIGN' : '⚠️ PILOT CALL-SIGN (REQUIRED)'}
                 </span>
-                {pilotUsername && <span className="pilot-card-edit-hint">EDIT ✎</span>}
+                {pilotUsername && <span className="pilot-card-edit-hint">EDIT ✎ · 🗝️ 100</span>}
               </div>
 
               {pilotUsername ? (
@@ -262,27 +263,46 @@ export function MainMenu({
               <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
             </button>
 
-            {/* Leaderboard */}
+            {/* Leaderboard Button with Barricades & Coming Soon */}
             <button
-              className="main-menu-modes-btn main-menu-leaderboard-btn"
+              className="main-menu-modes-btn main-menu-leaderboard-btn is-barricaded"
               onClick={handleOpenLeaderboard}
               id="main-menu-leaderboard-btn"
               type="button"
-              aria-label="Open Leaderboard"
+              aria-label="Leaderboard Coming Soon"
             >
+              {/* Caution Hazard Barricade Ribbons */}
+              <div className="btn-barricade-tape btn-barricade-tape-top" aria-hidden="true" />
+              <div className="btn-barricade-tape btn-barricade-tape-bottom" aria-hidden="true" />
+
               <span className="main-menu-modes-icon main-menu-leaderboard-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
-                  <rect x="7" y="14" width="2" height="4" rx="1"/>
-                  <rect x="11" y="11" width="2" height="7" rx="1"/>
-                  <rect x="15" y="8" width="2" height="10" rx="1"/>
+                <svg viewBox="0 0 24 24" className="leaderboard-barricade-icon">
+                  <rect x="2" y="5" width="20" height="4.5" rx="1.5" fill="#f59e0b"/>
+                  <path d="M6 5l-3 4.5h3.5l3-4.5H6zm6 0l-3 4.5h3.5l3-4.5H12zm6 0l-3 4.5h3.5l3-4.5H18z" fill="#0f172a"/>
+                  <rect x="2" y="11.5" width="20" height="4.5" rx="1.5" fill="#f59e0b"/>
+                  <path d="M6 11.5l-3 4.5h3.5l3-4.5H6zm6 0l-3 4.5h3.5l3-4.5H12zm6 0l-3 4.5h3.5l3-4.5H18z" fill="#0f172a"/>
+                  <path d="M5 4v16M19 4v16M2 20h6M16 20h6" stroke="#e2e8f0" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </span>
+
               <span className="main-menu-modes-label-group">
-                <span className="main-menu-modes-title">LEADERBOARD</span>
-                <span className="main-menu-modes-current">Global Rankings</span>
+                <span className="main-menu-modes-title-wrap">
+                  <span className="main-menu-modes-title">LEADERBOARD</span>
+                  <span className="barricade-badge">
+                    <span className="barricade-caution-emoji" aria-hidden="true">🚧</span>
+                    COMING SOON
+                    <span className="barricade-caution-emoji" aria-hidden="true">🚧</span>
+                  </span>
+                </span>
+                <span className="main-menu-modes-current barricade-subtext">
+                  <span className="barricade-pulsing-light" aria-hidden="true" />
+                  Under Construction
+                </span>
               </span>
-              <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+
+              <span className="main-menu-modes-arrow barricade-gate-indicator" aria-hidden="true">
+                <span className="barricade-mini-barrier">🚧</span>
+              </span>
             </button>
           </div>
 
@@ -339,6 +359,8 @@ export function MainMenu({
           onClose={() => setShowPilotModal(false)}
           onSave={handlePilotSave}
           isMandatory={pilotWarning}
+          keys={keys}
+          onSpendKeys={onSpendKeys}
         />
       )}
 

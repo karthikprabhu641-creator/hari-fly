@@ -119,6 +119,20 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
           </button>
         </header>
 
+        {/* Barricade Coming Soon Banner */}
+        <div className="leaderboard-barricade-banner">
+          <div className="barricade-hazard-line" />
+          <div className="barricade-banner-inner">
+            <span className="barricade-banner-icon" aria-hidden="true">🚧</span>
+            <div className="barricade-banner-text">
+              <span className="barricade-banner-heading">GLOBAL NETWORK • COMING SOON</span>
+              <span className="barricade-banner-desc">Live cross-platform pilot servers under construction</span>
+            </div>
+            <span className="barricade-banner-icon" aria-hidden="true">🚧</span>
+          </div>
+          <div className="barricade-hazard-line" />
+        </div>
+
         {/* Map Filter Tabs */}
         <div className="leaderboard-map-tabs">
           <button
@@ -193,20 +207,20 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
               {leaderboard.length > 0 && (
                 <div className="leaderboard-podium-cards live-podium">
                   {/* Rank 2 */}
-                  <div className={`podium-card podium-silver${top2?.username.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
+                  <div className={`podium-card podium-silver${top2?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
                     <div className="podium-badge">#2</div>
                     <div className="podium-avatar">🥈</div>
                     <div className="podium-name">{top2 ? top2.username : '---'}</div>
                     <div className="podium-score">{top2 ? `${top2.score} PTS` : '0 PTS'}</div>
                     {top2 && (
                       <span className="podium-tier-tag">
-                        {top2.username.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top2.mapId || 'Classic')}
+                        {top2?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top2.mapId || 'Classic')}
                       </span>
                     )}
                   </div>
 
                   {/* Rank 1 */}
-                  <div className={`podium-card podium-gold${top1?.username.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
+                  <div className={`podium-card podium-gold${top1?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
                     <div className="podium-crown">👑</div>
                     <div className="podium-badge">#1</div>
                     <div className="podium-avatar">🥇</div>
@@ -214,20 +228,20 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
                     <div className="podium-score">{top1 ? `${top1.score} PTS` : '0 PTS'}</div>
                     {top1 && (
                       <span className="podium-tier-tag">
-                        {top1.username.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : 'Grand Champion'}
+                        {top1?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : 'Grand Champion'}
                       </span>
                     )}
                   </div>
 
                   {/* Rank 3 */}
-                  <div className={`podium-card podium-bronze${top3?.username.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
+                  <div className={`podium-card podium-bronze${top3?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
                     <div className="podium-badge">#3</div>
                     <div className="podium-avatar">🥉</div>
                     <div className="podium-name">{top3 ? top3.username : '---'}</div>
                     <div className="podium-score">{top3 ? `${top3.score} PTS` : '0 PTS'}</div>
                     {top3 && (
                       <span className="podium-tier-tag">
-                        {top3.username.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top3.mapId || 'Classic')}
+                        {top3?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top3.mapId || 'Classic')}
                       </span>
                     )}
                   </div>
@@ -282,9 +296,9 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
                       </>
                     ) : (
                       <>
-                        <span className="empty-icon">✈️</span>
-                        <h3>No Records Yet — Be First!</h3>
-                        <p>Complete a flight to appear on the global leaderboard.</p>
+                        <span className="empty-icon">🚧</span>
+                        <h3>Leaderboard Coming Soon</h3>
+                        <p>No pilot records found yet.<br />Fly a flight session to record your call-sign and personal best!</p>
                       </>
                     )}
                   </div>

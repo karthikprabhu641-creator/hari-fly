@@ -1,7 +1,7 @@
 /**
  * Pilot Username / Call-sign Registration Modal
- * Displayed before player takes off if they haven't set their call-sign yet,
- * or when they click "EDIT" on their pilot profile.
+ * - First-time registration: FREE
+ * - Changing an existing call-sign: costs 100 🗝️ keys
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -9,15 +9,28 @@ import { useAudio } from '../hooks/useAudio';
 import { getPilotUsername, setPilotUsername } from '../services/leaderboardService';
 import birdImage from '../../image/bird-transparent.png';
 
-export function PilotUsernameModal({ isOpen, onClose, onSave, isMandatory = false }) {
+const RENAME_KEY_COST = 100;
+
+export function PilotUsernameModal({
+  isOpen,
+  onClose,
+  onSave,
+  isMandatory = false,
+  keys = 0,
+  onSpendKeys,
+}) {
   const { playClick } = useAudio();
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const inputRef = useRef(null);
 
+  // Whether the player already has an existing call-sign (rename path)
+  const [existingName, setExistingName] = useState('');
+
   useEffect(() => {
     if (isOpen) {
       const current = getPilotUsername();
+      setExistingName(current || '');
       setUsername(current || '');
       setError('');
       setTimeout(() => inputRef.current?.focus(), 150);
@@ -26,29 +39,42 @@ export function PilotUsernameModal({ isOpen, onClose, onSave, isMandatory = fals
 
   if (!isOpen) return null;
 
+  // Is this an edit/rename (not a first-time registration)?
+  const isRename = Boolean(existingName && existingName.trim().length >= 2);
+  const canAffordRename = keys >= RENAME_KEY_COST;
+
+  const validate = (clean) => {
+    if (!clean) return 'Please enter a pilot call-sign to take off.';
+    if (clean.length < 2) return 'Call-sign must be at least 2 characters long.';
+    if (clean.length > 18) return 'Call-sign cannot exceed 18 characters.';
+    if (!/^[a-zA-Z0-9_ -]+$/.test(clean)) return 'Only letters, numbers, underscores, and dashes allowed.';
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e?.preventDefault();
     const clean = username.trim();
 
-    if (!clean) {
-      setError('Please enter a pilot call-sign to take off.');
+    const validationError = validate(clean);
+    if (validationError) {
+      setError(validationError);
       inputRef.current?.focus();
       return;
     }
-    if (clean.length < 2) {
-      setError('Call-sign must be at least 2 characters long.');
-      inputRef.current?.focus();
-      return;
-    }
-    if (clean.length > 18) {
-      setError('Call-sign cannot exceed 18 characters.');
-      inputRef.current?.focus();
-      return;
-    }
-    if (!/^[a-zA-Z0-9_ -]+$/.test(clean)) {
-      setError('Only letters, numbers, underscores, and dashes allowed.');
-      inputRef.current?.focus();
-      return;
+
+    // If renaming an existing call-sign, deduct keys
+    if (isRename) {
+      if (!canAffordRename) {
+        setError(`You need ${RENAME_KEY_COST} 🗝️ Keys to change your call-sign. You only have ${keys}.`);
+        return;
+      }
+      if (typeof onSpendKeys === 'function') {
+        const spent = onSpendKeys(RENAME_KEY_COST);
+        if (!spent) {
+          setError(`Not enough keys to change your call-sign.`);
+          return;
+        }
+      }
     }
 
     playClick();
@@ -78,13 +104,39 @@ export function PilotUsernameModal({ isOpen, onClose, onSave, isMandatory = fals
         </div>
 
         <div className="pilot-modal-badge">
-          <span>FLIGHT REGISTRATION</span>
+          <span>{isRename ? 'CHANGE CALL-SIGN' : 'FLIGHT REGISTRATION'}</span>
         </div>
 
-        <h2 className="pilot-modal-title">REGISTER CALL-SIGN</h2>
+        <h2 className="pilot-modal-title">
+          {isRename ? 'RENAME CALL-SIGN' : 'REGISTER CALL-SIGN'}
+        </h2>
         <p className="pilot-modal-subtitle">
-          Your call-sign will be displayed on the Global Leaderboards and flight records.
+          {isRename
+            ? 'Changing your call-sign costs 100 🗝️ Keys. Your new name will update on the leaderboard.'
+            : 'Your call-sign will be displayed on the Global Leaderboards and flight records.'}
         </p>
+
+        {/* Key cost banner — shown only when renaming */}
+        {isRename && (
+          <div className={`pilot-rename-cost-banner${canAffordRename ? '' : ' is-insufficient'}`}>
+            <div className="rename-cost-row">
+              <span className="rename-cost-icon">🗝️</span>
+              <span className="rename-cost-label">RENAME COST</span>
+              <span className="rename-cost-amount">{RENAME_KEY_COST} Keys</span>
+            </div>
+            <div className="rename-balance-row">
+              <span className="rename-balance-label">YOUR BALANCE</span>
+              <span className={`rename-balance-val${canAffordRename ? ' is-ok' : ' is-short'}`}>
+                {keys} Keys {canAffordRename ? '✓' : '✗'}
+              </span>
+            </div>
+            {!canAffordRename && (
+              <p className="rename-insufficient-note">
+                You need {RENAME_KEY_COST - keys} more 🗝️ Keys. Collect keys during gameplay!
+              </p>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="pilot-modal-form">
           <div className="pilot-input-wrapper">
@@ -128,11 +180,28 @@ export function PilotUsernameModal({ isOpen, onClose, onSave, isMandatory = fals
                 CANCEL
               </button>
             )}
-            <button type="submit" className="pilot-modal-submit-btn" id="confirm-pilot-callsign-btn">
-              <span>CONFIRM &amp; FLY</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
+            <button
+              type="submit"
+              className={`pilot-modal-submit-btn${isRename && !canAffordRename ? ' is-locked' : ''}`}
+              id="confirm-pilot-callsign-btn"
+              disabled={isRename && !canAffordRename}
+              title={isRename && !canAffordRename ? `Need ${RENAME_KEY_COST} keys to rename` : undefined}
+            >
+              {isRename ? (
+                <>
+                  <span>🗝️ SPEND {RENAME_KEY_COST} &amp; RENAME</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>CONFIRM &amp; FLY</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         </form>

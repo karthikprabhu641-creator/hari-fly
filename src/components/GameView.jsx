@@ -26,10 +26,16 @@ export function GameView() {
 
   return (
     <div className="game-viewport-container">
-      {/* 2D Canvas Gameplay Renderer */}
+      {/* 2D Canvas Gameplay Renderer — always present */}
       <GameCanvas engine={engine} />
 
-      {gameState === 'LOADING' && <LoadingScreen progress={loadingProgress} />}
+      {/* Cinematic Flight Intro — shown during LOADING state */}
+      {gameState === 'LOADING' && (
+        <LoadingScreen
+          progress={loadingProgress}
+          onSkip={() => engine.skipIntro()}
+        />
+      )}
 
       {/* React UI Overlays */}
       <div className="game-ui-overlay">
@@ -58,6 +64,7 @@ export function GameView() {
           onOpenSettings={() => setShowSettings(true)}
           onClaimReward={(reward) => engine.claimLuckyReward(reward)}
           onSpendCoins={(amount) => engine.spendCoins(amount)}
+          onSpendKeys={(amount) => engine.spendKeys(amount)}
         />
       )}
 

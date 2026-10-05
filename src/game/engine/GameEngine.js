@@ -118,9 +118,18 @@ export class GameEngine {
         this.loadingProgress = progress;
         this.notifyUI();
       });
-      const remainingLoadingTime = 350 - (performance.now() - loadingStartedAt);
-      if (remainingLoadingTime > 0) {
-        await new Promise((resolve) => window.setTimeout(resolve, remainingLoadingTime));
+      // 5-second cinematic flight intro sequence
+      const INTRO_DURATION_MS = 5000;
+      const remainingLoadingTime = Math.max(0, INTRO_DURATION_MS - (performance.now() - loadingStartedAt));
+      if (remainingLoadingTime > 0 && this.fsm.is(GAME_STATE.LOADING)) {
+        await new Promise((resolve) => {
+          this._introResolve = resolve;
+          this._introTimer = window.setTimeout(() => {
+            this._introResolve = null;
+            this._introTimer = null;
+            resolve();
+          }, remainingLoadingTime);
+        });
       }
 
       // Transition from LOADING to MAIN_MENU
@@ -130,6 +139,24 @@ export class GameEngine {
       }
     } else {
       // Re-attached in existing state
+      this.notifyUI();
+    }
+  }
+
+  /**
+   * Skip flight intro sequence immediately
+   */
+  skipIntro() {
+    if (this._introTimer) {
+      window.clearTimeout(this._introTimer);
+      this._introTimer = null;
+    }
+    if (this._introResolve) {
+      this._introResolve();
+      this._introResolve = null;
+    }
+    if (this.fsm.is(GAME_STATE.LOADING)) {
+      this.fsm.transitionTo(GAME_STATE.MAIN_MENU);
       this.notifyUI();
     }
   }
@@ -323,6 +350,12 @@ export class GameEngine {
 
   spendCoins(amount) {
     const ok = this.collectibleManager.spendCoins(amount);
+    if (ok) this.notifyUI();
+    return ok;
+  }
+
+  spendKeys(amount) {
+    const ok = this.collectibleManager.spendKeys(amount);
     if (ok) this.notifyUI();
     return ok;
   }

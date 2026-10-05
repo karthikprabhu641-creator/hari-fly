@@ -9,14 +9,11 @@ import { safeStorage } from '../utils/storage';
 export const PILOT_USERNAME_STORAGE_KEY = 'hari_fly_pilot_username';
 export const LEADERBOARD_STORAGE_KEY = 'hari_fly_local_leaderboard_records';
 
-// Initial Hall-of-Fame records so the leaderboard is fun and populated out-of-the-box
-const DEFAULT_LEADERBOARD = [
-  { username: 'AcePilot', score: 142, mapId: 'classic', createdAt: '2026-09-20T10:00:00.000Z' },
-  { username: 'SkyFalcon', score: 98, mapId: 'sunset', createdAt: '2026-09-22T14:30:00.000Z' },
-  { username: 'NeonHawk', score: 76, mapId: 'cyberpunk', createdAt: '2026-09-25T18:15:00.000Z' },
-  { username: 'NightRider', score: 54, mapId: 'night', createdAt: '2026-09-28T21:00:00.000Z' },
-  { username: 'RetroBird', score: 38, mapId: 'retro', createdAt: '2026-10-01T09:45:00.000Z' },
-];
+// List of fake / bot player names to purge from local storage
+const FAKE_PLAYERS = new Set(['acepilot', 'skyfalcon', 'neonhawk', 'nightrider', 'retrobird']);
+
+// Default leaderboard is empty — no fake players
+const DEFAULT_LEADERBOARD = [];
 
 // ─── Pilot Identity ──────────────────────────────────────────────────────────
 
@@ -54,12 +51,18 @@ export function hasRegisteredUsername() {
 
 function getStoredRecords() {
   const records = safeStorage.getItem(LEADERBOARD_STORAGE_KEY, null);
-  if (Array.isArray(records) && records.length > 0) {
-    return records;
+  if (Array.isArray(records)) {
+    // Purge any fake players if they were saved previously
+    const realRecords = records.filter(
+      (r) => r && r.username && !FAKE_PLAYERS.has(String(r.username).trim().toLowerCase())
+    );
+    if (realRecords.length !== records.length) {
+      safeStorage.setItem(LEADERBOARD_STORAGE_KEY, realRecords);
+    }
+    return realRecords;
   }
-  // Initialize with defaults if empty
-  safeStorage.setItem(LEADERBOARD_STORAGE_KEY, DEFAULT_LEADERBOARD);
-  return [...DEFAULT_LEADERBOARD];
+  safeStorage.setItem(LEADERBOARD_STORAGE_KEY, []);
+  return [];
 }
 
 function saveStoredRecords(records) {
