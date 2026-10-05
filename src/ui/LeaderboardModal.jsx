@@ -1,7 +1,7 @@
 /**
  * Leaderboard Modal Component
- * Live Global Pilot Rankings powered by Supabase (real database).
- * Displays Podium for Top 3, ranked table for #4+, map filters, and current user status.
+ * Displays Top 3 Podium, ranked records table, map filters, and current pilot status.
+ * Stored locally and instantly accessible on mobile.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
