@@ -86,7 +86,6 @@ export function MainMenu({
   };
 
   const {
-    currentTrack,
     gameplayMode,
     favoriteTrack,
     playClick,
@@ -305,14 +304,6 @@ export function MainMenu({
       </main>
 
       <footer className="main-menu-footer">
-        {currentTrack && (
-          <div className="main-menu-now-playing">
-            <span className="now-playing-dot" />
-            <span>PLAYING</span>
-            <strong>{currentTrack.name}</strong>
-          </div>
-        )}
-
         <a
           href="https://www.instagram.com/kartxik.exe"
           target="_blank"
