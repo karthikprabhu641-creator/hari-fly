@@ -22,6 +22,18 @@ import {
 import { safeStorage } from '../utils/storage';
 import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } from '../utils/device';
 
+function formatWheelTimer(ms) {
+  if (ms <= 0) return 'FREE';
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const mins = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((ms % (1000 * 60)) / 1000);
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
 export function MainMenu({
   bestScore,
   coins,
@@ -127,42 +139,50 @@ export function MainMenu({
         <div className="main-menu-topbar-left">
           <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />
 
-          {/* Lucky Wheel Entry Button (Icon-only Wheel) */}
-          <button
-            className={`main-menu-lucky-wheel-btn${isWheelReady ? ' is-ready' : ''}`}
-            onClick={handleOpenLuckyWheel}
-            id="main-menu-lucky-wheel-btn"
-            type="button"
-            aria-label={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel - Next spin in ${formatCooldown(wheelCooldownRemaining)}`}
-            title={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel (${formatCooldown(wheelCooldownRemaining)})`}
-          >
-            <span className="lucky-wheel-btn-icon-wrap" aria-hidden="true">
-              <svg viewBox="0 0 32 32" className="lucky-wheel-btn-svg">
-                <g className="lucky-wheel-spinner">
-                  {/* Wheel Sectors with vibrant game colors */}
-                  <path d="M16 16 L16 3 A13 13 0 0 1 25.19 6.81 Z" fill="#f59e0b" />
-                  <path d="M16 16 L25.19 6.81 A13 13 0 0 1 29 16 Z" fill="#38bdf8" />
-                  <path d="M16 16 L29 16 A13 13 0 0 1 25.19 25.19 Z" fill="#ec4899" />
-                  <path d="M16 16 L25.19 25.19 A13 13 0 0 1 16 29 Z" fill="#22c55e" />
-                  <path d="M16 16 L16 29 A13 13 0 0 1 6.81 25.19 Z" fill="#a855f7" />
-                  <path d="M16 16 L6.81 25.19 A13 13 0 0 1 3 16 Z" fill="#facc15" />
-                  <path d="M16 16 L3 16 A13 13 0 0 1 6.81 6.81 Z" fill="#06b6d4" />
-                  <path d="M16 16 L6.81 6.81 A13 13 0 0 1 16 3 Z" fill="#ef4444" />
-                  {/* Spoke divider lines */}
-                  <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
-                  <path d="M16 3v26M3 16h26M6.81 6.81l18.38 18.38M6.81 25.19L25.19 6.81" stroke="rgba(15,23,42,0.6)" strokeWidth="0.8" />
-                  {/* Outer rim */}
-                  <circle cx="16" cy="16" r="13.2" fill="none" stroke="#facc15" strokeWidth="1.6" />
-                  {/* Center hub */}
-                  <circle cx="16" cy="16" r="4.2" fill="#0f172a" stroke="#facc15" strokeWidth="1.4" />
-                  <circle cx="16" cy="16" r="1.8" fill="#facc15" />
-                </g>
-                {/* Pointer indicator at top (pointing down) */}
-                <polygon points="16,1 13.6,5.2 18.4,5.2" fill="#facc15" stroke="#78350f" strokeWidth="0.6" />
-              </svg>
-              {isWheelReady && <span className="lucky-wheel-pulse-dot" />}
+          {/* Lucky Wheel Entry with Timer below wheel */}
+          <div className="main-menu-lucky-wheel-wrapper">
+            <button
+              className={`main-menu-lucky-wheel-btn${isWheelReady ? ' is-ready' : ''}`}
+              onClick={handleOpenLuckyWheel}
+              id="main-menu-lucky-wheel-btn"
+              type="button"
+              aria-label={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel - Next spin in ${formatCooldown(wheelCooldownRemaining)}`}
+              title={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel (${formatCooldown(wheelCooldownRemaining)})`}
+            >
+              <span className="lucky-wheel-btn-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 32 32" className="lucky-wheel-btn-svg">
+                  <g className="lucky-wheel-spinner">
+                    {/* Wheel Sectors with vibrant game colors */}
+                    <path d="M16 16 L16 3 A13 13 0 0 1 25.19 6.81 Z" fill="#f59e0b" />
+                    <path d="M16 16 L25.19 6.81 A13 13 0 0 1 29 16 Z" fill="#38bdf8" />
+                    <path d="M16 16 L29 16 A13 13 0 0 1 25.19 25.19 Z" fill="#ec4899" />
+                    <path d="M16 16 L25.19 25.19 A13 13 0 0 1 16 29 Z" fill="#22c55e" />
+                    <path d="M16 16 L16 29 A13 13 0 0 1 6.81 25.19 Z" fill="#a855f7" />
+                    <path d="M16 16 L6.81 25.19 A13 13 0 0 1 3 16 Z" fill="#facc15" />
+                    <path d="M16 16 L3 16 A13 13 0 0 1 6.81 6.81 Z" fill="#06b6d4" />
+                    <path d="M16 16 L6.81 6.81 A13 13 0 0 1 16 3 Z" fill="#ef4444" />
+                    {/* Spoke divider lines */}
+                    <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
+                    <path d="M16 3v26M3 16h26M6.81 6.81l18.38 18.38M6.81 25.19L25.19 6.81" stroke="rgba(15,23,42,0.6)" strokeWidth="0.8" />
+                    {/* Outer rim */}
+                    <circle cx="16" cy="16" r="13.2" fill="none" stroke="#facc15" strokeWidth="1.6" />
+                    {/* Center hub */}
+                    <circle cx="16" cy="16" r="4.2" fill="#0f172a" stroke="#facc15" strokeWidth="1.4" />
+                    <circle cx="16" cy="16" r="1.8" fill="#facc15" />
+                  </g>
+                  {/* Pointer indicator at top (pointing down) */}
+                  <polygon points="16,1 13.6,5.2 18.4,5.2" fill="#facc15" stroke="#78350f" strokeWidth="0.6" />
+                </svg>
+                {isWheelReady && <span className="lucky-wheel-pulse-dot" />}
+              </span>
+            </button>
+            <span
+              className={`lucky-wheel-sub-timer${isWheelReady ? ' is-ready' : ''}`}
+              id="lucky-wheel-timer-badge"
+            >
+              {isWheelReady ? 'FREE' : formatWheelTimer(wheelCooldownRemaining)}
             </span>
-          </button>
+          </div>
         </div>
 
         <div className="main-menu-topbar-right">
@@ -292,6 +312,23 @@ export function MainMenu({
             <strong>{currentTrack.name}</strong>
           </div>
         )}
+
+        <a
+          href="https://www.instagram.com/kartxik.exe"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="main-menu-dev-credit"
+          id="dev-credit-link"
+          aria-label="Developed by Karthik (Instagram: @kartxik.exe)"
+          title="Follow @kartxik.exe on Instagram"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="dev-credit-prefix">developed by</span>
+          <span className="dev-credit-name">Karthik</span>
+          <svg className="dev-credit-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
       </footer>
 
       {showModes && (
