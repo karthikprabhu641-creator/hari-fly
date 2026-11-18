@@ -3,7 +3,7 @@
  * Top-level view container managing Canvas 2D engine and the React UI state layer.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { GameEngine } from '../game/engine/GameEngine';
 import { useGame } from '../hooks/useGame';
 import { GameCanvas } from './GameCanvas';
@@ -13,6 +13,7 @@ import { PauseMenu } from '../ui/PauseMenu';
 import { GameOverModal } from '../ui/GameOverModal';
 import { AudioSettingsModal } from '../ui/AudioSettingsModal';
 import { LoadingScreen } from '../ui/LoadingScreen';
+import { isMobileDevice, isFullscreen, requestFullscreen } from '../utils/device';
 
 export function GameView() {
   // Stable singleton engine instance
@@ -23,6 +24,29 @@ export function GameView() {
 
   // Audio settings modal state
   const [showSettings, setShowSettings] = useState(false);
+
+  // Mobile automatic fullscreen on first interaction
+  useEffect(() => {
+    if (!isMobileDevice()) return;
+
+    const enterFullscreenOnMobile = () => {
+      if (!isFullscreen()) {
+        requestFullscreen();
+      }
+    };
+
+    window.addEventListener('touchstart', enterFullscreenOnMobile, { passive: true, once: true });
+    window.addEventListener('touchend', enterFullscreenOnMobile, { passive: true, once: true });
+    window.addEventListener('pointerdown', enterFullscreenOnMobile, { passive: true, once: true });
+    window.addEventListener('click', enterFullscreenOnMobile, { once: true });
+
+    return () => {
+      window.removeEventListener('touchstart', enterFullscreenOnMobile);
+      window.removeEventListener('touchend', enterFullscreenOnMobile);
+      window.removeEventListener('pointerdown', enterFullscreenOnMobile);
+      window.removeEventListener('click', enterFullscreenOnMobile);
+    };
+  }, []);
 
   return (
     <div className="game-viewport-container">

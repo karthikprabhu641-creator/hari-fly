@@ -65,6 +65,15 @@ class SafeStorage {
     return this.setItem(key, Number.isFinite(value) ? value : 0);
   }
 
+  getBoolean(key, defaultValue = false) {
+    const val = this.getItem(key, defaultValue);
+    return typeof val === 'boolean' ? val : Boolean(val);
+  }
+
+  setBoolean(key, value) {
+    return this.setItem(key, Boolean(value));
+  }
+
   removeItem(key) {
     if (this.isStorageAvailable) {
       try {

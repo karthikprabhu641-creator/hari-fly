@@ -112,8 +112,8 @@ export function PilotUsernameModal({
         </h2>
         <p className="pilot-modal-subtitle">
           {isRename
-            ? 'Changing your call-sign costs 100 🗝️ Keys. Your new name will update on the leaderboard.'
-            : 'Your call-sign will be displayed on the Global Leaderboards and flight records.'}
+            ? 'Changing your call-sign costs 100 🗝️ Keys.'
+            : 'Set your in-game pilot call-sign before you take off.'}
         </p>
 
         {/* Key cost banner — shown only when renaming */}

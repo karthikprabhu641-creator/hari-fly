@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import birdImage from '../../image/bird-transparent.png';
 import { audioManager } from '../audio/AudioManager';
+import { isMobileDevice, isFullscreen, requestFullscreen } from '../utils/device';
 
 const PARTICLES = Array.from({ length: 36 }, (_, index) => {
   const x = (index * 47 + 13) % 100;
@@ -28,6 +29,9 @@ export function LoadingScreen({ onSkip }) {
   }, []);
 
   const handleSkip = () => {
+    if (isMobileDevice() && !isFullscreen()) {
+      requestFullscreen();
+    }
     if (typeof onSkip === 'function') onSkip();
   };
 

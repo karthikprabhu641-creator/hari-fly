@@ -26,8 +26,8 @@ import { Viewport } from './Viewport';
 import { GameLoop } from './GameLoop';
 import { assetManager } from '../../assets/AssetManager';
 import { audioManager } from '../../audio/AudioManager';
-import { getPilotUsername, submitScore } from '../../services/leaderboardService';
 import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
+import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 
 export class GameEngine {
   constructor() {
@@ -181,13 +181,6 @@ export class GameEngine {
 
       this.fsm.transitionTo(GAME_STATE.GAME_OVER);
       this.notifyUI();
-
-      // Submit score to global leaderboard
-      const finalScore = this.scoreSystem.getScore();
-      const pilotName = getPilotUsername();
-      if (finalScore > 0 && pilotName) {
-        submitScore(pilotName, finalScore, this.selectedMapId).catch(() => {});
-      }
     });
 
     // 2. Flap VFX / Audio
@@ -208,6 +201,10 @@ export class GameEngine {
   }
 
   handleFlapInput() {
+    if (isMobileDevice() && !isFullscreen()) {
+      requestFullscreen();
+    }
+
     const currentState = this.fsm.getState();
 
     if (currentState === GAME_STATE.MAIN_MENU) {

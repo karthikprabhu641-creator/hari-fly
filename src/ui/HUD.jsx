@@ -3,12 +3,32 @@
  * Active during gameplay. Shows current score, pause button, and audio toggles.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { WalletDisplay } from './WalletDisplay';
+import { isFullscreen, toggleFullscreen } from '../utils/device';
 
 export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpenSettings }) {
   const { isMuted, toggleMute, playClick } = useAudio();
+  const [isFullscreenActive, setIsFullscreenActive] = useState(() => isFullscreen());
+
+  useEffect(() => {
+    const handleFSChange = () => {
+      setIsFullscreenActive(isFullscreen());
+    };
+    document.addEventListener('fullscreenchange', handleFSChange);
+    document.addEventListener('webkitfullscreenchange', handleFSChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFSChange);
+      document.removeEventListener('webkitfullscreenchange', handleFSChange);
+    };
+  }, []);
+
+  const handleToggleFullscreen = (e) => {
+    e.stopPropagation();
+    playClick();
+    toggleFullscreen();
+  };
 
   const handlePause = (e) => {
     e.stopPropagation();
@@ -38,6 +58,24 @@ export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpen
       <header className="hud-header">
       {/* Sound Controls */}
       <div className="hud-controls">
+        <button
+          className="icon-btn"
+          onClick={handleToggleFullscreen}
+          title={isFullscreenActive ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+          id="hud-fullscreen-btn"
+          aria-label="Toggle Fullscreen"
+        >
+          {isFullscreenActive ? (
+            <svg viewBox="0 0 24 24">
+              <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" fill="currentColor"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24">
+              <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" fill="currentColor"/>
+            </svg>
+          )}
+        </button>
+
         <button
           className="icon-btn"
           onClick={handleMute}

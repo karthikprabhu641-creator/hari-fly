@@ -1,8 +1,8 @@
 /**
  * Main Menu Screen
- * Displayed on launch and after returning from game over.
- * Features custom bird avatar preview, pilot call-sign registration,
- * best score, audio controls, modes selection, soundtrack shop, and live leaderboard.
+ * Displayed on launch (after loading screen) and after returning from game over.
+ * Features bird avatar preview, best score, audio controls,
+ * modes selection, soundtrack shop, and lucky wheel.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -13,8 +13,6 @@ import birdImage from '../../image/bird-transparent.png';
 import { WalletDisplay } from './WalletDisplay';
 import { ModesModal } from './ModesModal';
 import { SongSelectionModal } from './SongSelectionModal';
-import { LeaderboardModal } from './LeaderboardModal';
-import { PilotUsernameModal } from './PilotUsernameModal';
 import {
   LuckyWheelModal,
   LUCKY_WHEEL_COOLDOWN_MS,
@@ -22,7 +20,7 @@ import {
   formatCooldown,
 } from './LuckyWheelModal';
 import { safeStorage } from '../utils/storage';
-import { getPilotUsername } from '../services/leaderboardService';
+import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } from '../utils/device';
 
 export function MainMenu({
   bestScore,
@@ -39,10 +37,6 @@ export function MainMenu({
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showPilotModal, setShowPilotModal] = useState(false);
-  const [pilotUsername, setPilotUsername] = useState(() => getPilotUsername());
-  const [pilotWarning, setPilotWarning] = useState(false);
 
   const [wheelCooldownRemaining, setWheelCooldownRemaining] = useState(() => {
     const last = safeStorage.getNumber(LUCKY_WHEEL_STORAGE_KEY, 0);
@@ -59,6 +53,26 @@ export function MainMenu({
 
   const isWheelReady = wheelCooldownRemaining <= 0;
 
+  const [isFullscreenActive, setIsFullscreenActive] = useState(() => isFullscreen());
+
+  useEffect(() => {
+    const handleFSChange = () => {
+      setIsFullscreenActive(isFullscreen());
+    };
+    document.addEventListener('fullscreenchange', handleFSChange);
+    document.addEventListener('webkitfullscreenchange', handleFSChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFSChange);
+      document.removeEventListener('webkitfullscreenchange', handleFSChange);
+    };
+  }, []);
+
+  const handleToggleFullscreen = (e) => {
+    e.stopPropagation();
+    playClick();
+    toggleFullscreen();
+  };
+
   const {
     currentTrack,
     gameplayMode,
@@ -69,16 +83,9 @@ export function MainMenu({
   const handleStart = (e) => {
     e.stopPropagation();
     playClick();
-
-    // Enforce pilot call-sign requirement before takeoff
-    const currentName = getPilotUsername();
-    if (!currentName || currentName.trim().length < 2) {
-      setPilotWarning(true);
-      setShowPilotModal(true);
-      return;
+    if (isMobileDevice() && !isFullscreen()) {
+      requestFullscreen();
     }
-
-    setPilotWarning(false);
     onStart();
   };
 
@@ -112,25 +119,6 @@ export function MainMenu({
 
   const handleCloseSongSelection = () => setShowSongSelection(false);
 
-  const handleOpenLeaderboard = (e) => {
-    e.stopPropagation();
-    playClick();
-    setShowLeaderboard(true);
-  };
-
-  const handleCloseLeaderboard = () => setShowLeaderboard(false);
-
-  const handleOpenPilotModal = (e) => {
-    e.stopPropagation();
-    playClick();
-    setShowPilotModal(true);
-  };
-
-  const handlePilotSave = (savedName) => {
-    setPilotUsername(savedName);
-    setPilotWarning(false);
-  };
-
   const currentMap = MAP_LIST.find((map) => map.id === selectedMapId) || MAP_LIST[0];
 
   return (
@@ -139,86 +127,109 @@ export function MainMenu({
         <div className="main-menu-topbar-left">
           <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />
 
-          {/* Lucky Wheel Entry Button next to Coins and Keys */}
+          {/* Lucky Wheel Entry Button (Icon-only Wheel) */}
           <button
             className={`main-menu-lucky-wheel-btn${isWheelReady ? ' is-ready' : ''}`}
             onClick={handleOpenLuckyWheel}
             id="main-menu-lucky-wheel-btn"
             type="button"
-            aria-label="Open Lucky Wheel"
+            aria-label={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel - Next spin in ${formatCooldown(wheelCooldownRemaining)}`}
+            title={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel (${formatCooldown(wheelCooldownRemaining)})`}
           >
             <span className="lucky-wheel-btn-icon-wrap" aria-hidden="true">
-              <svg viewBox="0 0 24 24" className="lucky-wheel-btn-svg">
-                <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                <path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M5.3 18.7L18.7 5.3" stroke="currentColor" strokeWidth="1.4" />
-                <circle cx="12" cy="12" r="2.8" fill="#facc15" stroke="#713f12" strokeWidth="0.8" />
+              <svg viewBox="0 0 32 32" className="lucky-wheel-btn-svg">
+                <g className="lucky-wheel-spinner">
+                  {/* Wheel Sectors with vibrant game colors */}
+                  <path d="M16 16 L16 3 A13 13 0 0 1 25.19 6.81 Z" fill="#f59e0b" />
+                  <path d="M16 16 L25.19 6.81 A13 13 0 0 1 29 16 Z" fill="#38bdf8" />
+                  <path d="M16 16 L29 16 A13 13 0 0 1 25.19 25.19 Z" fill="#ec4899" />
+                  <path d="M16 16 L25.19 25.19 A13 13 0 0 1 16 29 Z" fill="#22c55e" />
+                  <path d="M16 16 L16 29 A13 13 0 0 1 6.81 25.19 Z" fill="#a855f7" />
+                  <path d="M16 16 L6.81 25.19 A13 13 0 0 1 3 16 Z" fill="#facc15" />
+                  <path d="M16 16 L3 16 A13 13 0 0 1 6.81 6.81 Z" fill="#06b6d4" />
+                  <path d="M16 16 L6.81 6.81 A13 13 0 0 1 16 3 Z" fill="#ef4444" />
+                  {/* Spoke divider lines */}
+                  <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
+                  <path d="M16 3v26M3 16h26M6.81 6.81l18.38 18.38M6.81 25.19L25.19 6.81" stroke="rgba(15,23,42,0.6)" strokeWidth="0.8" />
+                  {/* Outer rim */}
+                  <circle cx="16" cy="16" r="13.2" fill="none" stroke="#facc15" strokeWidth="1.6" />
+                  {/* Center hub */}
+                  <circle cx="16" cy="16" r="4.2" fill="#0f172a" stroke="#facc15" strokeWidth="1.4" />
+                  <circle cx="16" cy="16" r="1.8" fill="#facc15" />
+                </g>
+                {/* Pointer indicator at top (pointing down) */}
+                <polygon points="16,1 13.6,5.2 18.4,5.2" fill="#facc15" stroke="#78350f" strokeWidth="0.6" />
               </svg>
               {isWheelReady && <span className="lucky-wheel-pulse-dot" />}
-            </span>
-            <span className="lucky-wheel-btn-info">
-              <span className="lucky-wheel-btn-name">LUCKY WHEEL</span>
-              {isWheelReady ? (
-                <span className="lucky-wheel-btn-badge">FREE SPIN</span>
-              ) : (
-                <span className="lucky-wheel-btn-timer">{formatCooldown(wheelCooldownRemaining)}</span>
-              )}
             </span>
           </button>
         </div>
 
-        <button className="main-menu-settings" onClick={handleSettings} id="main-menu-settings-btn">
-          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19.14 12.94a7.9 7.9 0 0 0 0-1.88l2.03-1.58-2-3.46-2.39.96a7.3 7.3 0 0 0-1.63-.94L14.8 3.5h-4l-.36 2.54a7.3 7.3 0 0 0-1.63.94l-2.39-.96-2 3.46 2.03 1.58a7.9 7.9 0 0 0 0 1.88l-2.03 1.58 2 3.46 2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54h4l.36-2.54c.58-.22 1.13-.54 1.63-.94l2.39.96 2-3.46-2.04-1.58ZM12.8 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" /></svg>
-          <span>Audio settings</span>
-        </button>
+        <div className="main-menu-topbar-right">
+          <button
+            className="main-menu-icon-btn main-menu-fullscreen-btn"
+            onClick={handleToggleFullscreen}
+            id="main-menu-fullscreen-btn"
+            type="button"
+            aria-label={isFullscreenActive ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+            title={isFullscreenActive ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+          >
+            {isFullscreenActive ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" fill="currentColor"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" fill="currentColor"/>
+              </svg>
+            )}
+          </button>
+
+          <button className="main-menu-settings" onClick={handleSettings} id="main-menu-settings-btn" aria-label="Open audio settings">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19.14 12.94a7.9 7.9 0 0 0 0-1.88l2.03-1.58-2-3.46-2.39.96a7.3 7.3 0 0 0-1.63-.94L14.8 3.5h-4l-.36 2.54a7.3 7.3 0 0 0-1.63.94l-2.39-.96-2 3.46 2.03 1.58a7.9 7.9 0 0 0 0 1.88l-2.03 1.58 2 3.46 2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54h4l.36-2.54c.58-.22 1.13-.54 1.63-.94l2.39.96 2-3.46-2.04-1.58ZM12.8 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" /></svg>
+            <span>Settings</span>
+          </button>
+        </div>
       </header>
 
       <main className="main-menu-hero">
         <section className="main-menu-copy">
-          <h1 className="main-menu-title">HARI<span>.</span><br />FLY</h1>
+          <h1 className="main-menu-title">
+            <span className="title-text-hari">HARI</span>
+            <span className="title-dot">.</span>
+            <span className="title-text-fly">FLY</span>
+          </h1>
 
           <div className="main-menu-best">
-            <span>PERSONAL BEST</span>
+            <span className="best-label">
+              <span className="best-trophy-icon" aria-hidden="true">🏆</span>
+              PERSONAL BEST
+            </span>
             <strong id="main-menu-best-score">{bestScore}</strong>
           </div>
 
           <div className="main-menu-actions">
-            {/* Pilot Call-Sign Requirement Card */}
-            <div
-              className={`main-menu-pilot-card${pilotUsername ? ' has-name' : ' is-empty'}${pilotWarning ? ' shake-warning' : ''}`}
-              onClick={handleOpenPilotModal}
-              role="button"
-              tabIndex={0}
-              id="main-menu-pilot-card"
+            {/* Primary Action: Start Flying with Ultra-Fluid Gaming Animation */}
+            <button
+              className="main-menu-start animated-hero-start"
+              onClick={handleStart}
+              id="start-game-btn"
+              type="button"
+              aria-label="Start Flying"
             >
-              <div className="pilot-card-header">
-                <span className="pilot-card-badge">
-                  {pilotUsername ? '👨‍✈️ PILOT CALL-SIGN' : '⚠️ PILOT CALL-SIGN (REQUIRED)'}
+              <span className="start-btn-halo" aria-hidden="true" />
+              <span className="start-btn-beam" aria-hidden="true" />
+              <span className="start-btn-shimmer" aria-hidden="true" />
+              <span className="start-btn-content">
+                <span className="start-btn-icon-flight" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" className="start-btn-svg">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span className="start-btn-flare" />
                 </span>
-                {pilotUsername && <span className="pilot-card-edit-hint">EDIT ✎ · 🗝️ 100</span>}
-              </div>
-
-              {pilotUsername ? (
-                <div className="pilot-card-name-row">
-                  <span className="pilot-card-at">@</span>
-                  <span className="pilot-card-name">{pilotUsername}</span>
-                  <span className="pilot-card-verified-tag">READY TO FLY ✓</span>
-                </div>
-              ) : (
-                <div className="pilot-card-prompt-row">
-                  <span className="pilot-prompt-text">Tap to enter your call-sign...</span>
-                  <span className="pilot-prompt-arrow">➔</span>
-                </div>
-              )}
-
-              {pilotWarning && (
-                <p className="pilot-warning-hint">Call-sign required before flight takeoff!</p>
-              )}
-            </div>
-
-            {/* Primary Action: Start Flying */}
-            <button className="main-menu-start" onClick={handleStart} id="start-game-btn">
-              <span>START FLYING</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                <span className="start-btn-text">START FLYING</span>
+                <span className="start-btn-chevron-trail" aria-hidden="true">»</span>
+              </span>
             </button>
 
             {/* Modes */}
@@ -262,54 +273,13 @@ export function MainMenu({
               </span>
               <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
             </button>
-
-            {/* Leaderboard Button with Barricades & Coming Soon */}
-            <button
-              className="main-menu-modes-btn main-menu-leaderboard-btn is-barricaded"
-              onClick={handleOpenLeaderboard}
-              id="main-menu-leaderboard-btn"
-              type="button"
-              aria-label="Leaderboard Coming Soon"
-            >
-              {/* Caution Hazard Barricade Ribbons */}
-              <div className="btn-barricade-tape btn-barricade-tape-top" aria-hidden="true" />
-              <div className="btn-barricade-tape btn-barricade-tape-bottom" aria-hidden="true" />
-
-              <span className="main-menu-modes-icon main-menu-leaderboard-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" className="leaderboard-barricade-icon">
-                  <rect x="2" y="5" width="20" height="4.5" rx="1.5" fill="#f59e0b"/>
-                  <path d="M6 5l-3 4.5h3.5l3-4.5H6zm6 0l-3 4.5h3.5l3-4.5H12zm6 0l-3 4.5h3.5l3-4.5H18z" fill="#0f172a"/>
-                  <rect x="2" y="11.5" width="20" height="4.5" rx="1.5" fill="#f59e0b"/>
-                  <path d="M6 11.5l-3 4.5h3.5l3-4.5H6zm6 0l-3 4.5h3.5l3-4.5H12zm6 0l-3 4.5h3.5l3-4.5H18z" fill="#0f172a"/>
-                  <path d="M5 4v16M19 4v16M2 20h6M16 20h6" stroke="#e2e8f0" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </span>
-
-              <span className="main-menu-modes-label-group">
-                <span className="main-menu-modes-title-wrap">
-                  <span className="main-menu-modes-title">LEADERBOARD</span>
-                  <span className="barricade-badge">
-                    <span className="barricade-caution-emoji" aria-hidden="true">🚧</span>
-                    COMING SOON
-                    <span className="barricade-caution-emoji" aria-hidden="true">🚧</span>
-                  </span>
-                </span>
-                <span className="main-menu-modes-current barricade-subtext">
-                  <span className="barricade-pulsing-light" aria-hidden="true" />
-                  Under Construction
-                </span>
-              </span>
-
-              <span className="main-menu-modes-arrow barricade-gate-indicator" aria-hidden="true">
-                <span className="barricade-mini-barrier">🚧</span>
-              </span>
-            </button>
           </div>
 
           <p className="main-menu-controls"><kbd>SPACE</kbd><span>or tap anywhere to flap</span></p>
         </section>
 
         <section className="main-menu-art" aria-label="Your bird pilot">
+          <div className="main-menu-bird-podium" aria-hidden="true" />
           <img className="main-menu-bird" src={birdImage} alt="Your bird pilot, ready for takeoff" />
         </section>
       </main>
@@ -318,7 +288,7 @@ export function MainMenu({
         {currentTrack && (
           <div className="main-menu-now-playing">
             <span className="now-playing-dot" />
-            <span>UP NEXT</span>
+            <span>PLAYING</span>
             <strong>{currentTrack.name}</strong>
           </div>
         )}
@@ -340,27 +310,6 @@ export function MainMenu({
           onClose={handleCloseSongSelection}
           coins={coins}
           onSpendCoins={onSpendCoins}
-        />
-      )}
-
-      {showLeaderboard && (
-        <LeaderboardModal
-          onClose={handleCloseLeaderboard}
-          onOpenPilotEdit={() => {
-            setShowLeaderboard(false);
-            setShowPilotModal(true);
-          }}
-        />
-      )}
-
-      {showPilotModal && (
-        <PilotUsernameModal
-          isOpen={showPilotModal}
-          onClose={() => setShowPilotModal(false)}
-          onSave={handlePilotSave}
-          isMandatory={pilotWarning}
-          keys={keys}
-          onSpendKeys={onSpendKeys}
         />
       )}
 

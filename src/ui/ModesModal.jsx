@@ -142,6 +142,7 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
                 </div>
               );
             })}
+
           </div>
         </div>
 
@@ -170,6 +171,7 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
             </button>
           </div>
         </footer>
+
       </div>
     </div>
   );
