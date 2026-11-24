@@ -13,25 +13,14 @@ export const ENVIRONMENT_THRESHOLDS = [
   { score: 0, environment: ENVIRONMENTS.MORNING },
   { score: 20, environment: ENVIRONMENTS.SUNSET },
   { score: 40, environment: ENVIRONMENTS.NIGHT },
-  { score: 60, environment: ENVIRONMENTS.MORNING },
-  { score: 80, environment: ENVIRONMENTS.SUNSET },
-  { score: 100, environment: ENVIRONMENTS.NIGHT },
-  { score: 120, environment: ENVIRONMENTS.MORNING },
 ];
 
 export function getEnvironmentForScore(score) {
   const safeScore = Math.max(0, Number(score) || 0);
-  let environment = ENVIRONMENTS.MORNING;
-
-  for (const threshold of ENVIRONMENT_THRESHOLDS) {
-    if (safeScore >= threshold.score) {
-      environment = threshold.environment;
-    } else {
-      break;
-    }
-  }
-
-  return environment;
+  const cyclePosition = Math.floor(safeScore / 20) % 3;
+  if (cyclePosition === 1) return ENVIRONMENTS.SUNSET;
+  if (cyclePosition === 2) return ENVIRONMENTS.NIGHT;
+  return ENVIRONMENTS.MORNING;
 }
 
 export class EnvironmentSystem {

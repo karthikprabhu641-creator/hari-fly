@@ -60,6 +60,12 @@ const icons = {
   clouds: <path d="M7 18a5 5 0 0 1-1-9.9A7 7 0 0 1 19.5 10a4 4 0 0 1-1.5 8H7Z" />,
   shuffle: <path d="M3 7h3c5 0 5 10 10 10h5m-3-3 3 3-3 3M3 17h3c2 0 3-2 4-4m3-4c1-1.5 2-2 3-2h5m-3-3 3 3-3 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />,
   pause: <path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" />,
+  home: (
+    <>
+      <path d="m3 11 9-8 9 8" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 10v10h13V10M9.5 20v-6h5v6" />
+    </>
+  ),
   play: <path d="m7 4 12 8-12 8V4Z" />,
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />,
   globe: (

@@ -460,9 +460,9 @@ button:disabled {
   max-width: 380px;
   max-height: calc(100dvh - 16px);
   overflow: auto;
-  padding: 28px 22px 22px;
+  padding: 12px 20px 20px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 32px 32px 0 0;
+  border-radius: 28px 28px 18px 18px;
   background: rgba(15, 23, 42, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -474,6 +474,28 @@ button:disabled {
   align-items: center;
   text-align: center;
   animation: game-over-sheet-up 500ms var(--ease-spring) both;
+}
+
+.game-over-drag-handle {
+  width: 42px;
+  height: 4px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.game-over-hero {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.game-over-heading {
+  min-width: 0;
 }
 
 @keyframes game-over-sheet-up {
@@ -514,10 +536,10 @@ button:disabled {
 }
 
 .game-over-title {
-  margin-top: 6px;
+  margin-top: 3px;
   color: #f8fafc;
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 10vw, 3rem);
+  font-size: clamp(1.9rem, 8vw, 2.5rem);
   font-weight: 950;
   line-height: 0.98;
   letter-spacing: 1px;
@@ -533,14 +555,25 @@ button:disabled {
 }
 
 .game-over-avatar-frame {
-  width: 100px;
-  height: 100px;
-  margin: 18px 0 16px;
-  padding: 4px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 20px;
-  background: rgba(30, 41, 59, 0.6);
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.15);
+  position: relative;
+  width: 82px;
+  height: 82px;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid rgba(182, 242, 58, 0.35);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(182, 242, 58, 0.16), rgba(43, 181, 240, 0.12));
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.38),
+    0 0 20px rgba(182, 242, 58, 0.12);
+}
+
+.game-over-avatar-ring {
+  position: absolute;
+  inset: -5px;
+  border: 1px dashed rgba(182, 242, 58, 0.28);
+  border-radius: 28px;
+  pointer-events: none;
 }
 
 .game-over-avatar-image {
@@ -558,8 +591,8 @@ button:disabled {
   width: 100%;
   margin-bottom: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(30, 41, 59, 0.5);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.72), rgba(15, 27, 45, 0.92));
   overflow: hidden;
 }
 
@@ -681,6 +714,10 @@ button:disabled {
 .game-over-retry-button,
 .game-over-menu-button {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   cursor: pointer;
   font-family: var(--font-display);
   outline: none;
@@ -689,27 +726,26 @@ button:disabled {
 }
 
 .game-over-retry-button {
-  min-height: 52px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  border-radius: 12px;
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--lime-400), var(--lime-500) 58%, var(--lime-600));
+  color: var(--ink);
   font-size: 0.95rem;
   font-weight: 900;
   letter-spacing: 0.05em;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 16px rgba(56, 189, 248, 0.12);
+  box-shadow: 0 8px 0 var(--lime-600), 0 14px 28px rgba(143, 224, 31, 0.22);
 }
 
 .game-over-retry-button:hover {
   transform: translateY(-2px);
-  border-color: #38bdf8;
-  background: rgba(56, 189, 248, 0.25);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 22px rgba(56, 189, 248, 0.3);
-  color: #ffffff;
+  background: linear-gradient(135deg, #c6fb52, var(--lime-500), var(--lime-600));
+  box-shadow: 0 10px 0 var(--lime-600), 0 18px 34px rgba(143, 224, 31, 0.28);
+  color: var(--ink);
 }
 
 .game-over-retry-button svg {
@@ -726,10 +762,10 @@ button:disabled {
 .game-over-menu-button {
   min-height: 42px;
   margin-top: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-2);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -741,16 +777,11 @@ button:disabled {
 }
 
 .game-over-divider {
-  width: 100%;
-  height: 1px;
-  margin-top: 16px;
-  background: rgba(255, 255, 255, 0.08);
+  display: none;
 }
 
 .game-over-hint {
-  margin-top: 10px;
-  color: #475569;
-  font-size: 0.68rem;
+  display: none;
 }
 
 /* Hero Title */

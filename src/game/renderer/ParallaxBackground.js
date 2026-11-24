@@ -181,14 +181,34 @@ export class ParallaxBackground {
       ctx.fill();
     });
 
-    ctx.fillStyle = '#fef3c7';
-    ctx.beginPath();
-    ctx.arc(this.width - 72, 96, 25, 0, Math.PI * 2);
-    ctx.fill();
+    const moonX = this.width - 72;
+    const moonY = 96;
+    const moonRadius = 27;
 
-    ctx.fillStyle = '#111827';
+    ctx.shadowColor = 'rgba(255, 244, 190, 0.55)';
+    ctx.shadowBlur = 28;
+    const moonGlow = ctx.createRadialGradient(
+      moonX - 7,
+      moonY - 8,
+      3,
+      moonX,
+      moonY,
+      moonRadius
+    );
+    moonGlow.addColorStop(0, '#fffdf0');
+    moonGlow.addColorStop(0.75, '#fef3c7');
+    moonGlow.addColorStop(1, '#e8dca7');
+    ctx.fillStyle = moonGlow;
     ctx.beginPath();
-    ctx.arc(this.width - 60, 87, 25, 0, Math.PI * 2);
+    ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = 'rgba(177, 168, 125, 0.18)';
+    ctx.beginPath();
+    ctx.arc(moonX - 9, moonY - 8, 5.5, 0, Math.PI * 2);
+    ctx.arc(moonX + 8, moonY + 7, 4, 0, Math.PI * 2);
+    ctx.arc(moonX + 10, moonY - 10, 2.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
