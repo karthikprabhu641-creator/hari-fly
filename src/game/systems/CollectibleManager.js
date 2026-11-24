@@ -56,11 +56,11 @@ export class CollectibleManager {
     collectible.pulse = Math.random() * Math.PI * 2;
   }
 
-  update(dt, player) {
+  update(dt, player, obstacleSpeed = GAME_CONFIG.OBSTACLES.SPEED) {
     const playerHitbox = player.getHitbox();
     this.pool.forEach((collectible) => {
       if (!collectible.active) return;
-      collectible.x -= GAME_CONFIG.OBSTACLES.SPEED * dt;
+      collectible.x -= obstacleSpeed * dt;
       collectible.pulse += dt * 5;
 
       const bounds = {

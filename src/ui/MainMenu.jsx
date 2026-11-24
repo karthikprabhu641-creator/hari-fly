@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { GAMEPLAY_MUSIC_MODES } from '../config/audioConfig';
 import { MAP_LIST } from '../config/mapConfig';
+import { GAME_MODES } from '../config/gameModeConfig';
 import birdImage from '../../image/bird-transparent.png';
 import { WalletDisplay } from './WalletDisplay';
 import { ModesModal } from './ModesModal';
@@ -39,7 +40,9 @@ export function MainMenu({
   coins,
   keys,
   selectedMapId,
+  selectedGameModeId,
   onSelectMap,
+  onSelectGameMode,
   onStart,
   onOpenSettings,
   onClaimReward,
@@ -131,6 +134,7 @@ export function MainMenu({
   const handleCloseSongSelection = () => setShowSongSelection(false);
 
   const currentMap = MAP_LIST.find((map) => map.id === selectedMapId) || MAP_LIST[0];
+  const currentGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
 
   return (
     <div className="main-menu-screen" id="main-menu-overlay">
@@ -257,7 +261,7 @@ export function MainMenu({
               onClick={handleOpenModes}
               id="main-menu-modes-btn"
               type="button"
-              aria-label={`Open game modes. Currently selected: ${currentMap.name}`}
+              aria-label={`Open game modes. Currently selected: ${currentGameMode.name}, ${currentMap.name}`}
             >
               <span className="main-menu-modes-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
@@ -266,7 +270,7 @@ export function MainMenu({
               </span>
               <span className="main-menu-modes-label-group">
                 <span className="main-menu-modes-title">MODES</span>
-                <span className="main-menu-modes-current">{currentMap.name}</span>
+                <span className="main-menu-modes-current">{currentGameMode.name} · {currentMap.name}</span>
               </span>
               <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
             </button>
@@ -325,7 +329,9 @@ export function MainMenu({
       {showModes && (
         <ModesModal
           selectedMapId={selectedMapId}
+          selectedGameModeId={selectedGameModeId}
           onSelectMap={onSelectMap}
+          onSelectGameMode={onSelectGameMode}
           onStart={onStart}
           onClose={handleCloseModes}
           coins={coins}

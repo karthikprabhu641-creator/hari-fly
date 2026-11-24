@@ -17,6 +17,7 @@ export class ObstacleManager {
 
     this.spawnInterval = GAME_CONFIG.OBSTACLES.SPAWN_INTERVAL;
     this.speed = GAME_CONFIG.OBSTACLES.SPEED;
+    this.gapSize = GAME_CONFIG.OBSTACLES.GAP_SIZE;
     this.spawnTimer = 0;
     this.isEnabled = true;
 
@@ -41,7 +42,7 @@ export class ObstacleManager {
     if (!obstacle) return;
 
     const minTop = GAME_CONFIG.OBSTACLES.MIN_TOP_HEIGHT;
-    const gapSize = GAME_CONFIG.OBSTACLES.GAP_SIZE;
+    const gapSize = this.gapSize;
     const minBottom = 80;
     const maxTop = this.groundY - gapSize - minBottom;
 
@@ -88,6 +89,13 @@ export class ObstacleManager {
         this.pool[i].render(ctx);
       }
     }
+  }
+
+  setDifficulty({ obstacleSpeed, gapSize, spawnInterval }) {
+    this.speed = obstacleSpeed;
+    this.gapSize = gapSize;
+    this.spawnInterval = spawnInterval;
+    this.reset();
   }
 
   reset() {

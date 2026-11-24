@@ -27,6 +27,7 @@ import { GameLoop } from './GameLoop';
 import { assetManager } from '../../assets/AssetManager';
 import { audioManager } from '../../audio/AudioManager';
 import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
+import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../config/gameModeConfig';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 
 export class GameEngine {
@@ -55,12 +56,14 @@ export class GameEngine {
     this.playerRenderer = new PlayerRenderer({ assetId: 'player.default' });
     this.parallaxBg = new ParallaxBackground();
     this.selectedMapId = getSelectedMapId();
+    this.selectedGameModeId = getSelectedGameModeId();
     this.parallaxBg.setMap(this.selectedMapId);
     this.weatherSystem.setMap(this.selectedMapId);
     this.obstacleManager = new ObstacleManager({
       onScore: (obstacle) => this.handleScoreTrigger(obstacle),
       onSpawn: (obstacle) => this.collectibleManager.onObstacleSpawned(obstacle),
     });
+    this.setGameMode(this.selectedGameModeId, false);
 
     this.inputManager = new InputManager({
       onFlap: () => this.handleFlapInput(),
@@ -340,6 +343,13 @@ export class GameEngine {
     this.notifyUI();
   }
 
+  setGameMode(modeId, notify = true) {
+    this.selectedGameModeId = saveSelectedGameMode(modeId);
+    const mode = GAME_MODES.find((item) => item.id === this.selectedGameModeId);
+    this.obstacleManager.setDifficulty(mode);
+    if (notify) this.notifyUI();
+  }
+
   claimLuckyReward({ coins = 0, keys = 0 }) {
     this.collectibleManager.addReward({ coins, keys });
     this.notifyUI();
@@ -382,11 +392,11 @@ export class GameEngine {
 
       // 2. Obstacles
       this.obstacleManager.update(gameplayDt, this.player.x);
-      this.powerUpManager.update(gameplayDt, dt, this.player);
-      this.collectibleManager.update(gameplayDt, this.player);
+      this.powerUpManager.update(gameplayDt, dt, this.player, this.obstacleManager.speed);
+      this.collectibleManager.update(gameplayDt, this.player, this.obstacleManager.speed);
 
       // 3. Parallax background
-      this.parallaxBg.update(gameplayDt, GAME_CONFIG.OBSTACLES.SPEED);
+      this.parallaxBg.update(gameplayDt, this.obstacleManager.speed);
 
       // 4. Collision check
       this.collisionSystem.checkCollisions(this.player, this.obstacleManager);
@@ -441,6 +451,7 @@ export class GameEngine {
     return {
       gameState: this.fsm.getState(),
       selectedMapId: this.selectedMapId,
+      selectedGameModeId: this.selectedGameModeId,
       loadingProgress: this.loadingProgress,
       score: this.scoreSystem.getScore(),
       bestScore: this.scoreSystem.getBestScore(),

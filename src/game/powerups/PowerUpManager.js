@@ -92,7 +92,7 @@ export class PowerUpManager {
     return types[Math.floor(Math.random() * types.length)];
   }
 
-  update(gameplayDt, realDt, player) {
+  update(gameplayDt, realDt, player, obstacleSpeed = GAME_CONFIG.OBSTACLES.SPEED) {
     this.collisionGraceRemaining = Math.max(
       0,
       this.collisionGraceRemaining - realDt
@@ -120,7 +120,7 @@ export class PowerUpManager {
     const playerHitbox = player.getHitbox();
     this.pool.forEach((powerUp) => {
       if (!powerUp.active) return;
-      powerUp.x -= GAME_CONFIG.OBSTACLES.SPEED * gameplayDt;
+      powerUp.x -= obstacleSpeed * gameplayDt;
       powerUp.pulse += realDt * 5;
 
       if (this.isCollected(powerUp, playerHitbox)) {

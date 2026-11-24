@@ -3,8 +3,61 @@
    ========================================================= */
 
 :root {
-  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* HARI.FLY design tokens */
+  --bg-0: #07141a;
+  --bg-1: #0c2a2a;
+  --bg-2: #0f1b2d;
+  --bg-3: #14233a;
+  --lime-400: #b6f23a;
+  --lime-500: #8fe01f;
+  --lime-600: #5fa811;
+  --white: #ffffff;
+  --ink: #0a1a05;
+  --gold: #ffc21a;
+  --gold-dim: #8a6a12;
+  --cyan: #2bb5f0;
+  --purple: #b57bff;
+  --pink: #ff5fa2;
+  --red: #ff4d4d;
+  --text-1: #ffffff;
+  --text-2: #b8c4cc;
+  --text-3: #6f8088;
+  --stroke: rgba(255, 255, 255, 0.08);
+  --stroke-strong: rgba(255, 255, 255, 0.16);
+  --glow-lime: 0 0 32px rgba(143, 224, 31, 0.45);
+  --glow-gold: 0 0 20px rgba(255, 194, 26, 0.35);
+
+  --fs-display: 68px;
+  --fs-title: 28px;
+  --fs-card: 26px;
+  --fs-sub: 22px;
+  --fs-hud: 22px;
+  --fs-label: 14px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 32px;
+  --radius-pill: 999px;
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-cta: 0 10px 0 var(--lime-600), 0 18px 40px rgba(143, 224, 31, 0.35);
+
+  --z-bg: 0;
+  --z-particles: 1;
+  --z-face: 5;
+  --z-ui: 10;
+  --z-hud: 20;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-fx-overlay: 90;
 
   /* Palette */
   --bg-primary: #090d16;
@@ -1172,17 +1225,21 @@ html, body {
 .main-menu-screen {
   position: absolute;
   inset: 0;
-  z-index: 20;
+  z-index: var(--z-ui);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: max(18px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
-  color: #f3f8ef;
+  padding:
+    max(var(--space-4), env(safe-area-inset-top))
+    max(var(--space-5), env(safe-area-inset-right))
+    max(var(--space-4), env(safe-area-inset-bottom))
+    max(var(--space-5), env(safe-area-inset-left));
+  color: var(--text-1);
   background:
-    repeating-linear-gradient(135deg, transparent 0 76px, rgba(190, 231, 189, 0.025) 77px 78px, transparent 79px 150px),
-    radial-gradient(ellipse at 73% 46%, rgba(47, 125, 102, 0.32), transparent 42%),
-    linear-gradient(118deg, #102d2b 0%, #0b2024 52%, #101b22 100%);
+    repeating-linear-gradient(135deg, transparent 0 76px, rgba(255, 255, 255, 0.08) 77px 78px, transparent 79px 150px),
+    radial-gradient(ellipse at 50% 42%, rgba(60, 200, 150, 0.18), transparent 42%),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
   touch-action: pan-y;
 }
 
@@ -1484,8 +1541,8 @@ html, body {
 .main-menu-title {
   margin-top: 15px;
   font-family: var(--font-display);
-  font-size: 5.25rem;
-  font-weight: 950;
+  font-size: var(--fs-display);
+  font-weight: 800;
   line-height: 0.86;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -3734,9 +3791,12 @@ html, body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .main-menu-bird,
-  .loading-bird {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -3862,6 +3922,84 @@ html, body {
 .modes-grid-scroll-area::-webkit-scrollbar-thumb {
   background: rgba(99, 179, 237, 0.2);
   border-radius: 99px;
+}
+
+.modes-selection-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modes-selection-section + .modes-selection-section {
+  margin-top: 1.5rem;
+}
+
+.modes-section-heading {
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #64748b;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.difficulty-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.difficulty-mode-card {
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.difficulty-mode-preview {
+  position: relative;
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 120%, rgba(56, 189, 248, 0.28), transparent 68%), #0a1628;
+}
+
+.difficulty-mode-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.difficulty-mode-preview-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2, 8, 16, 0.05), rgba(2, 8, 16, 0.62));
+}
+
+.difficulty-mode-card:hover .difficulty-mode-preview-img {
+  transform: scale(1.06);
+}
+
+.difficulty-mode-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 3px 12px rgba(255, 255, 255, 0.25));
+}
+
+.difficulty-mode-card .mode-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 0.85rem 0.85rem;
+}
+
+.difficulty-mode-card .mode-card-description {
+  min-height: 2.2em;
 }
 
 /* Cards grid */
@@ -4129,6 +4267,46 @@ html, body {
 .modes-footer-play-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+}
+
+@media (max-width: 600px) {
+  .difficulty-modes-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .difficulty-mode-card {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    align-items: stretch;
+  }
+
+  .difficulty-mode-preview {
+    min-height: 82px;
+  }
+
+  .difficulty-mode-card .mode-card-theme-tag {
+    top: 0.35rem;
+    left: 0.35rem;
+    font-size: 0.5rem;
+    padding: 0.16rem 0.3rem;
+  }
+
+  .difficulty-mode-card .mode-card-badge-selected {
+    top: 0.35rem;
+    right: 0.35rem;
+    font-size: 0.48rem;
+    padding: 0.16rem 0.25rem;
+  }
+
+  .difficulty-mode-card .mode-card-body {
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .difficulty-mode-card .mode-card-description {
+    min-height: 0;
+  }
 }
 
 /* =====================================================================

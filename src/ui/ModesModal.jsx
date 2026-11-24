@@ -7,9 +7,19 @@
 import React, { useEffect } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { MAP_LIST } from '../config/mapConfig';
+import { GAME_MODES } from '../config/gameModeConfig';
 import { WalletDisplay } from './WalletDisplay';
 
-export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins = 0, keys = 0 }) {
+export function ModesModal({
+  selectedMapId,
+  selectedGameModeId,
+  onSelectMap,
+  onSelectGameMode,
+  onStart,
+  onClose,
+  coins = 0,
+  keys = 0,
+}) {
   const { playClick } = useAudio();
 
   // Close on Escape key
@@ -29,6 +39,11 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
     onSelectMap(mapId);
   };
 
+  const handleSelectGameMode = (modeId) => {
+    playClick();
+    onSelectGameMode(modeId);
+  };
+
   const handleStartFlight = (e) => {
     e.stopPropagation();
     playClick();
@@ -42,6 +57,7 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
   };
 
   const selectedMap = MAP_LIST.find((m) => m.id === selectedMapId) || MAP_LIST[0];
+  const selectedGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
 
   return (
     <div className="modes-page-backdrop" id="modes-page-overlay" onClick={handleBack}>
@@ -63,7 +79,7 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
             </button>
             <div className="modes-page-titles">
               <h1 className="modes-page-title">GAME MODES</h1>
-              <p className="modes-page-subtitle">Select an environment & atmosphere for your flight</p>
+              <p className="modes-page-subtitle">Choose your difficulty and flight environment</p>
             </div>
           </div>
 
@@ -74,83 +90,115 @@ export function ModesModal({ selectedMapId, onSelectMap, onStart, onClose, coins
 
         {/* Modes Grid */}
         <div className="modes-grid-scroll-area">
-          <div className="modes-cards-grid">
-            {MAP_LIST.map((map) => {
-              const isSelected = map.id === selectedMapId;
-              return (
-                <div
-                  key={map.id}
-                  className={`mode-card${isSelected ? ' is-active' : ''}`}
-                  onClick={() => handleSelect(map.id)}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={isSelected}
-                  aria-label={`Select ${map.name} mode`}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleSelect(map.id);
-                    }
-                  }}
-                >
-                  <div className="mode-card-preview-wrapper">
-                    <img src={map.preview} alt={map.name} className="mode-card-preview-img" />
-                    <span className="mode-card-theme-tag">{map.theme.toUpperCase()}</span>
-                    {isSelected && (
-                      <span className="mode-card-badge-selected" aria-label="Currently active mode">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="m5 12 4 4L19 6" />
-                        </svg>
-                        <span>ACTIVE</span>
-                      </span>
-                    )}
-                  </div>
+          <section className="modes-selection-section" aria-labelledby="difficulty-modes-heading">
+            <h2 className="modes-section-heading" id="difficulty-modes-heading">GAME MODE</h2>
+            <div className="difficulty-modes-grid">
+              {GAME_MODES.map((mode) => {
+                const isSelected = mode.id === selectedGameModeId;
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    className={`mode-card difficulty-mode-card${isSelected ? ' is-active' : ''}`}
+                    onClick={() => handleSelectGameMode(mode.id)}
+                    aria-pressed={isSelected}
+                    aria-label={`Select ${mode.name}${mode.id === 'hari-special' ? ', extreme mode' : ''}`}
+                  >
+                    <span className="difficulty-mode-preview">
+                      <img src={mode.preview} alt="" className="difficulty-mode-preview-img" />
+                      <span className="difficulty-mode-preview-shade" />
+                      <span className="mode-card-theme-tag">{mode.badge}</span>
+                      {isSelected && <span className="mode-card-badge-selected">✓ ACTIVE</span>}
+                    </span>
+                    <span className="mode-card-body">
+                      <span className="mode-card-name">{mode.name}</span>
+                      <span className="mode-card-description">{mode.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
 
-                  <div className="mode-card-body">
-                    <div className="mode-card-title-row">
-                      <h3 className="mode-card-name">{map.name}</h3>
+          <section className="modes-selection-section" aria-labelledby="environment-modes-heading">
+            <h2 className="modes-section-heading" id="environment-modes-heading">MAP</h2>
+            <div className="modes-cards-grid">
+              {MAP_LIST.map((map) => {
+                const isSelected = map.id === selectedMapId;
+                return (
+                  <div
+                    key={map.id}
+                    className={`mode-card${isSelected ? ' is-active' : ''}`}
+                    onClick={() => handleSelect(map.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isSelected}
+                    aria-label={`Select ${map.name} mode`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelect(map.id);
+                      }
+                    }}
+                  >
+                    <div className="mode-card-preview-wrapper">
+                      <img src={map.photo || map.preview} alt={`${map.name} map`} className="mode-card-preview-img" />
+                      <span className="mode-card-theme-tag">{map.theme.toUpperCase()}</span>
+                      {isSelected && (
+                        <span className="mode-card-badge-selected" aria-label="Currently active mode">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m5 12 4 4L19 6" />
+                          </svg>
+                          <span>ACTIVE</span>
+                        </span>
+                      )}
                     </div>
-                    <p className="mode-card-description">{map.description}</p>
 
-                    {map.weather && map.weather.length > 0 && (
-                      <div className="mode-card-weather-tags">
-                        {map.weather.map((w) => (
-                          <span key={w} className="mode-weather-tag">
-                            {w === 'rain' && '🌧 Rain'}
-                            {w === 'snow' && '❄ Snow'}
-                            {w === 'wind' && '💨 Wind'}
-                            {w === 'fog' && '🌫 Fog'}
-                            {w === 'clouds' && '⛅ Clouds'}
-                          </span>
-                        ))}
+                    <div className="mode-card-body">
+                      <div className="mode-card-title-row">
+                        <h3 className="mode-card-name">{map.name}</h3>
                       </div>
-                    )}
+                      <p className="mode-card-description">{map.description}</p>
 
-                    <div className="mode-card-action">
-                      <button
-                        type="button"
-                        className={`mode-select-btn${isSelected ? ' is-selected' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelect(map.id);
-                        }}
-                      >
-                        {isSelected ? '✓ ACTIVE' : 'SELECT MODE'}
-                      </button>
+                      {map.weather && map.weather.length > 0 && (
+                        <div className="mode-card-weather-tags">
+                          {map.weather.map((w) => (
+                            <span key={w} className="mode-weather-tag">
+                              {w === 'rain' && '🌧 Rain'}
+                              {w === 'snow' && '❄ Snow'}
+                              {w === 'wind' && '💨 Wind'}
+                              {w === 'fog' && '🌫 Fog'}
+                              {w === 'clouds' && '⛅ Clouds'}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mode-card-action">
+                        <button
+                          type="button"
+                          className={`mode-select-btn${isSelected ? ' is-selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelect(map.id);
+                          }}
+                        >
+                          {isSelected ? '✓ ACTIVE' : 'SELECT MODE'}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-
-          </div>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
         {/* Footer actions */}
         <footer className="modes-page-footer">
           <div className="modes-footer-info">
             <span className="modes-footer-label">SELECTED:</span>
-            <strong className="modes-footer-name">{selectedMap?.name}</strong>
+            <strong className="modes-footer-name">{selectedGameMode.name} · {selectedMap?.name}</strong>
           </div>
           <div className="modes-footer-buttons">
             <button
