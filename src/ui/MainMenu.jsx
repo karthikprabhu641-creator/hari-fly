@@ -255,47 +255,77 @@ export function MainMenu({
               </span>
             </button>
 
-            {/* Modes */}
-            <button
-              className="main-menu-modes-btn"
-              onClick={handleOpenModes}
-              id="main-menu-modes-btn"
-              type="button"
-              aria-label={`Open game modes. Currently selected: ${currentGameMode.name}, ${currentMap.name}`}
-            >
-              <span className="main-menu-modes-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                </svg>
-              </span>
-              <span className="main-menu-modes-label-group">
-                <span className="main-menu-modes-title">MODES</span>
-                <span className="main-menu-modes-current">{currentGameMode.name} · {currentMap.name}</span>
-              </span>
-              <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
-            </button>
-
-            {/* Soundtrack */}
-            <button
-              className="main-menu-modes-btn main-menu-music-btn"
-              onClick={handleOpenSongSelection}
-              id="main-menu-song-select-btn"
-              type="button"
-              aria-label="Open Soundtrack and Song Selection Menu"
-            >
-              <span className="main-menu-modes-icon main-menu-music-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-              </span>
-              <span className="main-menu-modes-label-group">
-                <span className="main-menu-modes-title">SOUNDTRACK</span>
-                <span className="main-menu-modes-current">
-                  {gameplayMode === GAMEPLAY_MUSIC_MODES.PLAY_ALL ? 'Play All Songs' : (favoriteTrack?.name || 'Blue Eyes')}
+            <div className="main-menu-card-grid" aria-label="Game features">
+              {/* Modes */}
+              <button
+                className="main-menu-modes-btn"
+                onClick={handleOpenModes}
+                id="main-menu-modes-btn"
+                type="button"
+                aria-label={`Open game modes. Currently selected: ${currentGameMode.name}, ${currentMap.name}`}
+              >
+                <span className="main-menu-modes-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                  </svg>
                 </span>
-              </span>
-              <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
-            </button>
+                <span className="main-menu-modes-label-group">
+                  <span className="main-menu-modes-title">MODES</span>
+                  <span className="main-menu-modes-current">{currentGameMode.name} · {currentMap.name}</span>
+                </span>
+                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+              </button>
+
+              {/* Soundtrack */}
+              <button
+                className="main-menu-modes-btn main-menu-music-btn"
+                onClick={handleOpenSongSelection}
+                id="main-menu-song-select-btn"
+                type="button"
+                aria-label="Open Soundtrack and Song Selection Menu"
+              >
+                <span className="main-menu-modes-icon main-menu-music-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                  </svg>
+                </span>
+                <span className="main-menu-modes-label-group">
+                  <span className="main-menu-modes-title">SOUNDTRACK</span>
+                  <span className="main-menu-modes-current">
+                    {gameplayMode === GAMEPLAY_MUSIC_MODES.PLAY_ALL ? 'Play All Songs' : (favoriteTrack?.name || 'Blue Eyes')}
+                  </span>
+                </span>
+                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+              </button>
+
+              <button
+                className="main-menu-modes-btn main-menu-placeholder-card"
+                type="button"
+                disabled
+                aria-label="Skins coming soon"
+              >
+                <span className="main-menu-modes-icon main-menu-skins-icon" aria-hidden="true">★</span>
+                <span className="main-menu-modes-label-group">
+                  <span className="main-menu-modes-title">SKINS</span>
+                  <span className="main-menu-modes-current">COMING SOON</span>
+                </span>
+                <span className="main-menu-lock-badge" aria-label="Locked">🔒</span>
+              </button>
+
+              <button
+                className="main-menu-modes-btn main-menu-placeholder-card"
+                type="button"
+                disabled
+                aria-label="Missions coming soon"
+              >
+                <span className="main-menu-modes-icon main-menu-missions-icon" aria-hidden="true">✓</span>
+                <span className="main-menu-modes-label-group">
+                  <span className="main-menu-modes-title">MISSIONS</span>
+                  <span className="main-menu-modes-current">COMING SOON</span>
+                </span>
+                <span className="main-menu-lock-badge" aria-label="Locked">🔒</span>
+              </button>
+            </div>
           </div>
 
           <p className="main-menu-controls"><kbd>SPACE</kbd><span>or tap anywhere to flap</span></p>
