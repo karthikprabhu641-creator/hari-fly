@@ -52,6 +52,8 @@
 - 2026-11-24 - Step 13 complete. Final production build and live HTTP smoke check pass. Added `CHANGELOG.md`. The 360x640, 390x844, and 430x932 layouts are covered by existing responsive CSS and require manual visual confirmation. Saved data and `backup-v1/` remain preserved.
 
 ## Notes & Fixes
+- 2026-11-24 - Increased and equalized the main-menu coin, key, and lucky-wheel icon graphics to 30px.
+- 2026-11-24 - Removed the dark/pill backgrounds from the main-menu coin, key, lucky-wheel, fullscreen/settings, and HUD icon controls. The lucky-wheel button is now 30px to match the wallet height, with no dark timer tile.
 - 2026-11-24 - Replaced emoji/Unicode icon glyphs across the game UI with the shared clay-style [ClayIcon.jsx](src/ui/ClayIcon.jsx) SVG set. Covered loading, trophy, skins, missions, modes/weather, leaderboard, lucky wheel, song selection, and pilot registration.
 - 2026-11-24 - Fixed a startup regression found after Step 8: `GameEngine` called `this.obstacleManager.setMap(...)` before creating `ObstacleManager`, causing the React ErrorBoundary to replace the game with "Cannot read properties of undefined (reading 'setMap')". The call is now after construction and repeated safely when the selected map changes.
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.
