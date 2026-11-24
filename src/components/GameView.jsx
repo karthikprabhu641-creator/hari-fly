@@ -14,6 +14,7 @@ import { GameOverModal } from '../ui/GameOverModal';
 import { AudioSettingsModal } from '../ui/AudioSettingsModal';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../utils/device';
+import { ToastViewport } from '../ui/ToastViewport';
 
 export function GameView() {
   // Stable singleton engine instance
@@ -50,6 +51,7 @@ export function GameView() {
 
   return (
     <div className="game-viewport-container">
+      <ToastViewport />
       {/* 2D Canvas Gameplay Renderer — always present */}
       <GameCanvas engine={engine} />
 

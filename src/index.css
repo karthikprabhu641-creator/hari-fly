@@ -114,6 +114,31 @@ html, body {
   position: fixed;
 }
 
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+[role='button']:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.counter-value,
+.lucky-wheel-sub-timer,
+.main-menu-best strong,
+.hud-score-number {
+  font-variant-numeric: tabular-nums;
+}
+
 #root {
   width: 100%;
   height: 100%;
@@ -318,6 +343,49 @@ html, body {
   width: 19px;
   height: 19px;
   object-fit: contain;
+}
+
+@keyframes counter-bump {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.2); }
+}
+
+.wallet-display-item.is-bumped {
+  border-color: var(--gold);
+  animation: counter-bump 300ms var(--ease-spring);
+}
+
+.toast-viewport {
+  position: fixed;
+  top: calc(var(--safe-top) + 18px);
+  left: 50%;
+  z-index: var(--z-toast);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+.toast-pill {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius-pill);
+  background: rgba(15, 27, 45, 0.96);
+  color: var(--text-1);
+  box-shadow: var(--shadow-card);
+  font-size: var(--fs-label);
+  font-weight: 800;
+  text-align: center;
+  animation: toast-in 280ms var(--ease-spring);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-24px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* =========================================================
@@ -1712,7 +1780,7 @@ html, body {
 }
 
 .main-menu-start.animated-hero-start:active {
-  transform: translateY(1px) scale(0.97);
+  transform: translateY(6px) scale(0.97);
   box-shadow: 0 0 18px rgba(132, 204, 22, 0.4), 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
@@ -1888,6 +1956,11 @@ html, body {
   border-color: #38bdf8;
   background: rgba(56, 189, 248, 0.12);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.2);
+}
+
+.main-menu-modes-btn:active {
+  transform: scale(0.98);
+  background: var(--bg-3);
 }
 
 .main-menu-card-grid {

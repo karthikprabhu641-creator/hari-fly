@@ -5,7 +5,7 @@
  * modes selection, soundtrack shop, and lucky wheel.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { GAMEPLAY_MUSIC_MODES } from '../config/audioConfig';
 import { MAP_LIST } from '../config/mapConfig';
@@ -22,6 +22,36 @@ import {
 } from './LuckyWheelModal';
 import { safeStorage } from '../utils/storage';
 import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } from '../utils/device';
+
+function useAnimatedNumber(value) {
+  const safeValue = Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : 0;
+  const [display, setDisplay] = useState(safeValue);
+  const frameRef = useRef(null);
+  const previousRef = useRef(safeValue);
+
+  useEffect(() => {
+    const from = previousRef.current;
+    previousRef.current = safeValue;
+    if (from === safeValue) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDisplay(safeValue);
+      return;
+    }
+    const started = performance.now();
+    const tick = (now) => {
+      const progress = Math.min(1, (now - started) / 600);
+      setDisplay(Math.round(from + (safeValue - from) * (1 - Math.pow(1 - progress, 3))));
+      if (progress < 1) frameRef.current = requestAnimationFrame(tick);
+    };
+    frameRef.current = requestAnimationFrame(tick);
+  }, [safeValue]);
+
+  useEffect(() => () => {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+  }, []);
+
+  return display;
+}
 
 function formatWheelTimer(ms) {
   if (ms <= 0) return 'FREE';
@@ -49,6 +79,7 @@ export function MainMenu({
   onSpendCoins,
   onSpendKeys,
 }) {
+  const animatedBestScore = useAnimatedNumber(bestScore);
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
@@ -232,7 +263,7 @@ export function MainMenu({
               <span className="best-trophy-icon" aria-hidden="true">🏆</span>
               PERSONAL BEST
             </span>
-            <strong id="main-menu-best-score">{bestScore}</strong>
+            <strong id="main-menu-best-score" className="counter-value">{animatedBestScore}</strong>
           </div>
 
           <div className="main-menu-actions">
