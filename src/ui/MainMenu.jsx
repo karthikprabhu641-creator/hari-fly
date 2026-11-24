@@ -346,7 +346,19 @@ export function MainMenu({
               </span>
             </button>
 
-            <div className="main-menu-difficulty" role="group" aria-label="Game difficulty">
+            <div
+              className="main-menu-difficulty"
+              role="group"
+              aria-label="Game difficulty"
+              data-selected={
+                selectedGameModeId === 'normal'
+                  ? 'normal'
+                  : selectedGameModeId === 'hard'
+                    ? 'hard'
+                    : 'extreme'
+              }
+            >
+              <span className="main-menu-difficulty-indicator" aria-hidden="true" />
               {GAME_MODES.map((mode) => {
                 const isSelected = mode.id === selectedGameModeId;
                 const label = mode.id === 'hari-special' ? 'EXTREME' : mode.name.toUpperCase();
