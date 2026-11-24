@@ -23,6 +23,8 @@ import {
 import { safeStorage } from '../utils/storage';
 import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } from '../utils/device';
 import { vibrate } from '../utils/haptics';
+import { LocalProgressModal } from './LocalProgressModal';
+import { getSelectedSkin, SKINS } from '../services/localProgressService';
 
 function useAnimatedNumber(value) {
   const safeValue = Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : 0;
@@ -82,9 +84,12 @@ export function MainMenu({
   onSpendKeys,
 }) {
   const animatedBestScore = useAnimatedNumber(bestScore);
+  const selectedSkinId = getSelectedSkin();
+  const selectedSkin = SKINS.find((skin) => skin.id === selectedSkinId) || SKINS[0];
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
+  const [showLocalProgress, setShowLocalProgress] = useState(null);
   const [faceTapped, setFaceTapped] = useState(false);
   const [faceParticles, setFaceParticles] = useState([]);
   const faceTimerRef = useRef(null);
@@ -381,31 +386,31 @@ export function MainMenu({
               </button>
 
               <button
-                className="main-menu-modes-btn main-menu-placeholder-card"
+                className="main-menu-modes-btn"
                 type="button"
-                disabled
-                aria-label="Skins coming soon"
+                onClick={() => setShowLocalProgress('skins')}
+                aria-label="Open skins"
               >
                 <span className="main-menu-modes-icon main-menu-skins-icon" aria-hidden="true">★</span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">SKINS</span>
-                  <span className="main-menu-modes-current">COMING SOON</span>
+                  <span className="main-menu-modes-current">LOCAL SKINS</span>
                 </span>
-                <span className="main-menu-lock-badge" aria-label="Locked">🔒</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
               </button>
 
               <button
-                className="main-menu-modes-btn main-menu-placeholder-card"
+                className="main-menu-modes-btn"
                 type="button"
-                disabled
-                aria-label="Missions coming soon"
+                onClick={() => setShowLocalProgress('missions')}
+                aria-label="Open daily missions"
               >
                 <span className="main-menu-modes-icon main-menu-missions-icon" aria-hidden="true">✓</span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">MISSIONS</span>
-                  <span className="main-menu-modes-current">COMING SOON</span>
+                  <span className="main-menu-modes-current">DAILY SET</span>
                 </span>
-                <span className="main-menu-lock-badge" aria-label="Locked">🔒</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
               </button>
             </div>
           </div>
@@ -422,7 +427,7 @@ export function MainMenu({
             onClick={handleFaceTap}
             aria-label="Tap your bird pilot"
           >
-            <img className="main-menu-bird" src={birdImage} alt="" aria-hidden="true" />
+            <img className="main-menu-bird" src={birdImage} alt="" aria-hidden="true" style={{ filter: `${selectedSkin.filter === 'none' ? 'drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))' : `${selectedSkin.filter} drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))`}` }} />
             {faceParticles.map((particle) => (
               <span
                 key={particle.id}
@@ -485,6 +490,14 @@ export function MainMenu({
           onClaimReward={onClaimReward}
           coins={coins}
           keys={keys}
+        />
+      )}
+      {showLocalProgress && (
+        <LocalProgressModal
+          mode={showLocalProgress}
+          keys={keys}
+          onSpendKeys={onSpendKeys}
+          onClose={() => setShowLocalProgress(null)}
         />
       )}
     </div>

@@ -2199,6 +2199,135 @@ button:disabled {
   color: var(--gold) !important;
 }
 
+.local-progress-backdrop {
+  z-index: var(--z-modal);
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(14px);
+}
+
+.local-progress-card {
+  position: relative;
+  width: min(100%, 380px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 28px 20px 20px;
+  border: 1px solid var(--stroke-strong);
+  border-radius: 32px 32px 18px 18px;
+  background: var(--bg-2);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  animation: game-over-sheet-up 280ms var(--ease-spring);
+}
+
+.skin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.skin-option {
+  min-height: 142px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-md);
+  background: var(--bg-3);
+  color: var(--text-1);
+  font-family: var(--font-display);
+  cursor: pointer;
+}
+
+.skin-option:disabled {
+  opacity: 0.55;
+}
+
+.skin-option.is-selected {
+  border-color: var(--lime-500);
+  box-shadow: 0 0 16px rgba(143, 224, 31, 0.25);
+}
+
+.skin-preview {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--lime-400), var(--cyan));
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 900;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+}
+
+.skin-option strong {
+  font-size: 0.78rem;
+}
+
+.skin-option small {
+  color: var(--text-2);
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+  text-align: left;
+}
+
+.mission-row {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-md);
+  background: var(--bg-3);
+}
+
+.mission-row > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-1);
+  font-size: 0.78rem;
+}
+
+.mission-row small {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-progress {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mission-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lime-500), var(--lime-400));
+  transition: width 280ms var(--ease-out);
+}
+
+.mission-reset-note {
+  color: var(--text-3);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
 .main-menu-modes-icon {
   display: grid;
   place-items: center;

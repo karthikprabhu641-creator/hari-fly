@@ -31,6 +31,7 @@ import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../c
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 import { showToast } from '../../utils/toast';
 import { vibrate } from '../../utils/haptics';
+import { updateMissions } from '../../services/localProgressService';
 
 export class GameEngine {
   constructor() {
@@ -208,10 +209,15 @@ export class GameEngine {
       this.parallaxBg.setScore(data.score);
       audioManager.playScore();
       this.particleSystem.emitScoreSparkles(this.player.x, this.player.y);
+      updateMissions({ score: data.score });
       this.notifyUI();
     });
 
-    this.unsubscribers.push(unsubCollide, unsubFlap, unsubScore);
+    const unsubCoin = eventBus.on(GAME_EVENTS.COIN_COLLECTED, (data) => {
+      updateMissions({ coinDelta: data.coinDelta });
+    });
+
+    this.unsubscribers.push(unsubCollide, unsubFlap, unsubScore, unsubCoin);
   }
 
   handleFlapInput() {

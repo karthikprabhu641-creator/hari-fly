@@ -8,6 +8,7 @@ import { assetManager } from '../../assets/AssetManager';
 import { checkCircleRectCollision } from '../collision/Hitbox';
 import { vibrate } from '../../utils/haptics';
 import { audioManager } from '../../audio/AudioManager';
+import { eventBus, GAME_EVENTS } from './EventBus';
 
 const COLLECTIBLE_TYPES = {
   COIN: 'coin',
@@ -89,6 +90,7 @@ export class CollectibleManager {
     if (type === COLLECTIBLE_TYPES.COIN) {
       this.coins += 1;
       safeStorage.setNumber(GAME_CONFIG.CURRENCY.COINS_STORAGE_KEY, this.coins);
+      eventBus.emit(GAME_EVENTS.COIN_COLLECTED, { coinDelta: 1 });
       if (audioManager.vibrationEnabled) vibrate(8);
     } else if (type === COLLECTIBLE_TYPES.KEY) {
       this.keys += 1;
