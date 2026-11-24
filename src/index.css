@@ -59,6 +59,16 @@
   --z-toast: 60;
   --z-fx-overlay: 90;
 
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  --dur-instant: 80ms;
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 500ms;
+  --dur-loop: 4000ms;
+
   /* Palette */
   --bg-primary: #090d16;
   --bg-card: rgba(15, 23, 42, 0.78);
@@ -1582,6 +1592,48 @@ html, body {
   }
 }
 
+@keyframes menu-face-enter {
+  from { opacity: 0; transform: scale(0.6); }
+  75% { opacity: 1; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes menu-slide-down {
+  from { opacity: 0; transform: translateY(-24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes menu-slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes menu-drop-in {
+  0% { opacity: 0; transform: translateY(-60px); }
+  70% { opacity: 1; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes menu-face-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+  88% { transform: translateY(-4px) rotate(0deg); }
+  91% { transform: translateY(-4px) rotate(-7deg); }
+  94% { transform: translateY(-4px) rotate(6deg); }
+  97% { transform: translateY(-4px) rotate(-4deg); }
+}
+
+@keyframes menu-logo-shine {
+  0%, 82%, 100% { opacity: 0; transform: translateX(-180%) skewX(-20deg); }
+  88% { opacity: 0.55; }
+  96% { opacity: 0; transform: translateX(180%) skewX(-20deg); }
+}
+
+@keyframes menu-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
 .main-menu-best {
   display: inline-flex;
   align-items: center;
@@ -2816,7 +2868,73 @@ html, body {
   height: min(57vh, 490px);
   object-fit: contain;
   filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38));
-  animation: menuBirdFloat 3.6s ease-in-out infinite;
+  animation: menu-face-float 7s var(--ease-in-out) 700ms infinite;
+}
+
+.menu-active .main-menu-art {
+  animation: menu-face-enter 500ms var(--ease-spring) 100ms both;
+}
+
+.menu-active .main-menu-topbar {
+  animation: menu-slide-down 300ms var(--ease-out) both;
+}
+
+.menu-active .main-menu-title > span {
+  display: inline-flex;
+}
+
+.menu-active .main-menu-title span span {
+  display: inline-block;
+  animation: menu-drop-in 400ms var(--ease-spring) both;
+}
+
+.menu-active .main-menu-title .title-text-hari span:nth-child(1) { animation-delay: 250ms; }
+.menu-active .main-menu-title .title-text-hari span:nth-child(2) { animation-delay: 290ms; }
+.menu-active .main-menu-title .title-text-hari span:nth-child(3) { animation-delay: 330ms; }
+.menu-active .main-menu-title .title-text-hari span:nth-child(4) { animation-delay: 370ms; }
+.menu-active .main-menu-title .title-dot { animation: menu-drop-in 400ms var(--ease-spring) 410ms both; }
+.menu-active .main-menu-title .title-text-fly span:nth-child(1) { animation-delay: 450ms; }
+.menu-active .main-menu-title .title-text-fly span:nth-child(2) { animation-delay: 490ms; }
+.menu-active .main-menu-title .title-text-fly span:nth-child(3) { animation-delay: 530ms; }
+
+.menu-active .main-menu-best {
+  animation: menu-slide-up 600ms var(--ease-out) 500ms both;
+}
+
+.menu-active .main-menu-start {
+  animation: menu-slide-up 450ms var(--ease-spring) 600ms both,
+             heroPulseAura 2.4s ease-in-out 1.05s infinite;
+}
+
+.menu-active .main-menu-card-grid .main-menu-modes-btn {
+  animation: menu-slide-up 400ms var(--ease-out) both;
+}
+
+.menu-active .main-menu-card-grid .main-menu-modes-btn:nth-child(1) { animation-delay: 700ms; }
+.menu-active .main-menu-card-grid .main-menu-modes-btn:nth-child(2) { animation-delay: 780ms; }
+.menu-active .main-menu-card-grid .main-menu-modes-btn:nth-child(3) { animation-delay: 860ms; }
+.menu-active .main-menu-card-grid .main-menu-modes-btn:nth-child(4) { animation-delay: 940ms; }
+
+.menu-active .main-menu-lucky-wheel-btn .lucky-wheel-spinner {
+  animation: lucky-wheel-turn 18s linear infinite;
+}
+
+@keyframes lucky-wheel-turn {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.menu-active .start-btn-chevron-trail {
+  animation: menu-nudge 1.2s var(--ease-in-out) infinite;
+}
+
+.menu-active .main-menu-music-icon {
+  animation: menu-music-pulse 1s var(--ease-in-out) infinite;
+}
+
+@keyframes menu-music-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.82; }
 }
 
 .main-menu-footer {

@@ -137,7 +137,7 @@ export function MainMenu({
   const currentGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
 
   return (
-    <div className="main-menu-screen" id="main-menu-overlay">
+    <div className="main-menu-screen menu-active" id="main-menu-overlay">
       <header className="main-menu-topbar">
         <div className="main-menu-topbar-left">
           <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />
@@ -217,10 +217,14 @@ export function MainMenu({
 
       <main className="main-menu-hero">
         <section className="main-menu-copy">
-          <h1 className="main-menu-title">
-            <span className="title-text-hari">HARI</span>
+          <h1 className="main-menu-title" aria-label="HARI.FLY">
+            <span className="title-text-hari" aria-hidden="true">
+              <span>H</span><span>A</span><span>R</span><span>I</span>
+            </span>
             <span className="title-dot">.</span>
-            <span className="title-text-fly">FLY</span>
+            <span className="title-text-fly" aria-hidden="true">
+              <span>F</span><span>L</span><span>Y</span>
+            </span>
           </h1>
 
           <div className="main-menu-best">

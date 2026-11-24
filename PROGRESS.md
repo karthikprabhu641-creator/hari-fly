@@ -23,7 +23,7 @@
 - [x] 0 Audit & Setup
 - [x] 1 Tokens, Typography, Background
 - [x] 2 Menu Layout Upgrade
-- [ ] 3 Menu Load Animation & Idle Loops
+- [x] 3 Menu Load Animation & Idle Loops
 - [ ] 4 Press States, Counters, Toasts
 - [ ] 5 Hero Interactions
 - [ ] 6 Start Transition & Menu Pause
@@ -39,6 +39,7 @@
 - 2026-11-24 - Step 0 complete. Created `backup-v1/` with 101 project files, excluding `.git`, `node_modules`, and generated `dist`; verified the copied file count. Created this code map and step tracker. No game code changed.
 - 2026-11-24 - Step 1 complete. Added the HARI.FLY design tokens and system-font fallback to `src/index.css`, replaced the menu gradient/radial background, and removed the Google Fonts network links from `index.html`. No bundled WOFF2 font was available, so the system fallback is used.
 - 2026-11-24 - Step 2 complete. Upgraded the menu HUD targets, 96px lime primary CTA, gold personal-best border, 2x2 feature-card grid, and list-card states. Added visually locked, disabled Skins and Missions placeholders with no new gameplay logic.
+- 2026-11-24 - Step 3 complete. Added the stagger table, split logo letters, and menu idle animations for the face, CTA, wheel, and music icon. Added the `menu-active` class and reduced-motion coverage; menu elements leave the active menu when gameplay replaces it.
 
 ## Notes & Fixes
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.
