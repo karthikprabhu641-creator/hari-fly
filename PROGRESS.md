@@ -28,7 +28,7 @@
 - [x] 5 Hero Interactions
 - [x] 6 Start Transition & Menu Pause
 - [x] 7 In-Game Juice: Player & HUD
-- [ ] 8 World: Parallax, Snow, Wind
+- [x] 8 World: Parallax, Snow, Wind
 - [ ] 9 Death Sequence & Game Over Panel
 - [ ] 10 Audio, Haptics, Settings
 - [ ] 11 Expressions, Skins, Missions
@@ -44,8 +44,10 @@
 - 2026-11-24 - Step 5 complete. Added a tappable hero face with squash/stretch, six temporary particles, click audio/haptic hook, random wiggle timers, and a wheel ready state showing `SPIN!` with gold pulse and periodic wiggle. All timers are cleaned on menu unmount.
 - 2026-11-24 - Step 6 complete. Added a 200ms menu fade, 400ms face move, 3-2-1-GO countdown, menu-loop pause class, and cleanup of start timers. The existing engine start behavior and physics remain unchanged.
 - 2026-11-24 - Step 7 complete. Added visual player tilt/squash support to image avatars and fallback birds, increased pooled flap trail puffs, kept particles within the existing pool, added score-pop feedback, CLOSE near-miss messaging, and milestone toast/confetti at 10/25/50. Physics, hitboxes, and obstacle logic remain unchanged.
+- 2026-11-24 - Step 8 complete. Added separate 0.2x/0.5x/0.8x parallax offsets, two snow particle layers, occasional wind gust strength for snow, snowfall ice obstacles, and per-map CSS theme variables. No collision or obstacle-speed values were changed.
 
 ## Notes & Fixes
+- 2026-11-24 - Fixed a startup regression found after Step 8: `GameEngine` called `this.obstacleManager.setMap(...)` before creating `ObstacleManager`, causing the React ErrorBoundary to replace the game with "Cannot read properties of undefined (reading 'setMap')". The call is now after construction and repeated safely when the selected map changes.
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.
 - Existing uncommitted changes were present before Step 0 in `src/components/GameView.jsx`, `src/config/mapConfig.js`, `src/game/engine/GameEngine.js`, `src/game/obstacles/ObstacleManager.js`, `src/game/powerups/PowerUpManager.js`, `src/game/systems/CollectibleManager.js`, `src/index.css`, `src/ui/MainMenu.jsx`, and `src/ui/ModesModal.jsx`. Untracked items included `NEW md's/`, `src/assets/maps-real/`, `src/assets/modes/`, and `src/config/gameModeConfig.js`. These were left untouched and included in the backup where applicable.
 - The backup intentionally excludes dependency and generated/build folders; `package-lock.json` is included to restore dependencies if needed.

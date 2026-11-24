@@ -19,6 +19,9 @@ export class ParallaxBackground {
     this.groundY = this.height - this.groundHeight;
 
     this.cloudOffset = 0;
+    this.farOffset = 0;
+    this.midOffset = 0;
+    this.nearOffset = 0;
     this.mountainOffset = 0;
     this.groundOffset = 0;
     this.environmentSystem = new EnvironmentSystem();
@@ -47,6 +50,9 @@ export class ParallaxBackground {
 
     // Parallax scroll updates
     this.cloudOffset = (this.cloudOffset + speed * GAME_CONFIG.WORLD.PARALLAX_CLOUDS * dt) % this.width;
+    this.farOffset = (this.farOffset + speed * 0.2 * dt) % this.width;
+    this.midOffset = (this.midOffset + speed * 0.5 * dt) % this.width;
+    this.nearOffset = (this.nearOffset + speed * 0.8 * dt) % this.width;
     this.mountainOffset = (this.mountainOffset + speed * GAME_CONFIG.WORLD.PARALLAX_MOUNTAINS * dt) % this.width;
     this.groundOffset = (this.groundOffset + speed * GAME_CONFIG.WORLD.PARALLAX_GROUND * dt) % 24; // 24px pattern repeat
   }
@@ -76,6 +82,9 @@ export class ParallaxBackground {
 
   reset(score = 0) {
     this.cloudOffset = 0;
+    this.farOffset = 0;
+    this.midOffset = 0;
+    this.nearOffset = 0;
     this.mountainOffset = 0;
     this.groundOffset = 0;
     this.environmentSystem.reset(score);
@@ -244,7 +253,7 @@ export class ParallaxBackground {
     const numPoints = 8;
     const step = mWidth / numPoints;
     for (let i = 0; i <= numPoints + 1; i++) {
-      const px = (i * step - this.mountainOffset + mWidth * 2) % mWidth;
+      const px = (i * step - this.farOffset + mWidth * 2) % mWidth;
       const height = i % 2 === 0 ? 90 : 50;
       ctx.lineTo(px, base - height);
     }
@@ -261,7 +270,7 @@ export class ParallaxBackground {
     const blockWidth = this.width / heights.length;
     ctx.save();
     heights.forEach((height, index) => {
-      const x = (index * blockWidth - this.mountainOffset * 0.45 + this.width * 2) % this.width;
+      const x = (index * blockWidth - this.midOffset + this.width * 2) % this.width;
       ctx.fillStyle = index % 2 ? '#17243d' : '#202b48';
       ctx.fillRect(x, base - height, blockWidth + 1, height);
       ctx.fillStyle = 'rgba(250, 217, 130, 0.76)';
@@ -281,7 +290,7 @@ export class ParallaxBackground {
     const peaks = [0.1, 0.27, 0.44, 0.63, 0.8, 0.97];
     ctx.save();
     peaks.forEach((ratio, index) => {
-      const x = (ratio * this.width - this.mountainOffset * 0.35 + this.width * 2) % this.width;
+      const x = (ratio * this.width - this.midOffset + this.width * 2) % this.width;
       const peakHeight = index % 2 ? 72 : 112;
       ctx.fillStyle = index % 2 ? '#91b9cd' : '#789eb7';
       ctx.beginPath();
@@ -308,7 +317,7 @@ export class ParallaxBackground {
     ctx.save();
     ctx.fillStyle = '#174b3a';
     for (let index = 0; index < 7; index += 1) {
-      const x = (index * 66 - this.mountainOffset * 0.6 + this.width * 2) % this.width;
+      const x = (index * 66 - this.nearOffset + this.width * 2) % this.width;
       const height = index % 2 ? 90 : 122;
       ctx.fillRect(x, base - height, 12, height);
       ctx.beginPath();
@@ -337,7 +346,7 @@ export class ParallaxBackground {
     ];
     ctx.save();
     islands.forEach(({ x, y, width }) => {
-      const driftX = (x - this.mountainOffset * 0.24 + this.width * 2) % this.width;
+      const driftX = (x - this.nearOffset + this.width * 2) % this.width;
       ctx.fillStyle = '#71bd78';
       ctx.beginPath();
       ctx.ellipse(driftX, y, width, 8, 0, 0, Math.PI * 2);

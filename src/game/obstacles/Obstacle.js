@@ -15,6 +15,7 @@ export class Obstacle {
     this.gapSize = GAME_CONFIG.OBSTACLES.GAP_SIZE;
     this.passed = false;
     this.active = false;
+    this.mapId = 'skyland';
 
     this.groundY = GAME_CONFIG.VIEWPORT.HEIGHT - GAME_CONFIG.WORLD.GROUND_HEIGHT;
 
@@ -23,10 +24,11 @@ export class Obstacle {
     this.bottomHitbox = new RectHitbox(0, 0, this.width, 0);
   }
 
-  init(x, gapTopY, gapSize = GAME_CONFIG.OBSTACLES.GAP_SIZE) {
+  init(x, gapTopY, gapSize = GAME_CONFIG.OBSTACLES.GAP_SIZE, mapId = 'skyland') {
     this.x = x;
     this.gapTopY = gapTopY;
     this.gapSize = gapSize;
+    this.mapId = mapId;
     this.passed = false;
     this.active = true;
 
@@ -101,6 +103,22 @@ export class Obstacle {
   drawPipeBody(ctx, x, y, width, height) {
     if (height <= 0) return;
 
+    if (this.mapId === 'snowfall') {
+      const ice = ctx.createLinearGradient(x, 0, x + width, 0);
+      ice.addColorStop(0, '#75aeca');
+      ice.addColorStop(0.22, '#dff7ff');
+      ice.addColorStop(0.68, '#9fd1e7');
+      ice.addColorStop(1, '#5c91aa');
+      ctx.fillStyle = ice;
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#dff7ff';
+      ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
+      ctx.strokeRect(x, y, width, height);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.fillRect(x + 7, y, 6, height);
+      return;
+    }
+
     // Linear gradient for 3D curved tube look
     const grad = ctx.createLinearGradient(x, 0, x + width, 0);
     grad.addColorStop(0, '#15803d');    // Dark green edge
@@ -121,6 +139,22 @@ export class Obstacle {
   }
 
   drawPipeLip(ctx, x, y, width, height) {
+    if (this.mapId === 'snowfall') {
+      const ice = ctx.createLinearGradient(x, 0, x + width, 0);
+      ice.addColorStop(0, '#5c91aa');
+      ice.addColorStop(0.25, '#dff7ff');
+      ice.addColorStop(0.75, '#9fd1e7');
+      ice.addColorStop(1, '#75aeca');
+      ctx.fillStyle = ice;
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#eafaff';
+      ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
+      ctx.strokeRect(x, y, width, height);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.fillRect(x + 8, y, 7, height);
+      return;
+    }
+
     const grad = ctx.createLinearGradient(x, 0, x + width, 0);
     grad.addColorStop(0, '#166534');
     grad.addColorStop(0.25, '#4ade80');

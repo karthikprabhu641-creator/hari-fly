@@ -22,6 +22,7 @@ export class ObstacleManager {
     this.isEnabled = true;
 
     this.groundY = GAME_CONFIG.VIEWPORT.HEIGHT - GAME_CONFIG.WORLD.GROUND_HEIGHT;
+    this.mapId = 'skyland';
   }
 
   getActiveObstacles() {
@@ -49,7 +50,7 @@ export class ObstacleManager {
     const gapTopY = randomRange(minTop, maxTop);
     const spawnX = GAME_CONFIG.VIEWPORT.WIDTH + 20;
 
-    obstacle.init(spawnX, gapTopY, gapSize);
+    obstacle.init(spawnX, gapTopY, gapSize, this.mapId);
     this.onSpawn(obstacle);
   }
 
@@ -96,6 +97,10 @@ export class ObstacleManager {
     this.gapSize = gapSize;
     this.spawnInterval = spawnInterval;
     this.reset();
+  }
+
+  setMap(mapId) {
+    this.mapId = mapId;
   }
 
   reset() {

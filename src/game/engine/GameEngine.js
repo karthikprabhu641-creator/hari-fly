@@ -26,7 +26,7 @@ import { Viewport } from './Viewport';
 import { GameLoop } from './GameLoop';
 import { assetManager } from '../../assets/AssetManager';
 import { audioManager } from '../../audio/AudioManager';
-import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
+import { getSelectedMapId, getMap, saveSelectedMap } from '../../config/mapConfig';
 import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../config/gameModeConfig';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 import { showToast } from '../../utils/toast';
@@ -64,6 +64,7 @@ export class GameEngine {
       onScore: (obstacle) => this.handleScoreTrigger(obstacle),
       onSpawn: (obstacle) => this.collectibleManager.onObstacleSpawned(obstacle),
     });
+    this.obstacleManager.setMap(this.selectedMapId);
     this.setGameMode(this.selectedGameModeId, false);
 
     this.inputManager = new InputManager({
@@ -348,8 +349,15 @@ export class GameEngine {
 
   setMap(mapId) {
     this.selectedMapId = saveSelectedMap(mapId);
+    const map = getMap(this.selectedMapId);
+    if (typeof document !== 'undefined' && map) {
+      document.documentElement.style.setProperty('--bg-0', map.backdrop[0]);
+      document.documentElement.style.setProperty('--bg-1', map.backdrop[1]);
+      document.documentElement.style.setProperty('--cyan', map.accent);
+    }
     this.parallaxBg.setMap(this.selectedMapId);
     this.weatherSystem.setMap(this.selectedMapId);
+    this.obstacleManager.setMap(this.selectedMapId);
     this.notifyUI();
   }
 

@@ -25,6 +25,8 @@ export const MAPS = {
     land: '#4b9a79',
     ground: ['#d9ce86', '#85bd54'],
     weather: ['clouds', 'rain', 'wind'],
+    accent: '#2bb5f0',
+    backdrop: ['#07141a', '#0c2a2a'],
   },
   'sunset-valley': {
     id: 'sunset-valley',
@@ -37,6 +39,8 @@ export const MAPS = {
     land: '#a74d62',
     ground: ['#bc8051', '#6b513b'],
     weather: ['rain', 'wind'],
+    accent: '#ffc21a',
+    backdrop: ['#24101f', '#8a3d32'],
   },
   'night-city': {
     id: 'night-city',
@@ -49,6 +53,8 @@ export const MAPS = {
     land: '#18243c',
     ground: ['#56536b', '#24263c'],
     weather: ['rain', 'fog'],
+    accent: '#ff5fa2',
+    backdrop: ['#050711', '#17294f'],
   },
   snowfall: {
     id: 'snowfall',
@@ -61,6 +67,8 @@ export const MAPS = {
     land: '#8fb9cb',
     ground: ['#e5f3f4', '#9ccbd7'],
     weather: ['snow', 'wind'],
+    accent: '#2bb5f0',
+    backdrop: ['#07141a', '#0c2a2a'],
   },
   jungle: {
     id: 'jungle',
@@ -73,6 +81,8 @@ export const MAPS = {
     land: '#205e45',
     ground: ['#6b9b47', '#294b35'],
     weather: ['rain', 'fog', 'wind'],
+    accent: '#b6f23a',
+    backdrop: ['#071913', '#1d5361'],
   },
 };
 

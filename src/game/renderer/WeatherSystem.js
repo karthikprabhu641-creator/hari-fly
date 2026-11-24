@@ -23,7 +23,11 @@ export class WeatherSystem {
     this.previousRainActive = this.rainActive;
     this.transitionDuration = 1;
     this.lightningTimer = 0;
-    this.snowflakes = Array.from({ length: 38 }, () => this.createSnowflake(true));
+    this.snowSlow = Array.from({ length: 28 }, () => this.createSnowflake(true));
+    this.snowFast = Array.from({ length: 18 }, () => this.createSnowflake(true));
+    this.gustTimer = 7 + Math.random() * 5;
+    this.gustRemaining = 0;
+    this.gustStrength = 0;
   }
 
   createSnowflake(randomizeY = false) {
@@ -41,7 +45,8 @@ export class WeatherSystem {
     this.previousRainActive = this.map.weather.includes('rain');
     this.rainActive = this.previousRainActive;
     this.transitionTime = this.transitionDuration;
-    this.snowflakes.forEach((flake) => Object.assign(flake, this.createSnowflake(true)));
+    this.snowSlow.forEach((flake) => Object.assign(flake, this.createSnowflake(true)));
+    this.snowFast.forEach((flake) => Object.assign(flake, this.createSnowflake(true)));
   }
 
   createRainDrop(randomizeY = false) {
@@ -55,6 +60,18 @@ export class WeatherSystem {
   }
 
   update(dt) {
+    if (this.gustRemaining > 0) {
+      this.gustRemaining = Math.max(0, this.gustRemaining - dt);
+      if (this.gustRemaining === 0) this.gustStrength = 0;
+    } else {
+      this.gustTimer -= dt;
+      if (this.gustTimer <= 0) {
+        this.gustRemaining = randomRange(1, 2);
+        this.gustStrength = randomRange(38, 72);
+        this.gustTimer = randomRange(8, 14);
+      }
+    }
+
     this.weatherTimer += dt;
     if (this.weatherTimer >= GAME_CONFIG.WEATHER.WEATHER_CHANGE_INTERVAL) {
       this.weatherTimer = 0;
@@ -80,9 +97,17 @@ export class WeatherSystem {
     });
 
     if (this.map.weather.includes('snow')) {
-      this.snowflakes.forEach((flake) => {
-        flake.x += (flake.drift + wind * 0.12) * dt;
-        flake.y += flake.speed * dt;
+      this.snowSlow.forEach((flake) => {
+        flake.x += (flake.drift * 0.45 + wind * 0.12 + this.gustStrength * 0.35) * dt;
+        flake.y += flake.speed * 0.65 * dt;
+        if (flake.y > this.height || flake.x < -8 || flake.x > this.width + 8) {
+          Object.assign(flake, this.createSnowflake());
+          flake.x = Math.min(this.width, Math.max(0, flake.x));
+        }
+      });
+      this.snowFast.forEach((flake) => {
+        flake.x += (flake.drift + wind * 0.18 + this.gustStrength) * dt;
+        flake.y += flake.speed * 1.35 * dt;
         if (flake.y > this.height || flake.x < -8 || flake.x > this.width + 8) {
           Object.assign(flake, this.createSnowflake());
           flake.x = Math.min(this.width, Math.max(0, flake.x));
@@ -122,10 +147,16 @@ export class WeatherSystem {
 
     if (this.map.weather.includes('snow')) {
       ctx.save();
-      ctx.fillStyle = 'rgba(245, 252, 255, 0.88)';
-      this.snowflakes.forEach((flake) => {
+      ctx.fillStyle = 'rgba(245, 252, 255, 0.72)';
+      this.snowSlow.forEach((flake) => {
         ctx.beginPath();
         ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = 'rgba(245, 252, 255, 0.96)';
+      this.snowFast.forEach((flake) => {
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.radius * 1.55, 0, Math.PI * 2);
         ctx.fill();
       });
       ctx.restore();
@@ -146,6 +177,9 @@ export class WeatherSystem {
     this.rainActive = this.map.weather.includes('rain');
     this.previousRainActive = this.rainActive;
     this.lightningTimer = 0;
+    this.gustTimer = 7 + Math.random() * 5;
+    this.gustRemaining = 0;
+    this.gustStrength = 0;
     this.rainDrops.forEach((drop) => {
       drop.x = randomRange(-this.width * 0.1, this.width);
       drop.y = randomRange(0, this.groundY);
