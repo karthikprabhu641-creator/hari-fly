@@ -32,7 +32,7 @@
 - [x] 9 Death Sequence & Game Over Panel
 - [x] 10 Audio, Haptics, Settings
 - [x] 11 Expressions, Skins, Missions
-- [ ] 12 Accessibility & Performance Pass
+- [x] 12 Accessibility & Performance Pass
 - [ ] 13 Final QA & Handoff
 
 ## Log
@@ -48,6 +48,7 @@
 - 2026-11-24 - Step 9 complete. Added an 80ms death freeze, red flash, 8px/250ms screen shake, dizzy player spin/stars, 500ms delayed bottom-sheet reveal, 600ms score count-up, new-best gold burst, and renamed actions to PLAY AGAIN/HOME.
 - 2026-11-24 - Step 10 complete. Added persistent Sound, Music, Vibration, Screen shake, and Reduce motion switches in settings. Added guarded vibration helper, existing first-tap AudioContext unlock, and independent storage keys under the existing `hraifly_*` prefix. Reduced-motion preferences now apply a workspace-level CSS class.
 - 2026-11-24 - Step 11 complete. Replaced the locked Skins/Missions placeholders with local modals. Added three local skin choices, key-cost unlock logic, selected-skin filter fallback, and a daily two-mission set that resets at local midnight. Existing face-image art remains the graceful expression fallback.
+- 2026-11-24 - Step 12 complete. Added HUD icon labels, 48px icon targets, face/list containment, reduced-motion canvas guards, and frame-time fallback that reduces emitted particles when frame time exceeds 20ms. Removed remaining `will-change` declarations. Confirmed there are no CDN/font/fetch calls in the app; only the existing footer Instagram link remains user-triggered external navigation.
 
 ## Notes & Fixes
 - 2026-11-24 - Fixed a startup regression found after Step 8: `GameEngine` called `this.obstacleManager.setMap(...)` before creating `ObstacleManager`, causing the React ErrorBoundary to replace the game with "Cannot read properties of undefined (reading 'setMap')". The call is now after construction and repeated safely when the selected map changes.

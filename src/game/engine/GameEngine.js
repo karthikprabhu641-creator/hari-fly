@@ -110,6 +110,14 @@ export class GameEngine {
         (dt) => this.update(dt),
         () => this.render()
       );
+      this.loop.onFrameTime = (rawDt) => {
+        this.particleSystem.setFallbackEnabled(rawDt > 0.020);
+        if (this.canvasRenderer) {
+          this.canvasRenderer.setScreenShakeEnabled(
+            audioManager.screenShakeEnabled && !audioManager.reduceMotion
+          );
+        }
+      };
     }
 
     // Initial resize based on parent container
@@ -420,7 +428,7 @@ export class GameEngine {
 
     // 1. Update visual effects & particles (always active)
     this.canvasRenderer.updateVFX(dt);
-    this.weatherSystem.update(dt);
+    if (!audioManager.reduceMotion) this.weatherSystem.update(dt);
     this.particleSystem.update(dt);
     this.player.updateAnimation(dt);
 
@@ -428,7 +436,7 @@ export class GameEngine {
       // Gentle idle hover animation on main menu
       this.player.y = GAME_CONFIG.PLAYER.START_Y + Math.sin(performance.now() * 0.0035) * 8;
       this.player.hitbox.update(this.player.x, this.player.y);
-      this.parallaxBg.update(dt, GAME_CONFIG.OBSTACLES.SPEED * 0.5);
+      this.parallaxBg.update(dt, audioManager.reduceMotion ? 0 : GAME_CONFIG.OBSTACLES.SPEED * 0.5);
       return;
     }
 
@@ -444,7 +452,7 @@ export class GameEngine {
       this.collectibleManager.update(gameplayDt, this.player, this.obstacleManager.speed);
 
       // 3. Parallax background
-      this.parallaxBg.update(gameplayDt, this.obstacleManager.speed);
+      this.parallaxBg.update(gameplayDt, audioManager.reduceMotion ? 0 : this.obstacleManager.speed);
 
       // 4. Collision check
       this.collisionSystem.checkCollisions(this.player, this.obstacleManager);

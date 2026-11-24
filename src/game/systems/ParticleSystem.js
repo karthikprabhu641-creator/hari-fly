@@ -63,6 +63,11 @@ export class ParticleSystem {
   constructor() {
     this.poolSize = GAME_CONFIG.VFX.PARTICLE_POOL_SIZE;
     this.pool = Array.from({ length: this.poolSize }, () => new Particle());
+    this.fallbackEnabled = false;
+  }
+
+  setFallbackEnabled(enabled) {
+    this.fallbackEnabled = !!enabled;
   }
 
   getAvailableParticle() {
@@ -78,7 +83,7 @@ export class ParticleSystem {
    * Emit soft cloud puff when player flaps
    */
   emitFlapPuff(x, y) {
-    const count = 8;
+    const count = this.fallbackEnabled ? 4 : 8;
     for (let i = 0; i < count; i++) {
       const p = this.getAvailableParticle();
       if (!p) break;
@@ -93,7 +98,7 @@ export class ParticleSystem {
    * Emit golden sparkles when scoring a point
    */
   emitScoreSparkles(x, y) {
-    const count = 12;
+    const count = this.fallbackEnabled ? 6 : 12;
     const colors = ['#fde047', '#facc15', '#fbbf24', '#ffffff'];
     for (let i = 0; i < count; i++) {
       const p = this.getAvailableParticle();
@@ -112,7 +117,7 @@ export class ParticleSystem {
    * Emit fiery/red impact burst on collision
    */
   emitImpactBurst(x, y) {
-    const count = 16;
+    const count = this.fallbackEnabled ? 8 : 16;
     const colors = ['#ef4444', '#f97316', '#fbbf24', '#ffffff'];
     for (let i = 0; i < count; i++) {
       const p = this.getAvailableParticle();

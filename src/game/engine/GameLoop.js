@@ -10,6 +10,7 @@ export class GameLoop {
   constructor(updateFn, renderFn) {
     this.updateFn = updateFn;
     this.renderFn = renderFn;
+    this.onFrameTime = null;
 
     this.rafId = null;
     this.lastTime = 0;
@@ -57,7 +58,9 @@ export class GameLoop {
     this.rafId = requestAnimationFrame(this.boundTick);
 
     // Delta-time in seconds
-    let dt = (currentTime - this.lastTime) / 1000;
+    let rawDt = (currentTime - this.lastTime) / 1000;
+    if (this.onFrameTime) this.onFrameTime(rawDt);
+    let dt = rawDt;
     this.lastTime = currentTime;
 
     // Safety clamp: protects against huge delta after tab switch, app backgrounding, or lag spikes
