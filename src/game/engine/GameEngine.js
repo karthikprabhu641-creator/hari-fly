@@ -30,6 +30,7 @@ import { getSelectedMapId, getMap, saveSelectedMap } from '../../config/mapConfi
 import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../config/gameModeConfig';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 import { showToast } from '../../utils/toast';
+import { vibrate } from '../../utils/haptics';
 
 export class GameEngine {
   constructor() {
@@ -92,6 +93,7 @@ export class GameEngine {
       this.powerUpManager,
       this.collectibleManager
     );
+    this.canvasRenderer.setScreenShakeEnabled(audioManager.screenShakeEnabled);
 
     // Attach input listeners to canvas
     this.inputManager.attach(canvas);
@@ -182,6 +184,8 @@ export class GameEngine {
       this.player.kill();
       audioManager.playHit();
       audioManager.playGameOver();
+      if (audioManager.vibrationEnabled) vibrate(40);
+      this.canvasRenderer.setScreenShakeEnabled(audioManager.screenShakeEnabled);
       this.canvasRenderer.triggerScreenShake();
       this.particleSystem.emitImpactBurst(data.point.x, data.point.y);
 

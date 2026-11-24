@@ -19,6 +19,16 @@ export function AudioSettingsModal({ onClose }) {
     setSfxVolume,
     toggleMute,
     playClick,
+    sfxEnabled,
+    musicEnabled,
+    vibrationEnabled,
+    screenShakeEnabled,
+    reduceMotion,
+    setSfxEnabled,
+    setMusicEnabled,
+    setVibrationEnabled,
+    setScreenShakeEnabled,
+    setReduceMotion,
   } = useAudio();
 
   const handleClose = (e) => {
@@ -101,6 +111,30 @@ export function AudioSettingsModal({ onClose }) {
         </div>
 
         {/* Action Buttons */}
+        <div className="settings-toggle-list" aria-label="Gameplay preferences">
+          {[
+            ['Sound', sfxEnabled, setSfxEnabled],
+            ['Music', musicEnabled, setMusicEnabled],
+            ['Vibration', vibrationEnabled, setVibrationEnabled],
+            ['Screen shake', screenShakeEnabled, setScreenShakeEnabled],
+            ['Reduce motion', reduceMotion, setReduceMotion],
+          ].map(([label, enabled, setter]) => (
+            <button
+              key={label}
+              type="button"
+              role="switch"
+              aria-checked={enabled}
+              className={`settings-toggle-row${enabled ? ' is-enabled' : ''}`}
+              onClick={() => setter(!enabled)}
+            >
+              <span>{label}</span>
+              <span className="settings-toggle-track" aria-hidden="true">
+                <span className="settings-toggle-thumb" />
+              </span>
+            </button>
+          ))}
+        </div>
+
         <div className="settings-actions">
           <button
             className="settings-action-btn"

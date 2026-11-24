@@ -105,6 +105,11 @@ export const GAME_CONFIG = {
     STORAGE_KEY_GAMEPLAY_MODE: 'hraifly_gameplay_music_mode',
     STORAGE_KEY_FAVORITE_TRACK: 'hraifly_favorite_gameplay_track',
     STORAGE_KEY_GAME_OVER_TRACK: 'hraifly_game_over_track',
+    STORAGE_KEY_SFX_ENABLED: 'hraifly_sfx_enabled',
+    STORAGE_KEY_MUSIC_ENABLED: 'hraifly_music_enabled',
+    STORAGE_KEY_VIBRATION_ENABLED: 'hraifly_vibration_enabled',
+    STORAGE_KEY_SCREEN_SHAKE_ENABLED: 'hraifly_screen_shake_enabled',
+    STORAGE_KEY_REDUCE_MOTION: 'hraifly_reduce_motion',
   },
 
   // High Score Storage Key

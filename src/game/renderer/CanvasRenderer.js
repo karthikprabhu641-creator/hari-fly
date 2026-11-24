@@ -21,16 +21,28 @@ export class CanvasRenderer {
     this.shakeIntensity = GAME_CONFIG.VFX.SCREEN_SHAKE_INTENSITY;
     this.shakeOffsetX = 0;
     this.shakeOffsetY = 0;
+    this.screenShakeEnabled = true;
 
     // Impact Flash state
     this.flashAlpha = 0;
   }
 
   triggerScreenShake(intensity = null, duration = null) {
+    if (!this.screenShakeEnabled) {
+      this.shakeTimer = 0;
+      this.shakeOffsetX = 0;
+      this.shakeOffsetY = 0;
+      this.flashAlpha = 0.25;
+      return;
+    }
     this.shakeIntensity = intensity !== null ? intensity : GAME_CONFIG.VFX.SCREEN_SHAKE_INTENSITY;
     this.shakeDuration = duration !== null ? duration : GAME_CONFIG.VFX.SCREEN_SHAKE_DURATION;
     this.shakeTimer = this.shakeDuration;
     this.flashAlpha = 0.25; // trigger red flash
+  }
+
+  setScreenShakeEnabled(enabled) {
+    this.screenShakeEnabled = !!enabled;
   }
 
   updateVFX(dt) {

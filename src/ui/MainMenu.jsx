@@ -22,6 +22,7 @@ import {
 } from './LuckyWheelModal';
 import { safeStorage } from '../utils/storage';
 import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } from '../utils/device';
+import { vibrate } from '../utils/haptics';
 
 function useAnimatedNumber(value) {
   const safeValue = Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : 0;
@@ -149,6 +150,7 @@ export function MainMenu({
     gameplayMode,
     favoriteTrack,
     playClick,
+    vibrationEnabled,
   } = useAudio();
 
   const handleFaceTap = (event) => {
@@ -162,13 +164,6 @@ export function MainMenu({
       size: 5 + Math.random() * 5,
     })));
 
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      try {
-        navigator.vibrate(8);
-      } catch {
-        // Haptics are optional.
-      }
-    }
 
     if (faceTimerRef.current) window.clearTimeout(faceTimerRef.current);
     faceTimerRef.current = window.setTimeout(() => {

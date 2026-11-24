@@ -28,12 +28,32 @@ class AudioManager {
       GAME_CONFIG.AUDIO.DEFAULT_SFX_VOLUME
     );
     this.isMuted = !!safeStorage.getItem(GAME_CONFIG.AUDIO.STORAGE_KEY_MUTE, false);
+    this.sfxEnabled = safeStorage.getBoolean(
+      GAME_CONFIG.AUDIO.STORAGE_KEY_SFX_ENABLED,
+      true
+    );
+    this.musicEnabled = safeStorage.getBoolean(
+      GAME_CONFIG.AUDIO.STORAGE_KEY_MUSIC_ENABLED,
+      true
+    );
+    this.vibrationEnabled = safeStorage.getBoolean(
+      GAME_CONFIG.AUDIO.STORAGE_KEY_VIBRATION_ENABLED,
+      true
+    );
+    this.screenShakeEnabled = safeStorage.getBoolean(
+      GAME_CONFIG.AUDIO.STORAGE_KEY_SCREEN_SHAKE_ENABLED,
+      true
+    );
+    this.reduceMotion = safeStorage.getBoolean(
+      GAME_CONFIG.AUDIO.STORAGE_KEY_REDUCE_MOTION,
+      window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
+    );
 
     this.gameOverSongs = GAME_OVER_SONGS;
     this.gameOverTrackId = this.getStoredGameOverTrackId();
 
     this.music.setVolume(this.bgmVolume);
-    this.music.setMuted(this.isMuted);
+    this.music.setMuted(this.isMuted || !this.musicEnabled);
     this.music.configure({
       mode: safeStorage.getItem(
         GAME_CONFIG.AUDIO.STORAGE_KEY_GAMEPLAY_MODE,
@@ -51,6 +71,7 @@ class AudioManager {
     this.outAudio.volume = this.isMuted ? 0 : this.bgmVolume;
 
     this.setupUnlockListeners();
+    this.applyReduceMotion();
   }
 
   getStoredGameOverTrackId() {
@@ -98,7 +119,7 @@ class AudioManager {
         }
         this.sfx = new SoundEffects(this.audioCtx);
         this.sfx.setVolume(this.sfxVolume);
-        this.sfx.setMuted(this.isMuted);
+        this.sfx.setMuted(this.isMuted || !this.sfxEnabled);
       }
       this.isUnlocked = true;
       this.notify();
@@ -256,8 +277,8 @@ class AudioManager {
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    this.music.setMuted(this.isMuted);
-    this.sfx?.setMuted(this.isMuted);
+    this.music.setMuted(this.isMuted || !this.musicEnabled);
+    this.sfx?.setMuted(this.isMuted || !this.sfxEnabled);
     if (this.outAudio) {
       this.outAudio.muted = this.isMuted;
       this.outAudio.volume = this.isMuted ? 0 : this.bgmVolume;
@@ -265,6 +286,46 @@ class AudioManager {
     safeStorage.setItem(GAME_CONFIG.AUDIO.STORAGE_KEY_MUTE, this.isMuted);
     this.notify();
     return this.isMuted;
+  }
+
+  setSfxEnabled(enabled) {
+    this.sfxEnabled = !!enabled;
+    this.sfx?.setMuted(!this.sfxEnabled || this.isMuted);
+    safeStorage.setBoolean(GAME_CONFIG.AUDIO.STORAGE_KEY_SFX_ENABLED, this.sfxEnabled);
+    this.notify();
+  }
+
+  setMusicEnabled(enabled) {
+    this.musicEnabled = !!enabled;
+    this.music.setMuted(!this.musicEnabled || this.isMuted);
+    if (!this.musicEnabled) this.music.pause();
+    else if (!this.isMuted) this.music.play();
+    safeStorage.setBoolean(GAME_CONFIG.AUDIO.STORAGE_KEY_MUSIC_ENABLED, this.musicEnabled);
+    this.notify();
+  }
+
+  setVibrationEnabled(enabled) {
+    this.vibrationEnabled = !!enabled;
+    safeStorage.setBoolean(GAME_CONFIG.AUDIO.STORAGE_KEY_VIBRATION_ENABLED, this.vibrationEnabled);
+    this.notify();
+  }
+
+  setScreenShakeEnabled(enabled) {
+    this.screenShakeEnabled = !!enabled;
+    safeStorage.setBoolean(GAME_CONFIG.AUDIO.STORAGE_KEY_SCREEN_SHAKE_ENABLED, this.screenShakeEnabled);
+    this.notify();
+  }
+
+  setReduceMotion(enabled) {
+    this.reduceMotion = !!enabled;
+    safeStorage.setBoolean(GAME_CONFIG.AUDIO.STORAGE_KEY_REDUCE_MOTION, this.reduceMotion);
+    this.applyReduceMotion();
+    this.notify();
+  }
+
+  applyReduceMotion() {
+    if (typeof document === 'undefined') return;
+    document.documentElement.classList.toggle('reduce-motion', this.reduceMotion);
   }
 
   // Observer
@@ -277,6 +338,11 @@ class AudioManager {
     const state = {
       isUnlocked: this.isUnlocked,
       isMuted: this.isMuted,
+      sfxEnabled: this.sfxEnabled,
+      musicEnabled: this.musicEnabled,
+      vibrationEnabled: this.vibrationEnabled,
+      screenShakeEnabled: this.screenShakeEnabled,
+      reduceMotion: this.reduceMotion,
       bgmVolume: this.bgmVolume,
       sfxVolume: this.sfxVolume,
       isPlayingMusic: this.music.isPlaying,

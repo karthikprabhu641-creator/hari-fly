@@ -992,6 +992,75 @@ button:disabled {
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
 }
 
+.settings-toggle-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.settings-toggle-row {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.65);
+  color: #94a3b8;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.settings-toggle-track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex: 0 0 42px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.5);
+  transition: background 160ms ease;
+}
+
+.settings-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  transition: transform 160ms var(--ease-spring);
+}
+
+.settings-toggle-row.is-enabled {
+  color: #e2e8f0;
+  border-color: rgba(182, 242, 58, 0.28);
+}
+
+.settings-toggle-row.is-enabled .settings-toggle-track {
+  background: var(--lime-500);
+}
+
+.settings-toggle-row.is-enabled .settings-toggle-thumb {
+  background: var(--ink);
+  transform: translateX(18px);
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 .settings-actions {
   display: flex;
   flex-direction: column;

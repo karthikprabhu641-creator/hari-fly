@@ -11,6 +11,7 @@ import { safeStorage } from '../utils/storage';
 import coinImage from '../../image/coin.png';
 import keyImage from '../../image/key.png';
 import { WalletDisplay } from './WalletDisplay';
+import { vibrate } from '../utils/haptics';
 
 export const LUCKY_WHEEL_COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 hours
 export const LUCKY_WHEEL_STORAGE_KEY = 'hari_fly_lucky_wheel_last_spin';
@@ -35,7 +36,7 @@ export function formatCooldown(ms) {
 }
 
 export function LuckyWheelModal({ onClose, onClaimReward, coins = 0, keys = 0 }) {
-  const { playClick, playWheelTick, playRewardChime } = useAudio();
+  const { playClick, playWheelTick, playRewardChime, vibrationEnabled } = useAudio();
 
   const [lastSpinTime, setLastSpinTime] = useState(() =>
     safeStorage.getNumber(LUCKY_WHEEL_STORAGE_KEY, 0)
@@ -127,6 +128,7 @@ export function LuckyWheelModal({ onClose, onClaimReward, coins = 0, keys = 0 })
     tickTimes.forEach((t) => {
       const id = setTimeout(() => {
         playWheelTick?.();
+        if (vibrationEnabled) vibrate(5);
       }, t);
       tickIntervalsRef.current.push(id);
     });
@@ -139,6 +141,7 @@ export function LuckyWheelModal({ onClose, onClaimReward, coins = 0, keys = 0 })
 
       // Play victory fanfare
       playRewardChime?.();
+      if (vibrationEnabled) vibrate([20, 40, 20]);
 
       // Record spin timestamp in storage
       const now = Date.now();
