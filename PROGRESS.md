@@ -25,7 +25,7 @@
 - [x] 2 Menu Layout Upgrade
 - [x] 3 Menu Load Animation & Idle Loops
 - [x] 4 Press States, Counters, Toasts
-- [ ] 5 Hero Interactions
+- [x] 5 Hero Interactions
 - [ ] 6 Start Transition & Menu Pause
 - [ ] 7 In-Game Juice: Player & HUD
 - [ ] 8 World: Parallax, Snow, Wind
@@ -41,6 +41,7 @@
 - 2026-11-24 - Step 2 complete. Upgraded the menu HUD targets, 96px lime primary CTA, gold personal-best border, 2x2 feature-card grid, and list-card states. Added visually locked, disabled Skins and Missions placeholders with no new gameplay logic.
 - 2026-11-24 - Step 3 complete. Added the stagger table, split logo letters, and menu idle animations for the face, CTA, wheel, and music icon. Added the `menu-active` class and reduced-motion coverage; menu elements leave the active menu when gameplay replaces it.
 - 2026-11-24 - Step 4 complete. Added visible focus and pressed states, animated coin/key/personal-best counters with bump feedback, tabular-number styling, and a queueing top-center toast system that is ready to call via `showToast(text)`.
+- 2026-11-24 - Step 5 complete. Added a tappable hero face with squash/stretch, six temporary particles, click audio/haptic hook, random wiggle timers, and a wheel ready state showing `SPIN!` with gold pulse and periodic wiggle. All timers are cleaned on menu unmount.
 
 ## Notes & Fixes
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.

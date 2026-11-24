@@ -83,6 +83,11 @@ export function MainMenu({
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
+  const [faceTapped, setFaceTapped] = useState(false);
+  const [faceParticles, setFaceParticles] = useState([]);
+  const faceTimerRef = useRef(null);
+  const faceWiggleTimerRef = useRef(null);
+  const [faceWiggling, setFaceWiggling] = useState(false);
 
   const [wheelCooldownRemaining, setWheelCooldownRemaining] = useState(() => {
     const last = safeStorage.getNumber(LUCKY_WHEEL_STORAGE_KEY, 0);
@@ -98,6 +103,26 @@ export function MainMenu({
   }, []);
 
   const isWheelReady = wheelCooldownRemaining <= 0;
+  const faceRef = useRef(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    const scheduleFaceWiggle = () => {
+      const delay = 4000 + Math.floor(Math.random() * 4000);
+      faceWiggleTimerRef.current = window.setTimeout(() => {
+        setFaceWiggling(true);
+        window.setTimeout(() => setFaceWiggling(false), 500);
+        scheduleFaceWiggle();
+      }, delay);
+    };
+    scheduleFaceWiggle();
+
+    return () => {
+      if (faceWiggleTimerRef.current) window.clearTimeout(faceWiggleTimerRef.current);
+      if (faceTimerRef.current) window.clearTimeout(faceTimerRef.current);
+    };
+  }, []);
 
   const [isFullscreenActive, setIsFullscreenActive] = useState(() => isFullscreen());
 
@@ -124,6 +149,32 @@ export function MainMenu({
     favoriteTrack,
     playClick,
   } = useAudio();
+
+  const handleFaceTap = (event) => {
+    event.stopPropagation();
+    playClick();
+    setFaceTapped(true);
+    setFaceParticles(Array.from({ length: 6 }, (_, index) => ({
+      id: `${Date.now()}-${index}`,
+      angle: (360 / 6) * index + (Math.random() * 24 - 12),
+      distance: 35 + Math.random() * 28,
+      size: 5 + Math.random() * 5,
+    })));
+
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(8);
+      } catch {
+        // Haptics are optional.
+      }
+    }
+
+    if (faceTimerRef.current) window.clearTimeout(faceTimerRef.current);
+    faceTimerRef.current = window.setTimeout(() => {
+      setFaceTapped(false);
+      setFaceParticles([]);
+    }, 500);
+  };
 
   const handleStart = (e) => {
     e.stopPropagation();
@@ -214,7 +265,7 @@ export function MainMenu({
               className={`lucky-wheel-sub-timer${isWheelReady ? ' is-ready' : ''}`}
               id="lucky-wheel-timer-badge"
             >
-              {isWheelReady ? 'FREE' : formatWheelTimer(wheelCooldownRemaining)}
+              {isWheelReady ? 'SPIN!' : formatWheelTimer(wheelCooldownRemaining)}
             </span>
           </div>
         </div>
@@ -368,7 +419,27 @@ export function MainMenu({
 
         <section className="main-menu-art" aria-label="Your bird pilot">
           <div className="main-menu-bird-podium" aria-hidden="true" />
-          <img className="main-menu-bird" src={birdImage} alt="Your bird pilot, ready for takeoff" />
+          <button
+            ref={faceRef}
+            type="button"
+            className={`main-menu-face-button${faceTapped ? ' is-tapped' : ''}${faceWiggling ? ' is-wiggling' : ''}`}
+            onClick={handleFaceTap}
+            aria-label="Tap your bird pilot"
+          >
+            <img className="main-menu-bird" src={birdImage} alt="" aria-hidden="true" />
+            {faceParticles.map((particle) => (
+              <span
+                key={particle.id}
+                className="main-menu-face-particle"
+                style={{
+                  '--particle-angle': `${particle.angle}deg`,
+                  '--particle-distance': `${particle.distance}px`,
+                  '--particle-size': `${particle.size}px`,
+                }}
+                aria-hidden="true"
+              />
+            ))}
+          </button>
         </section>
       </main>
 

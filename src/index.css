@@ -2944,6 +2944,84 @@ button:disabled {
   animation: menu-face-float 7s var(--ease-in-out) 700ms infinite;
 }
 
+.main-menu-face-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 490px);
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transform-origin: center;
+}
+
+.main-menu-face-button.is-tapped {
+  animation: face-tap-squash 500ms var(--ease-spring);
+}
+
+.main-menu-face-button.is-wiggling {
+  animation: face-random-wiggle 500ms var(--ease-out);
+}
+
+@keyframes face-tap-squash {
+  0% { transform: scale(1, 1); }
+  30% { transform: scale(1.15, 0.85); }
+  60% { transform: scale(0.92, 1.08); }
+  100% { transform: scale(1, 1); }
+}
+
+@keyframes face-random-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  50% { transform: rotate(7deg); }
+  75% { transform: rotate(-4deg); }
+}
+
+.main-menu-face-particle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  border-radius: 50%;
+  background: var(--lime-400);
+  box-shadow: 0 0 10px rgba(182, 242, 58, 0.65);
+  pointer-events: none;
+  animation: face-particle-burst 500ms var(--ease-out) forwards;
+}
+
+@keyframes face-particle-burst {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(var(--particle-distance)) scale(0.2);
+  }
+}
+
+.main-menu-lucky-wheel-btn.is-ready {
+  animation: lucky-ready-wiggle 3s var(--ease-in-out) infinite, luckyBtnPulse 2.4s ease-in-out infinite;
+}
+
+.lucky-wheel-sub-timer.is-ready {
+  color: var(--ink);
+  background: var(--gold);
+  border-color: #ffe58a;
+}
+
+@keyframes lucky-ready-wiggle {
+  0%, 78%, 100% { transform: rotate(0deg) scale(1); }
+  82% { transform: rotate(-12deg) scale(1.04); }
+  88% { transform: rotate(10deg) scale(1.04); }
+  94% { transform: rotate(-6deg) scale(1.02); }
+}
+
 .menu-active .main-menu-art {
   animation: menu-face-enter 500ms var(--ease-spring) 100ms both;
 }
