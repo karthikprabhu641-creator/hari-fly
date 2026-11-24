@@ -9,6 +9,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { GAMEPLAY_MUSIC_MODES, SONG_UNLOCK_STORAGE_KEY } from '../config/audioConfig';
 import { safeStorage } from '../utils/storage';
+import { ClayIcon } from './ClayIcon';
 import coinImage from '../../image/coin.png';
 
 /** Returns true if a song is unlocked (free or already purchased). */
@@ -190,7 +191,7 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                 role="button"
                 tabIndex={0}
               >
-                <div className="music-mode-card-icon">★</div>
+                <div className="music-mode-card-icon"><ClayIcon name="star" size={18} /></div>
                 <div className="music-mode-card-info">
                   <h3>Favourite Song</h3>
                   <p>Always play your chosen favorite song on every flight</p>
@@ -206,7 +207,7 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                 role="button"
                 tabIndex={0}
               >
-                <div className="music-mode-card-icon">🔀</div>
+                <div className="music-mode-card-icon"><ClayIcon name="shuffle" size={18} /></div>
                 <div className="music-mode-card-info">
                   <h3>Play All Songs</h3>
                   <p>Rotate and shuffle through all unlocked songs during gameplay</p>
@@ -260,8 +261,8 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                         <span className="song-card-title">{track.name}</span>
                         <span className="song-card-artist">
                           {isUnlocked
-                            ? (track.price === 0 ? '🎁 Free' : track.artist || 'Gameplay Music')
-                            : `🔒 Locked · ${track.price} coins`}
+                            ? (track.price === 0 ? 'Free' : track.artist || 'Gameplay Music')
+                            : `Locked · ${track.price} coins`}
                         </span>
                       </div>
                     </div>
@@ -277,9 +278,9 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                             aria-label={isPreviewing ? `Pause ${track.name}` : `Preview ${track.name}`}
                           >
                             {isPreviewing ? (
-                              <><span className="pause-icon">⏸</span><span>PLAYING</span></>
+                              <><span className="pause-icon"><ClayIcon name="pause" size={14} /></span><span>PLAYING</span></>
                             ) : (
-                              <><span className="play-icon">▶</span><span>PREVIEW</span></>
+                              <><span className="play-icon"><ClayIcon name="play" size={14} /></span><span>PREVIEW</span></>
                             )}
                           </button>
 
@@ -289,7 +290,7 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                             className={`song-fav-btn${isFavorite ? ' is-active' : ''}`}
                             onClick={(e) => { e.stopPropagation(); handleSelectFavorite(track); }}
                           >
-                            {isFavorite ? '★ FAVOURITE' : 'SET FAVOURITE'}
+                            {isFavorite ? <><ClayIcon name="star" size={12} /> FAVOURITE</> : 'SET FAVOURITE'}
                           </button>
                         </>
                       ) : (
@@ -331,9 +332,9 @@ export function SongSelectionModal({ onClose, coins = 0, onSpendCoins }) {
                       className={`gameover-song-chip${isSelected ? ' is-selected' : ''}`}
                       onClick={() => handleSelectGameOverTrack(track.id)}
                     >
-                      <span className="chip-icon">💀</span>
+                      <span className="chip-icon"><ClayIcon name="skull" size={18} /></span>
                       <span className="chip-name">{track.name}</span>
-                      {isSelected && <span className="chip-check">✓</span>}
+                      {isSelected && <span className="chip-check"><ClayIcon name="check" size={12} /></span>}
                     </button>
                   );
                 })}

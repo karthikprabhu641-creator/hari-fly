@@ -8,6 +8,7 @@ import {
   getMissions,
 } from '../services/localProgressService';
 import { useAudio } from '../hooks/useAudio';
+import { ClayIcon } from './ClayIcon';
 
 export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onClose }) {
   const { playClick } = useAudio();
@@ -39,7 +40,7 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
   return (
     <div className="modal-backdrop local-progress-backdrop" onClick={handleClose}>
       <div className="local-progress-card" role="dialog" aria-modal="true" aria-label={mode === 'skins' ? 'Skins' : 'Daily missions'} onClick={(event) => event.stopPropagation()}>
-        <button type="button" className="settings-close-btn" onClick={handleClose} aria-label={`Close ${mode}`}>✕</button>
+        <button type="button" className="settings-close-btn" onClick={handleClose} aria-label={`Close ${mode}`}><ClayIcon name="close" size={18} /></button>
         <h2 className="settings-title">{mode === 'skins' ? 'SKINS' : 'MISSIONS'}</h2>
         {mode === 'skins' ? (
           <div className="skin-grid">

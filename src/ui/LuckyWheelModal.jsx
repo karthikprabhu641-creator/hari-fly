@@ -12,6 +12,7 @@ import coinImage from '../../image/coin.png';
 import keyImage from '../../image/key.png';
 import { WalletDisplay } from './WalletDisplay';
 import { vibrate } from '../utils/haptics';
+import { ClayIcon } from './ClayIcon';
 
 export const LUCKY_WHEEL_COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 hours
 export const LUCKY_WHEEL_STORAGE_KEY = 'hari_fly_lucky_wheel_last_spin';
@@ -364,7 +365,7 @@ export function LuckyWheelModal({ onClose, onClaimReward, coins = 0, keys = 0 })
             ) : (
               <div className="lucky-wheel-cooldown-panel">
                 <div className="cooldown-timer-badge">
-                  <span className="cooldown-icon">⏳</span>
+                  <span className="cooldown-icon"><ClayIcon name="clock" size={18} /></span>
                   <div className="cooldown-digits-wrap">
                     <span className="cooldown-label">NEXT FREE SPIN IN</span>
                     <strong className="cooldown-timer">{formatCooldown(cooldownRemaining)}</strong>

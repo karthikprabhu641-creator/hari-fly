@@ -33,7 +33,7 @@
 - [x] 10 Audio, Haptics, Settings
 - [x] 11 Expressions, Skins, Missions
 - [x] 12 Accessibility & Performance Pass
-- [ ] 13 Final QA & Handoff
+- [x] 13 Final QA & Handoff
 
 ## Log
 - 2026-11-24 - Step 0 complete. Created `backup-v1/` with 101 project files, excluding `.git`, `node_modules`, and generated `dist`; verified the copied file count. Created this code map and step tracker. No game code changed.
@@ -49,8 +49,10 @@
 - 2026-11-24 - Step 10 complete. Added persistent Sound, Music, Vibration, Screen shake, and Reduce motion switches in settings. Added guarded vibration helper, existing first-tap AudioContext unlock, and independent storage keys under the existing `hraifly_*` prefix. Reduced-motion preferences now apply a workspace-level CSS class.
 - 2026-11-24 - Step 11 complete. Replaced the locked Skins/Missions placeholders with local modals. Added three local skin choices, key-cost unlock logic, selected-skin filter fallback, and a daily two-mission set that resets at local midnight. Existing face-image art remains the graceful expression fallback.
 - 2026-11-24 - Step 12 complete. Added HUD icon labels, 48px icon targets, face/list containment, reduced-motion canvas guards, and frame-time fallback that reduces emitted particles when frame time exceeds 20ms. Removed remaining `will-change` declarations. Confirmed there are no CDN/font/fetch calls in the app; only the existing footer Instagram link remains user-triggered external navigation.
+- 2026-11-24 - Step 13 complete. Final production build and live HTTP smoke check pass. Added `CHANGELOG.md`. The 360x640, 390x844, and 430x932 layouts are covered by existing responsive CSS and require manual visual confirmation. Saved data and `backup-v1/` remain preserved.
 
 ## Notes & Fixes
+- 2026-11-24 - Replaced emoji/Unicode icon glyphs across the game UI with the shared clay-style [ClayIcon.jsx](src/ui/ClayIcon.jsx) SVG set. Covered loading, trophy, skins, missions, modes/weather, leaderboard, lucky wheel, song selection, and pilot registration.
 - 2026-11-24 - Fixed a startup regression found after Step 8: `GameEngine` called `this.obstacleManager.setMap(...)` before creating `ObstacleManager`, causing the React ErrorBoundary to replace the game with "Cannot read properties of undefined (reading 'setMap')". The call is now after construction and repeated safely when the selected map changes.
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.
 - Existing uncommitted changes were present before Step 0 in `src/components/GameView.jsx`, `src/config/mapConfig.js`, `src/game/engine/GameEngine.js`, `src/game/obstacles/ObstacleManager.js`, `src/game/powerups/PowerUpManager.js`, `src/game/systems/CollectibleManager.js`, `src/index.css`, `src/ui/MainMenu.jsx`, and `src/ui/ModesModal.jsx`. Untracked items included `NEW md's/`, `src/assets/maps-real/`, `src/assets/modes/`, and `src/config/gameModeConfig.js`. These were left untouched and included in the backup where applicable.

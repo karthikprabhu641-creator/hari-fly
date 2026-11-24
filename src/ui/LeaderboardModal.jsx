@@ -8,6 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { fetchLeaderboard, getPilotUsername } from '../services/leaderboardService';
 import { MAP_LIST } from '../config/mapConfig';
+import { ClayIcon } from './ClayIcon';
 
 export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
   const { playClick } = useAudio();
@@ -123,12 +124,12 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
         <div className="leaderboard-barricade-banner">
           <div className="barricade-hazard-line" />
           <div className="barricade-banner-inner">
-            <span className="barricade-banner-icon" aria-hidden="true">🚧</span>
+            <span className="barricade-banner-icon" aria-hidden="true"><ClayIcon name="construction" size={18} /></span>
             <div className="barricade-banner-text">
               <span className="barricade-banner-heading">GLOBAL NETWORK • COMING SOON</span>
               <span className="barricade-banner-desc">Live cross-platform pilot servers under construction</span>
             </div>
-            <span className="barricade-banner-icon" aria-hidden="true">🚧</span>
+            <span className="barricade-banner-icon" aria-hidden="true"><ClayIcon name="construction" size={18} /></span>
           </div>
           <div className="barricade-hazard-line" />
         </div>
@@ -157,7 +158,7 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
         {/* User Status Bar */}
         <div className="leaderboard-my-status">
           <div className="my-status-left">
-            <span className="my-status-avatar">👨‍✈️</span>
+            <span className="my-status-avatar"><ClayIcon name="pilot" size={28} /></span>
             <div className="my-status-info">
               <span className="my-status-label">YOUR CALL-SIGN</span>
               <strong className="my-status-name">
@@ -209,26 +210,26 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
                   {/* Rank 2 */}
                   <div className={`podium-card podium-silver${top2?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
                     <div className="podium-badge">#2</div>
-                    <div className="podium-avatar">🥈</div>
+                    <div className="podium-avatar"><ClayIcon name="medal" size={30} /></div>
                     <div className="podium-name">{top2 ? top2.username : '---'}</div>
                     <div className="podium-score">{top2 ? `${top2.score} PTS` : '0 PTS'}</div>
                     {top2 && (
                       <span className="podium-tier-tag">
-                        {top2?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top2.mapId || 'Classic')}
+                        {top2?.username?.toLowerCase() === myUsername?.toLowerCase() ? <><ClayIcon name="star" size={12} /> YOU</> : (top2.mapId || 'Classic')}
                       </span>
                     )}
                   </div>
 
                   {/* Rank 1 */}
                   <div className={`podium-card podium-gold${top1?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
-                    <div className="podium-crown">👑</div>
+                    <div className="podium-crown"><ClayIcon name="crown" size={26} /></div>
                     <div className="podium-badge">#1</div>
-                    <div className="podium-avatar">🥇</div>
+                    <div className="podium-avatar"><ClayIcon name="medal" size={34} /></div>
                     <div className="podium-name">{top1 ? top1.username : '---'}</div>
                     <div className="podium-score">{top1 ? `${top1.score} PTS` : '0 PTS'}</div>
                     {top1 && (
                       <span className="podium-tier-tag">
-                        {top1?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : 'Grand Champion'}
+                        {top1?.username?.toLowerCase() === myUsername?.toLowerCase() ? <><ClayIcon name="star" size={12} /> YOU</> : 'Grand Champion'}
                       </span>
                     )}
                   </div>
@@ -236,12 +237,12 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
                   {/* Rank 3 */}
                   <div className={`podium-card podium-bronze${top3?.username?.toLowerCase() === myUsername?.toLowerCase() ? ' is-me' : ''}`}>
                     <div className="podium-badge">#3</div>
-                    <div className="podium-avatar">🥉</div>
+                    <div className="podium-avatar"><ClayIcon name="medal" size={30} /></div>
                     <div className="podium-name">{top3 ? top3.username : '---'}</div>
                     <div className="podium-score">{top3 ? `${top3.score} PTS` : '0 PTS'}</div>
                     {top3 && (
                       <span className="podium-tier-tag">
-                        {top3?.username?.toLowerCase() === myUsername?.toLowerCase() ? '★ YOU' : (top3.mapId || 'Classic')}
+                        {top3?.username?.toLowerCase() === myUsername?.toLowerCase() ? <><ClayIcon name="star" size={12} /> YOU</> : (top3.mapId || 'Classic')}
                       </span>
                     )}
                   </div>
@@ -290,13 +291,13 @@ export function LeaderboardModal({ onClose, onOpenPilotEdit }) {
                   <div className="leaderboard-empty-state">
                     {isOffline ? (
                       <>
-                        <span className="empty-icon">🔌</span>
+                        <span className="empty-icon"><ClayIcon name="plug" size={24} /></span>
                         <h3>Connection Error</h3>
                         <p>Could not reach the leaderboard database.<br />Check your internet connection and try again.</p>
                       </>
                     ) : (
                       <>
-                        <span className="empty-icon">🚧</span>
+                        <span className="empty-icon"><ClayIcon name="construction" size={24} /></span>
                         <h3>Leaderboard Coming Soon</h3>
                         <p>No pilot records found yet.<br />Fly a flight session to record your call-sign and personal best!</p>
                       </>

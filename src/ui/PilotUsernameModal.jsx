@@ -1,13 +1,14 @@
 /**
  * Pilot Username / Call-sign Registration Modal
  * - First-time registration: FREE
- * - Changing an existing call-sign: costs 100 🗝️ keys
+ * - Changing an existing call-sign: costs 100 keys
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { getPilotUsername, setPilotUsername } from '../services/leaderboardService';
 import birdImage from '../../image/bird-transparent.png';
+import { ClayIcon } from './ClayIcon';
 
 const RENAME_KEY_COST = 100;
 
@@ -65,7 +66,7 @@ export function PilotUsernameModal({
     // If renaming an existing call-sign, deduct keys
     if (isRename) {
       if (!canAffordRename) {
-        setError(`You need ${RENAME_KEY_COST} 🗝️ Keys to change your call-sign. You only have ${keys}.`);
+        setError(`You need ${RENAME_KEY_COST} keys to change your call-sign. You only have ${keys}.`);
         return;
       }
       if (typeof onSpendKeys === 'function') {
@@ -100,7 +101,7 @@ export function PilotUsernameModal({
       <div className="pilot-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="pilot-modal-avatar-frame">
           <img src={birdImage} alt="Pilot Bird" className="pilot-modal-avatar-img" />
-          <span className="pilot-modal-wings-icon">✈️</span>
+          <span className="pilot-modal-wings-icon"><ClayIcon name="plane" size={24} /></span>
         </div>
 
         <div className="pilot-modal-badge">
@@ -112,7 +113,7 @@ export function PilotUsernameModal({
         </h2>
         <p className="pilot-modal-subtitle">
           {isRename
-            ? 'Changing your call-sign costs 100 🗝️ Keys.'
+            ? 'Changing your call-sign costs 100 keys.'
             : 'Set your in-game pilot call-sign before you take off.'}
         </p>
 
@@ -120,19 +121,19 @@ export function PilotUsernameModal({
         {isRename && (
           <div className={`pilot-rename-cost-banner${canAffordRename ? '' : ' is-insufficient'}`}>
             <div className="rename-cost-row">
-              <span className="rename-cost-icon">🗝️</span>
+              <span className="rename-cost-icon"><ClayIcon name="key" size={22} /></span>
               <span className="rename-cost-label">RENAME COST</span>
               <span className="rename-cost-amount">{RENAME_KEY_COST} Keys</span>
             </div>
             <div className="rename-balance-row">
               <span className="rename-balance-label">YOUR BALANCE</span>
               <span className={`rename-balance-val${canAffordRename ? ' is-ok' : ' is-short'}`}>
-                {keys} Keys {canAffordRename ? '✓' : '✗'}
+                {keys} Keys {canAffordRename ? <ClayIcon name="check" size={14} /> : 'X'}
               </span>
             </div>
             {!canAffordRename && (
               <p className="rename-insufficient-note">
-                You need {RENAME_KEY_COST - keys} more 🗝️ Keys. Collect keys during gameplay!
+                You need {RENAME_KEY_COST - keys} more keys. Collect keys during gameplay!
               </p>
             )}
           </div>
@@ -161,7 +162,7 @@ export function PilotUsernameModal({
               onClick={handleRandomize}
               title="Generate Random Call-Sign"
             >
-              🎲
+              <ClayIcon name="dice" size={20} />
             </button>
           </div>
 
@@ -189,7 +190,7 @@ export function PilotUsernameModal({
             >
               {isRename ? (
                 <>
-                  <span>🗝️ SPEND {RENAME_KEY_COST} &amp; RENAME</span>
+                  <span><ClayIcon name="key" size={16} /> SPEND {RENAME_KEY_COST} &amp; RENAME</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                   </svg>

@@ -65,8 +65,8 @@ export function LoadingScreen({ onSkip }) {
       <img className="loading-bird" src={birdImage} alt="" />
       <div className="loading-copy" aria-live="polite">
         <p className="loading-message loading-message-prepare">PREPARING FOR TAKEOFF</p>
-        <p className="loading-message loading-message-ready">ENGINES ONLINE ✓</p>
-        <p className="loading-message loading-message-launch">READY TO FLY 🚀</p>
+        <p className="loading-message loading-message-ready">ENGINES ONLINE</p>
+        <p className="loading-message loading-message-launch">READY TO FLY</p>
       </div>
       <span className="loading-skip-hint">Tap to skip</span>
     </main>

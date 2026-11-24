@@ -25,6 +25,7 @@ import { isMobileDevice, isFullscreen, requestFullscreen, toggleFullscreen } fro
 import { vibrate } from '../utils/haptics';
 import { LocalProgressModal } from './LocalProgressModal';
 import { getSelectedSkin, SKINS } from '../services/localProgressService';
+import { ClayIcon } from './ClayIcon';
 
 function useAnimatedNumber(value) {
   const safeValue = Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : 0;
@@ -312,7 +313,7 @@ export function MainMenu({
 
           <div className="main-menu-best">
             <span className="best-label">
-              <span className="best-trophy-icon" aria-hidden="true">🏆</span>
+              <span className="best-trophy-icon" aria-hidden="true"><ClayIcon name="trophy" size={18} /></span>
               PERSONAL BEST
             </span>
             <strong id="main-menu-best-score" className="counter-value">{animatedBestScore}</strong>
@@ -338,7 +339,7 @@ export function MainMenu({
                   <span className="start-btn-flare" />
                 </span>
                 <span className="start-btn-text">START FLYING</span>
-                <span className="start-btn-chevron-trail" aria-hidden="true">»</span>
+                <span className="start-btn-chevron-trail" aria-hidden="true"><ClayIcon name="arrow" size={18} /></span>
               </span>
             </button>
 
@@ -360,7 +361,7 @@ export function MainMenu({
                   <span className="main-menu-modes-title">MODES</span>
                   <span className="main-menu-modes-current">{currentGameMode.name} · {currentMap.name}</span>
                 </span>
-                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true"><ClayIcon name="arrow" size={16} /></span>
               </button>
 
               {/* Soundtrack */}
@@ -382,7 +383,7 @@ export function MainMenu({
                     {gameplayMode === GAMEPLAY_MUSIC_MODES.PLAY_ALL ? 'Play All Songs' : (favoriteTrack?.name || 'Blue Eyes')}
                   </span>
                 </span>
-                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true"><ClayIcon name="arrow" size={16} /></span>
               </button>
 
               <button
@@ -391,12 +392,12 @@ export function MainMenu({
                 onClick={() => setShowLocalProgress('skins')}
                 aria-label="Open skins"
               >
-                <span className="main-menu-modes-icon main-menu-skins-icon" aria-hidden="true">★</span>
+                <span className="main-menu-modes-icon main-menu-skins-icon" aria-hidden="true"><ClayIcon name="star" size={20} /></span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">SKINS</span>
                   <span className="main-menu-modes-current">LOCAL SKINS</span>
                 </span>
-                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true"><ClayIcon name="arrow" size={16} /></span>
               </button>
 
               <button
@@ -405,12 +406,12 @@ export function MainMenu({
                 onClick={() => setShowLocalProgress('missions')}
                 aria-label="Open daily missions"
               >
-                <span className="main-menu-modes-icon main-menu-missions-icon" aria-hidden="true">✓</span>
+                <span className="main-menu-modes-icon main-menu-missions-icon" aria-hidden="true"><ClayIcon name="check" size={20} /></span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">MISSIONS</span>
                   <span className="main-menu-modes-current">DAILY SET</span>
                 </span>
-                <span className="main-menu-modes-arrow" aria-hidden="true">→</span>
+                <span className="main-menu-modes-arrow" aria-hidden="true"><ClayIcon name="arrow" size={16} /></span>
               </button>
             </div>
           </div>

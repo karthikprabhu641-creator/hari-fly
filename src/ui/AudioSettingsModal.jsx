@@ -8,6 +8,7 @@
 import React from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { audioManager } from '../audio/AudioManager';
+import { ClayIcon } from './ClayIcon';
 
 export function AudioSettingsModal({ onClose }) {
   const {
@@ -52,7 +53,7 @@ export function AudioSettingsModal({ onClose }) {
           type="button"
           aria-label="Close Settings"
         >
-          ✕
+          <ClayIcon name="close" size={18} />
         </button>
 
         <h2 className="settings-title">AUDIO</h2>
@@ -174,7 +175,7 @@ export function AudioSettingsModal({ onClose }) {
           type="button"
         >
           Done
-          <span className="settings-done-arrow">→</span>
+          <span className="settings-done-arrow"><ClayIcon name="arrow" size={16} /></span>
         </button>
       </div>
     </div>

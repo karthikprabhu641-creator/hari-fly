@@ -6,6 +6,7 @@
 
 import React, { useEffect } from 'react';
 import { useAudio } from '../hooks/useAudio';
+import { ClayIcon } from './ClayIcon';
 import { MAP_LIST } from '../config/mapConfig';
 import { GAME_MODES } from '../config/gameModeConfig';
 import { WalletDisplay } from './WalletDisplay';
@@ -108,7 +109,7 @@ export function ModesModal({
                       <img src={mode.preview} alt="" className="difficulty-mode-preview-img" />
                       <span className="difficulty-mode-preview-shade" />
                       <span className="mode-card-theme-tag">{mode.badge}</span>
-                      {isSelected && <span className="mode-card-badge-selected">✓ ACTIVE</span>}
+                      {isSelected && <span className="mode-card-badge-selected"><ClayIcon name="check" size={12} /> ACTIVE</span>}
                     </span>
                     <span className="mode-card-body">
                       <span className="mode-card-name">{mode.name}</span>
@@ -164,11 +165,11 @@ export function ModesModal({
                         <div className="mode-card-weather-tags">
                           {map.weather.map((w) => (
                             <span key={w} className="mode-weather-tag">
-                              {w === 'rain' && '🌧 Rain'}
-                              {w === 'snow' && '❄ Snow'}
-                              {w === 'wind' && '💨 Wind'}
-                              {w === 'fog' && '🌫 Fog'}
-                              {w === 'clouds' && '⛅ Clouds'}
+                              {w === 'rain' && <><ClayIcon name="rain" size={14} /> Rain</>}
+                              {w === 'snow' && <><ClayIcon name="snow" size={14} /> Snow</>}
+                              {w === 'wind' && <><ClayIcon name="wind" size={14} /> Wind</>}
+                              {w === 'fog' && <><ClayIcon name="fog" size={14} /> Fog</>}
+                              {w === 'clouds' && <><ClayIcon name="clouds" size={14} /> Clouds</>}
                             </span>
                           ))}
                         </div>
@@ -183,7 +184,7 @@ export function ModesModal({
                             handleSelect(map.id);
                           }}
                         >
-                          {isSelected ? '✓ ACTIVE' : 'SELECT MODE'}
+                          {isSelected ? <><ClayIcon name="check" size={14} /> ACTIVE</> : 'SELECT MODE'}
                         </button>
                       </div>
                     </div>

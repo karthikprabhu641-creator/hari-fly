@@ -91,6 +91,16 @@
   --safe-right: env(safe-area-inset-right, 0px);
 }
 
+.clay-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  overflow: visible;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.28));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* Reset & Mobile Prevention */
 *, *::before, *::after {
   box-sizing: border-box;
