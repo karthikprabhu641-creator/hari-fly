@@ -4,7 +4,7 @@
  * Displays final score, best score, new record celebration, and restart button.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import birdImage from '../../image/bird-transparent.png';
 import keyImage from '../../image/key.png';
@@ -12,6 +12,27 @@ import { WalletDisplay } from './WalletDisplay';
 
 export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0, nextContinueCost = 1, onContinue, onRestart, onGoToMenu }) {
   const { playClick } = useAudio();
+  const [displayScore, setDisplayScore] = useState(0);
+  const [displayBest, setDisplayBest] = useState(0);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      setDisplayScore(score);
+      setDisplayBest(bestScore);
+      return undefined;
+    }
+    const started = performance.now();
+    const frame = (now) => {
+      const progress = Math.min(1, (now - started) / 600);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayScore(Math.round(score * eased));
+      setDisplayBest(Math.round(bestScore * eased));
+      if (progress < 1) requestAnimationFrame(frame);
+    };
+    const rafId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafId);
+  }, [score, bestScore]);
 
   const handleRestart = (e) => {
     e.stopPropagation();
@@ -52,12 +73,12 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
         <div className="game-over-score-panel">
           <div className="game-over-score-main">
             <span className="game-over-score-label">YOUR SCORE</span>
-            <span className="game-over-score-value" id="game-over-score">{score}</span>
+            <span className="game-over-score-value" id="game-over-score">{displayScore}</span>
           </div>
 
           <div className="game-over-best-stat">
             <span className="game-over-score-label">BEST</span>
-            <span className="game-over-best-value" id="game-over-best-score">{bestScore}</span>
+            <span className={`game-over-best-value${isNewBest ? ' is-new-best' : ''}`} id="game-over-best-score">{displayBest}</span>
             {isNewBest && (
               <span className="game-over-new-best">NEW RECORD</span>
             )}
@@ -84,7 +105,7 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
           onClick={handleRestart}
           id="game-over-restart-btn"
         >
-          <span>FLY AGAIN</span>
+          <span>PLAY AGAIN</span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-2.97 2.17-5.43 5-5.91V5.07c-3.95.49-7 3.85-7 7.93 0 4.42 3.58 8 8 8v-4c-3.31 0-6-2.69-6-6z" />
           </svg>
@@ -95,7 +116,7 @@ export function GameOverModal({ score, bestScore, isNewBest, coins = 0, keys = 0
           onClick={handleMenu}
           id="game-over-menu-btn"
         >
-          RETURN TO MAIN MENU
+          HOME
         </button>
 
         <div className="game-over-divider" />

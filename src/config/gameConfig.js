@@ -59,8 +59,8 @@ export const GAME_CONFIG = {
 
   // Visual Effects & Particles
   VFX: {
-    SCREEN_SHAKE_DURATION: 0.35, // Seconds of shake on collision
-    SCREEN_SHAKE_INTENSITY: 12,  // Shake magnitude in px
+    SCREEN_SHAKE_DURATION: 0.25, // Seconds of shake on collision
+    SCREEN_SHAKE_INTENSITY: 8,   // Shake magnitude in px
     PARTICLE_POOL_SIZE: 80,
   },
 

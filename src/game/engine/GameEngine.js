@@ -177,6 +177,7 @@ export class GameEngine {
       }
 
       this.gameOverTime = performance.now();
+      this.deathFreezeUntil = this.gameOverTime + 80;
       this.powerUpManager.reset();
       this.player.kill();
       audioManager.playHit();
@@ -185,7 +186,11 @@ export class GameEngine {
       this.particleSystem.emitImpactBurst(data.point.x, data.point.y);
 
       this.fsm.transitionTo(GAME_STATE.GAME_OVER);
-      this.notifyUI();
+      if (this.gameOverUiTimer) window.clearTimeout(this.gameOverUiTimer);
+      this.gameOverUiTimer = window.setTimeout(() => {
+        this.gameOverUiTimer = null;
+        if (this.fsm.is(GAME_STATE.GAME_OVER)) this.notifyUI();
+      }, 500);
     });
 
     // 2. Flap VFX / Audio
@@ -283,6 +288,11 @@ export class GameEngine {
   }
 
   restart() {
+    if (this.gameOverUiTimer) {
+      window.clearTimeout(this.gameOverUiTimer);
+      this.gameOverUiTimer = null;
+    }
+    this.deathFreezeUntil = 0;
     // Complete reset of simulation without reloading webpage
     this.scoreSystem.reset();
     this.player.reset();
@@ -309,6 +319,11 @@ export class GameEngine {
 
   continueRun() {
     if (!this.fsm.is(GAME_STATE.GAME_OVER)) return false;
+    if (this.gameOverUiTimer) {
+      window.clearTimeout(this.gameOverUiTimer);
+      this.gameOverUiTimer = null;
+    }
+    this.deathFreezeUntil = 0;
     if (!this.collectibleManager.spendKeys(this.getContinueCost())) return false;
 
     this.continuesUsed += 1;
@@ -328,6 +343,11 @@ export class GameEngine {
   }
 
   goToMenu() {
+    if (this.gameOverUiTimer) {
+      window.clearTimeout(this.gameOverUiTimer);
+      this.gameOverUiTimer = null;
+    }
+    this.deathFreezeUntil = 0;
     // Keep all music silent while the main menu is visible.
     audioManager.pauseMusic();
 
@@ -422,6 +442,9 @@ export class GameEngine {
     }
 
     if (state === GAME_STATE.GAME_OVER) {
+      if (this.deathFreezeUntil && performance.now() < this.deathFreezeUntil) {
+        return;
+      }
       // Fall down to ground after collision if not already at ground
       if (this.player.y < this.collisionSystem.groundY - this.player.hitbox.radius) {
         this.player.velocity += this.physicsSystem.gravity * dt;
@@ -490,6 +513,10 @@ export class GameEngine {
   }
 
   destroy() {
+    if (this.gameOverUiTimer) {
+      window.clearTimeout(this.gameOverUiTimer);
+      this.gameOverUiTimer = null;
+    }
     this.detachCanvas();
     audioManager.pauseMusic();
     this.unsubscribers.forEach((unsub) => unsub());

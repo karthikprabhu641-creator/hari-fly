@@ -30,7 +30,7 @@ export class CanvasRenderer {
     this.shakeIntensity = intensity !== null ? intensity : GAME_CONFIG.VFX.SCREEN_SHAKE_INTENSITY;
     this.shakeDuration = duration !== null ? duration : GAME_CONFIG.VFX.SCREEN_SHAKE_DURATION;
     this.shakeTimer = this.shakeDuration;
-    this.flashAlpha = 0.45; // trigger red flash
+    this.flashAlpha = 0.25; // trigger red flash
   }
 
   updateVFX(dt) {
@@ -48,7 +48,7 @@ export class CanvasRenderer {
 
     // 2. Impact Flash decay
     if (this.flashAlpha > 0) {
-      this.flashAlpha = Math.max(0, this.flashAlpha - dt * 2.5);
+      this.flashAlpha = Math.max(0, this.flashAlpha - dt * 1.67);
     }
   }
 
@@ -89,6 +89,20 @@ export class CanvasRenderer {
     }
 
     // 9. Render Player
+    if (!player.isAlive) {
+      ctx.save();
+      ctx.fillStyle = '#ffd84d';
+      const starTime = performance.now() * 0.004;
+      for (let i = 0; i < 3; i += 1) {
+        const angle = starTime + i * Math.PI * 2 / 3;
+        const cx = player.x + Math.cos(angle) * 28;
+        const cy = player.y - 30 + Math.sin(angle) * 8;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
     this.playerRenderer.render(ctx, player);
     this.powerUpManager.renderPlayerEffects(ctx, player);
 

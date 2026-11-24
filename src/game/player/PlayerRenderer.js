@@ -31,7 +31,7 @@ export class PlayerRenderer {
     const image = assetManager.getImage(this.assetId);
 
     if (image) {
-      ctx.rotate(player.rotation);
+      ctx.rotate(player.isAlive ? player.rotation : player.rotation + player.dizzySpin);
       if (player.isFlapping) {
         ctx.scale(1.05, 0.95);
       }

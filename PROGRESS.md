@@ -29,7 +29,7 @@
 - [x] 6 Start Transition & Menu Pause
 - [x] 7 In-Game Juice: Player & HUD
 - [x] 8 World: Parallax, Snow, Wind
-- [ ] 9 Death Sequence & Game Over Panel
+- [x] 9 Death Sequence & Game Over Panel
 - [ ] 10 Audio, Haptics, Settings
 - [ ] 11 Expressions, Skins, Missions
 - [ ] 12 Accessibility & Performance Pass
@@ -45,6 +45,7 @@
 - 2026-11-24 - Step 6 complete. Added a 200ms menu fade, 400ms face move, 3-2-1-GO countdown, menu-loop pause class, and cleanup of start timers. The existing engine start behavior and physics remain unchanged.
 - 2026-11-24 - Step 7 complete. Added visual player tilt/squash support to image avatars and fallback birds, increased pooled flap trail puffs, kept particles within the existing pool, added score-pop feedback, CLOSE near-miss messaging, and milestone toast/confetti at 10/25/50. Physics, hitboxes, and obstacle logic remain unchanged.
 - 2026-11-24 - Step 8 complete. Added separate 0.2x/0.5x/0.8x parallax offsets, two snow particle layers, occasional wind gust strength for snow, snowfall ice obstacles, and per-map CSS theme variables. No collision or obstacle-speed values were changed.
+- 2026-11-24 - Step 9 complete. Added an 80ms death freeze, red flash, 8px/250ms screen shake, dizzy player spin/stars, 500ms delayed bottom-sheet reveal, 600ms score count-up, new-best gold burst, and renamed actions to PLAY AGAIN/HOME.
 
 ## Notes & Fixes
 - 2026-11-24 - Fixed a startup regression found after Step 8: `GameEngine` called `this.obstacleManager.setMap(...)` before creating `ObstacleManager`, causing the React ErrorBoundary to replace the game with "Cannot read properties of undefined (reading 'setMap')". The call is now after construction and repeated safely when the selected map changes.

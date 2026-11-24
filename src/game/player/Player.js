@@ -26,7 +26,9 @@ export class Player {
     // Visual animation states
     this.isFlapping = false;
     this.flapTimer = 0;
+    this.dizzySpin = 0;
     this.isAlive = true;
+    this.dizzySpin = 0;
   }
 
   flap() {
@@ -44,6 +46,9 @@ export class Player {
   }
 
   updateAnimation(dt) {
+    if (!this.isAlive) {
+      this.dizzySpin += dt * 8;
+    }
     if (this.flapTimer > 0) {
       this.flapTimer -= dt;
       if (this.flapTimer <= 0) {
