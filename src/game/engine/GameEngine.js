@@ -29,6 +29,7 @@ import { audioManager } from '../../audio/AudioManager';
 import { getSelectedMapId, saveSelectedMap } from '../../config/mapConfig';
 import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../config/gameModeConfig';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
+import { showToast } from '../../utils/toast';
 
 export class GameEngine {
   constructor() {
@@ -243,6 +244,15 @@ export class GameEngine {
 
   handleScoreTrigger(obstacle) {
     if (this.fsm.is(GAME_STATE.PLAYING)) {
+      const gapCenter = obstacle.gapTopY + obstacle.gapSize / 2;
+      const edgeDistance = Math.max(
+        obstacle.gapTopY - this.player.y,
+        this.player.y - (obstacle.gapTopY + obstacle.gapSize),
+        0
+      );
+      if (edgeDistance <= 80 && Math.abs(this.player.y - gapCenter) <= obstacle.gapSize * 0.5) {
+        showToast('CLOSE!');
+      }
       this.scoreSystem.increment();
       this.powerUpManager.onObstaclePassed(this.player.x, obstacle);
     }

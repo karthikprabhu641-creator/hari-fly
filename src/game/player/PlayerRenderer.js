@@ -31,8 +31,9 @@ export class PlayerRenderer {
     const image = assetManager.getImage(this.assetId);
 
     if (image) {
-      if (!player.isAlive) {
-        ctx.rotate(player.rotation);
+      ctx.rotate(player.rotation);
+      if (player.isFlapping) {
+        ctx.scale(1.05, 0.95);
       }
       this.renderImageAvatar(ctx, image, radius);
     } else {

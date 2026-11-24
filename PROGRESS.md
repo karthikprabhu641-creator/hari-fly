@@ -27,7 +27,7 @@
 - [x] 4 Press States, Counters, Toasts
 - [x] 5 Hero Interactions
 - [x] 6 Start Transition & Menu Pause
-- [ ] 7 In-Game Juice: Player & HUD
+- [x] 7 In-Game Juice: Player & HUD
 - [ ] 8 World: Parallax, Snow, Wind
 - [ ] 9 Death Sequence & Game Over Panel
 - [ ] 10 Audio, Haptics, Settings
@@ -43,6 +43,7 @@
 - 2026-11-24 - Step 4 complete. Added visible focus and pressed states, animated coin/key/personal-best counters with bump feedback, tabular-number styling, and a queueing top-center toast system that is ready to call via `showToast(text)`.
 - 2026-11-24 - Step 5 complete. Added a tappable hero face with squash/stretch, six temporary particles, click audio/haptic hook, random wiggle timers, and a wheel ready state showing `SPIN!` with gold pulse and periodic wiggle. All timers are cleaned on menu unmount.
 - 2026-11-24 - Step 6 complete. Added a 200ms menu fade, 400ms face move, 3-2-1-GO countdown, menu-loop pause class, and cleanup of start timers. The existing engine start behavior and physics remain unchanged.
+- 2026-11-24 - Step 7 complete. Added visual player tilt/squash support to image avatars and fallback birds, increased pooled flap trail puffs, kept particles within the existing pool, added score-pop feedback, CLOSE near-miss messaging, and milestone toast/confetti at 10/25/50. Physics, hitboxes, and obstacle logic remain unchanged.
 
 ## Notes & Fixes
 - The design document is `NEW md's/Hari.fly_design.md`; the prompt refers to it as `design.md`. Read the actual file when following steps.

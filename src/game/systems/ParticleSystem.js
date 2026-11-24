@@ -44,6 +44,7 @@ class Particle {
     this.x += this.vx * dt;
     this.y += this.vy * dt;
     this.alpha = 1 - this.life / this.maxLife;
+    this.size = Math.max(0.5, this.size * (1 - dt * 1.8));
   }
 
   render(ctx) {
@@ -77,7 +78,7 @@ export class ParticleSystem {
    * Emit soft cloud puff when player flaps
    */
   emitFlapPuff(x, y) {
-    const count = 4;
+    const count = 8;
     for (let i = 0; i < count; i++) {
       const p = this.getAvailableParticle();
       if (!p) break;
