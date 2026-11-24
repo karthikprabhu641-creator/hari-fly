@@ -227,51 +227,43 @@ export function MainMenu({
     <div className={`main-menu-screen menu-active${isStarting ? ' is-starting' : ''}`} id="main-menu-overlay">
       <header className="main-menu-topbar">
         <div className="main-menu-topbar-left">
-          <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />
-
-          {/* Lucky Wheel Entry with Timer below wheel */}
-          <div className="main-menu-lucky-wheel-wrapper">
-            <button
-              className={`main-menu-lucky-wheel-btn${isWheelReady ? ' is-ready' : ''}`}
-              onClick={handleOpenLuckyWheel}
-              id="main-menu-lucky-wheel-btn"
-              type="button"
-              aria-label={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel - Next spin in ${formatCooldown(wheelCooldownRemaining)}`}
-              title={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel (${formatCooldown(wheelCooldownRemaining)})`}
-            >
-              <span className="lucky-wheel-btn-icon-wrap" aria-hidden="true">
-                <svg viewBox="0 0 32 32" className="lucky-wheel-btn-svg">
-                  <g className="lucky-wheel-spinner">
-                    {/* Wheel Sectors with vibrant game colors */}
-                    <path d="M16 16 L16 3 A13 13 0 0 1 25.19 6.81 Z" fill="#f59e0b" />
-                    <path d="M16 16 L25.19 6.81 A13 13 0 0 1 29 16 Z" fill="#38bdf8" />
-                    <path d="M16 16 L29 16 A13 13 0 0 1 25.19 25.19 Z" fill="#ec4899" />
-                    <path d="M16 16 L25.19 25.19 A13 13 0 0 1 16 29 Z" fill="#22c55e" />
-                    <path d="M16 16 L16 29 A13 13 0 0 1 6.81 25.19 Z" fill="#a855f7" />
-                    <path d="M16 16 L6.81 25.19 A13 13 0 0 1 3 16 Z" fill="#facc15" />
-                    <path d="M16 16 L3 16 A13 13 0 0 1 6.81 6.81 Z" fill="#06b6d4" />
-                    <path d="M16 16 L6.81 6.81 A13 13 0 0 1 16 3 Z" fill="#ef4444" />
-                    {/* Spoke divider lines */}
-                    <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
-                    <path d="M16 3v26M3 16h26M6.81 6.81l18.38 18.38M6.81 25.19L25.19 6.81" stroke="rgba(15,23,42,0.6)" strokeWidth="0.8" />
-                    {/* Outer rim */}
-                    <circle cx="16" cy="16" r="13.2" fill="none" stroke="#facc15" strokeWidth="1.6" />
-                    {/* Center hub */}
-                    <circle cx="16" cy="16" r="4.2" fill="#0f172a" stroke="#facc15" strokeWidth="1.4" />
-                    <circle cx="16" cy="16" r="1.8" fill="#facc15" />
-                  </g>
-                  {/* Pointer indicator at top (pointing down) */}
-                  <polygon points="16,1 13.6,5.2 18.4,5.2" fill="#facc15" stroke="#78350f" strokeWidth="0.6" />
-                </svg>
-                {isWheelReady && <span className="lucky-wheel-pulse-dot" />}
+          <div className="main-menu-mobile-hud">
+            <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />
+            <div className="main-menu-lucky-wheel-wrapper">
+              <button
+                className={`main-menu-lucky-wheel-btn${isWheelReady ? ' is-ready' : ''}`}
+                onClick={handleOpenLuckyWheel}
+                id="main-menu-lucky-wheel-btn"
+                type="button"
+                aria-label={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel - Next spin in ${formatCooldown(wheelCooldownRemaining)}`}
+                title={isWheelReady ? 'Lucky Wheel - Free Spin Ready!' : `Lucky Wheel (${formatCooldown(wheelCooldownRemaining)})`}
+              >
+                <span className="lucky-wheel-btn-icon-wrap" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" className="lucky-wheel-btn-svg">
+                    <g className="lucky-wheel-spinner">
+                      <path d="M16 16 L16 3 A13 13 0 0 1 25.19 6.81 Z" fill="#f59e0b" />
+                      <path d="M16 16 L25.19 6.81 A13 13 0 0 1 29 16 Z" fill="#38bdf8" />
+                      <path d="M16 16 L29 16 A13 13 0 0 1 25.19 25.19 Z" fill="#ec4899" />
+                      <path d="M16 16 L25.19 25.19 A13 13 0 0 1 16 29 Z" fill="#22c55e" />
+                      <path d="M16 16 L16 29 A13 13 0 0 1 6.81 25.19 Z" fill="#a855f7" />
+                      <path d="M16 16 L6.81 25.19 A13 13 0 0 1 3 16 Z" fill="#facc15" />
+                      <path d="M16 16 L3 16 A13 13 0 0 1 6.81 6.81 Z" fill="#06b6d4" />
+                      <path d="M16 16 L6.81 6.81 A13 13 0 0 1 16 3 Z" fill="#ef4444" />
+                      <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
+                      <path d="M16 3v26M3 16h26M6.81 6.81l18.38 18.38M6.81 25.19L25.19 6.81" stroke="rgba(15,23,42,0.6)" strokeWidth="0.8" />
+                      <circle cx="16" cy="16" r="13.2" fill="none" stroke="#facc15" strokeWidth="1.6" />
+                      <circle cx="16" cy="16" r="4.2" fill="#0f172a" stroke="#facc15" strokeWidth="1.4" />
+                      <circle cx="16" cy="16" r="1.8" fill="#facc15" />
+                    </g>
+                    <polygon points="16,1 13.6,5.2 18.4,5.2" fill="#facc15" stroke="#78350f" strokeWidth="0.6" />
+                  </svg>
+                  {isWheelReady && <span className="lucky-wheel-pulse-dot" />}
+                </span>
+              </button>
+              <span className={`lucky-wheel-sub-timer${isWheelReady ? ' is-ready' : ''}`} id="lucky-wheel-timer-badge">
+                {isWheelReady ? 'SPIN!' : formatWheelTimer(wheelCooldownRemaining)}
               </span>
-            </button>
-            <span
-              className={`lucky-wheel-sub-timer${isWheelReady ? ' is-ready' : ''}`}
-              id="lucky-wheel-timer-badge"
-            >
-              {isWheelReady ? 'SPIN!' : formatWheelTimer(wheelCooldownRemaining)}
-            </span>
+            </div>
           </div>
         </div>
 
@@ -387,9 +379,7 @@ export function MainMenu({
                 aria-label={`Open maps. Currently selected: ${currentMap.name}`}
               >
                 <span className="main-menu-modes-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                  </svg>
+                  <ClayIcon name="globe" size={20} />
                 </span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">MODES</span>
@@ -407,9 +397,7 @@ export function MainMenu({
                 aria-label="Open Soundtrack and Song Selection Menu"
               >
                 <span className="main-menu-modes-icon main-menu-music-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                  </svg>
+                  <ClayIcon name="music" size={20} />
                 </span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">SOUNDTRACK</span>
@@ -450,7 +438,6 @@ export function MainMenu({
             </div>
           </div>
 
-          <p className="main-menu-controls"><kbd>SPACE</kbd><span>or tap anywhere to flap</span></p>
         </section>
 
         <section className="main-menu-art" aria-label="Your bird pilot">

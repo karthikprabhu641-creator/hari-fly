@@ -12,19 +12,12 @@ export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpen
   const { isMuted, toggleMute, playClick } = useAudio();
   const [isFullscreenActive, setIsFullscreenActive] = useState(() => isFullscreen());
   const [scorePopped, setScorePopped] = useState(false);
-  const [milestone, setMilestone] = useState('');
   const previousScoreRef = useRef(score);
 
   useEffect(() => {
     if (score === previousScoreRef.current) return;
     previousScoreRef.current = score;
     setScorePopped(true);
-    if ([10, 25, 50].includes(score)) {
-      const label = score === 10 ? 'NICE!' : score === 25 ? 'WOW!' : 'LEGEND!';
-      setMilestone(label);
-      const timer = window.setTimeout(() => setMilestone(''), 1800);
-      return () => window.clearTimeout(timer);
-    }
     const timer = window.setTimeout(() => setScorePopped(false), 280);
     return () => window.clearTimeout(timer);
   }, [score]);
@@ -128,23 +121,6 @@ export function HUD({ score, powerUps = [], coins = 0, keys = 0, onPause, onOpen
       <div className={`hud-score-badge${scorePopped ? ' is-popped' : ''}`}>
         <span className="hud-score-number" key={score}>{score}</span>
       </div>
-      {milestone && (
-        <div className="milestone-toast" role="status" aria-live="polite">
-          {milestone}
-          <span className="milestone-confetti" aria-hidden="true">
-            {Array.from({ length: 18 }, (_, index) => (
-              <i
-                key={index}
-                style={{
-                  '--confetti-x': `${((index * 47) % 180) - 90}px`,
-                  '--confetti-delay': `${(index % 6) * 35}ms`,
-                  '--confetti-color': ['#b6f23a', '#ffc21a', '#2bb5f0', '#ff5fa2'][index % 4],
-                }}
-              />
-            ))}
-          </span>
-        </div>
-      )}
 
       {/* Pause Button */}
       <div className="hud-controls">

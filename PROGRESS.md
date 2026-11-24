@@ -52,6 +52,10 @@
 - 2026-11-24 - Step 13 complete. Final production build and live HTTP smoke check pass. Added `CHANGELOG.md`. The 360x640, 390x844, and 430x932 layouts are covered by existing responsive CSS and require manual visual confirmation. Saved data and `backup-v1/` remain preserved.
 
 ## Notes & Fixes
+- 2026-11-24 - Removed the in-game CLOSE and NICE milestone overlays. Environment transitions now occur every 20 scored pipes: morning at 0/60/120, evening/sunset at 20/80, and night at 40/100.
+- 2026-11-24 - On mobile, positioned the lucky wheel below the coin wallet icon in the main-menu top-left cluster. This rule is media-bound to 768px and leaves the desktop/laptop topbar unchanged.
+- 2026-11-24 - Removed the main-menu "SPACE / tap anywhere to flap" hint shown below the feature cards.
+- 2026-11-24 - Redesigned the mobile Modes/Soundtrack/Skins/Missions block as a stable 2×2 compact grid. Added fixed card heights, 38px premium icon tiles, truncated secondary text, and replaced the remaining card SVGs with clay-style globe/music icons.
 - 2026-11-24 - Reduced the difficulty segmented control to a compact 280px desktop / 260px mobile size. Added a sliding white indicator with spring easing for Normal, Hard, and Extreme selection.
 - 2026-11-24 - Removed game-difficulty cards from the Maps modal and added a centered Normal/Hard/Extreme segmented button directly below START FLYING. Updated the extreme mode label from "Hari'special" to "Extreme" and made the Modes card show only the selected map.
 - 2026-11-24 - Separated difficulty from the Maps section. Added a centered Normal/Hard/Extreme segmented control directly below START FLYING, renamed Hari'special to Extreme, and removed difficulty cards from the map modal.

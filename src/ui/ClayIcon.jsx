@@ -62,6 +62,17 @@ const icons = {
   pause: <path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" />,
   play: <path d="m7 4 12 8-12 8V4Z" />,
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />,
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" fill="none" stroke="var(--bg-0)" strokeWidth="1.3" opacity=".8" />
+    </>
+  ),
+  music: (
+    <>
+      <path d="M9 18.5a3.5 3.5 0 1 1-2-3.16V6l10-2v11.5a3.5 3.5 0 1 1-2-3.16V8L9 9.5v9Z" />
+    </>
+  ),
   rain: (
     <>
       <path d="M7 10a5 5 0 0 1 9.7-1.7A4 4 0 0 1 17 16H7a3.5 3.5 0 0 1 0-7Z" />

@@ -11,9 +11,12 @@ export const ENVIRONMENTS = {
 
 export const ENVIRONMENT_THRESHOLDS = [
   { score: 0, environment: ENVIRONMENTS.MORNING },
-  { score: 50, environment: ENVIRONMENTS.NIGHT },
-  { score: 100, environment: ENVIRONMENTS.SUNSET },
-  { score: 150, environment: ENVIRONMENTS.MORNING },
+  { score: 20, environment: ENVIRONMENTS.SUNSET },
+  { score: 40, environment: ENVIRONMENTS.NIGHT },
+  { score: 60, environment: ENVIRONMENTS.MORNING },
+  { score: 80, environment: ENVIRONMENTS.SUNSET },
+  { score: 100, environment: ENVIRONMENTS.NIGHT },
+  { score: 120, environment: ENVIRONMENTS.MORNING },
 ];
 
 export function getEnvironmentForScore(score) {
