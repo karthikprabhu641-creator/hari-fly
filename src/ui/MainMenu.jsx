@@ -69,6 +69,7 @@ export function MainMenu({
   bestScore,
   coins,
   keys,
+  isStarting = false,
   selectedMapId,
   selectedGameModeId,
   onSelectMap,
@@ -219,7 +220,7 @@ export function MainMenu({
   const currentGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
 
   return (
-    <div className="main-menu-screen menu-active" id="main-menu-overlay">
+    <div className={`main-menu-screen menu-active${isStarting ? ' is-starting' : ''}`} id="main-menu-overlay">
       <header className="main-menu-topbar">
         <div className="main-menu-topbar-left">
           <WalletDisplay coins={coins} keys={keys} className="main-menu-wallet" />

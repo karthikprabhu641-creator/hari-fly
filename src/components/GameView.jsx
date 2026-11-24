@@ -25,6 +25,42 @@ export function GameView() {
 
   // Audio settings modal state
   const [showSettings, setShowSettings] = useState(false);
+  const [startCountdown, setStartCountdown] = useState(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const startTimersRef = React.useRef([]);
+
+  useEffect(() => () => {
+    startTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
+  }, []);
+
+  const handleStartSequence = () => {
+    if (isStarting) return;
+
+    startTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
+    startTimersRef.current = [];
+    setIsStarting(true);
+    setStartCountdown(null);
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const countdownDelay = reducedMotion ? 80 : 600;
+    const numberDuration = reducedMotion ? 120 : 650;
+
+    const schedule = (delay, action) => {
+      const timerId = window.setTimeout(action, delay);
+      startTimersRef.current.push(timerId);
+      return timerId;
+    };
+
+    schedule(countdownDelay, () => setStartCountdown('3'));
+    schedule(countdownDelay + numberDuration, () => setStartCountdown('2'));
+    schedule(countdownDelay + numberDuration * 2, () => setStartCountdown('1'));
+    schedule(countdownDelay + numberDuration * 3, () => setStartCountdown('GO'));
+    schedule(countdownDelay + numberDuration * 3 + (reducedMotion ? 120 : 400), () => {
+      setStartCountdown(null);
+      setIsStarting(false);
+      engine.handleFlapInput();
+    });
+  };
 
   // Mobile automatic fullscreen on first interaction
   useEffect(() => {
@@ -54,6 +90,11 @@ export function GameView() {
       <ToastViewport />
       {/* 2D Canvas Gameplay Renderer — always present */}
       <GameCanvas engine={engine} />
+      {startCountdown && (
+        <div className="start-countdown" role="status" aria-live="assertive">
+          <span key={startCountdown}>{startCountdown}</span>
+        </div>
+      )}
 
       {/* Cinematic Flight Intro — shown during LOADING state */}
       {gameState === 'LOADING' && (
@@ -81,6 +122,7 @@ export function GameView() {
       {/* Main Menu Modal */}
       {gameState === 'MAIN_MENU' && (
       <MainMenu
+          isStarting={isStarting}
           bestScore={bestScore}
           coins={coins}
           keys={keys}
@@ -88,7 +130,7 @@ export function GameView() {
           selectedGameModeId={selectedGameModeId}
           onSelectMap={(mapId) => engine.setMap(mapId)}
           onSelectGameMode={(modeId) => engine.setGameMode(modeId)}
-          onStart={() => engine.handleFlapInput()}
+          onStart={handleStartSequence}
           onOpenSettings={() => setShowSettings(true)}
           onClaimReward={(reward) => engine.claimLuckyReward(reward)}
           onSpendCoins={(amount) => engine.spendCoins(amount)}

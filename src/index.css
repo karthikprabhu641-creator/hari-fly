@@ -1321,6 +1321,61 @@ button:disabled {
   touch-action: pan-y;
 }
 
+.main-menu-screen.is-starting {
+  pointer-events: none;
+  animation: menu-start-fade 200ms var(--ease-out) both;
+}
+
+.main-menu-screen.is-starting *,
+.main-menu-screen.is-starting *::before,
+.main-menu-screen.is-starting *::after {
+  animation-play-state: paused !important;
+}
+
+.main-menu-screen.is-starting .main-menu-art {
+  animation: menu-face-start-position 400ms var(--ease-snap) 200ms both;
+}
+
+@keyframes menu-start-fade {
+  to { opacity: 0; transform: scale(1.02); }
+}
+
+@keyframes menu-face-start-position {
+  to {
+    transform: translate(-18vw, 18vh) scale(0.72);
+  }
+}
+
+.start-countdown {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-fx-overlay);
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  background: rgba(7, 20, 26, 0.12);
+  color: var(--lime-400);
+  font-family: var(--font-display);
+  font-size: clamp(96px, 28vw, 180px);
+  font-weight: 800;
+  line-height: 1;
+  text-shadow:
+    0 8px 0 rgba(95, 168, 17, 0.45),
+    0 18px 40px rgba(143, 224, 31, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.start-countdown span {
+  display: block;
+  animation: countdown-pop 650ms var(--ease-spring) both;
+}
+
+@keyframes countdown-pop {
+  0% { opacity: 0; transform: scale(0.55); }
+  30% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 .main-menu-topbar,
 .main-menu-hero,
 .main-menu-footer {
