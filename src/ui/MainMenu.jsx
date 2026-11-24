@@ -218,7 +218,10 @@ export function MainMenu({
   const handleCloseSongSelection = () => setShowSongSelection(false);
 
   const currentMap = MAP_LIST.find((map) => map.id === selectedMapId) || MAP_LIST[0];
-  const currentGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
+  const handleSelectDifficulty = (modeId) => {
+    playClick();
+    onSelectGameMode(modeId);
+  };
 
   return (
     <div className={`main-menu-screen menu-active${isStarting ? ' is-starting' : ''}`} id="main-menu-overlay">
@@ -343,6 +346,25 @@ export function MainMenu({
               </span>
             </button>
 
+            <div className="main-menu-difficulty" role="group" aria-label="Game difficulty">
+              {GAME_MODES.map((mode) => {
+                const isSelected = mode.id === selectedGameModeId;
+                const label = mode.id === 'hari-special' ? 'EXTREME' : mode.name.toUpperCase();
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    className={`main-menu-difficulty-btn${isSelected ? ' is-active' : ''}`}
+                    onClick={() => handleSelectDifficulty(mode.id)}
+                    aria-pressed={isSelected}
+                    aria-label={`Select ${label.toLowerCase()} difficulty`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="main-menu-card-grid" aria-label="Game features">
               {/* Modes */}
               <button
@@ -350,7 +372,7 @@ export function MainMenu({
                 onClick={handleOpenModes}
                 id="main-menu-modes-btn"
                 type="button"
-                aria-label={`Open game modes. Currently selected: ${currentGameMode.name}, ${currentMap.name}`}
+                aria-label={`Open maps. Currently selected: ${currentMap.name}`}
               >
                 <span className="main-menu-modes-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24">
@@ -359,7 +381,7 @@ export function MainMenu({
                 </span>
                 <span className="main-menu-modes-label-group">
                   <span className="main-menu-modes-title">MODES</span>
-                  <span className="main-menu-modes-current">{currentGameMode.name} · {currentMap.name}</span>
+                  <span className="main-menu-modes-current">{currentMap.name}</span>
                 </span>
                 <span className="main-menu-modes-arrow" aria-hidden="true"><ClayIcon name="arrow" size={16} /></span>
               </button>
@@ -467,9 +489,7 @@ export function MainMenu({
       {showModes && (
         <ModesModal
           selectedMapId={selectedMapId}
-          selectedGameModeId={selectedGameModeId}
           onSelectMap={onSelectMap}
-          onSelectGameMode={onSelectGameMode}
           onStart={onStart}
           onClose={handleCloseModes}
           coins={coins}

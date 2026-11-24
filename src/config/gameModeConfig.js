@@ -29,7 +29,7 @@ export const GAME_MODES = [
   },
   {
     id: 'hari-special',
-    name: "Hari'special",
+    name: 'Extreme',
     description: 'Extreme mode: the fastest obstacles and tightest gaps.',
     badge: 'EXTREME',
     preview: extremePreview,

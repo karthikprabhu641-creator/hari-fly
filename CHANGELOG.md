@@ -12,6 +12,7 @@
 - Added local skins, key unlocks, and midnight-resetting daily missions.
 - Added accessibility labels, 48px icon targets, reduced-motion guards, particle fallback, and offline dependency cleanup.
 - Removed emoji icons across the interface and replaced them with a shared clay-style SVG icon system.
+- Removed difficulty choices from the Maps modal and added Normal, Hard, and Extreme as a centered control below START FLYING.
 - Preserved gameplay physics, hitboxes, existing localStorage data, and the Karthik Instagram footer.
 
 ## Final QA

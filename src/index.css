@@ -1914,9 +1914,9 @@ button:disabled {
 .main-menu-best {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  margin: 20px 0 22px;
-  padding: 0.45rem 1.1rem;
+  gap: 8px;
+  margin: 12px 0 14px;
+  padding: 0.28rem 0.75rem;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.7) 100%);
   border: 2px solid var(--gold-dim);
@@ -1944,7 +1944,7 @@ button:disabled {
 .main-menu-best strong {
   color: #ffffff;
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.35rem;
   font-weight: 950;
   line-height: 1;
   text-shadow: 0 0 14px rgba(250, 204, 21, 0.5);
@@ -1953,8 +1953,54 @@ button:disabled {
 .main-menu-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: min(100%, 440px);
+}
+
+.main-menu-difficulty {
+  width: min(100%, 360px);
+  min-height: 48px;
+  margin: 2px auto 4px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(15, 27, 45, 0.72);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.main-menu-difficulty-btn {
+  min-height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 160ms var(--ease-spring), background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.main-menu-difficulty-btn:active {
+  transform: scale(0.96);
+}
+
+.main-menu-difficulty-btn.is-active {
+  background: #f4f7ef;
+  color: var(--ink);
+  box-shadow:
+    0 5px 12px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 #ffffff;
 }
 
 /* Beautiful Animated Hero Start Button */
@@ -1964,14 +2010,14 @@ button:disabled {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 96px;
-  padding: 0 24px;
+  min-height: 64px;
+  padding: 0 20px;
   border: 0;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, var(--lime-400) 0%, var(--lime-500) 52%, var(--lime-600) 100%);
   color: #0d1f0d;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 950;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -2143,10 +2189,10 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
-  min-height: 112px;
-  padding: 0 16px;
+  min-height: 72px;
+  padding: 0 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-md);
   background: var(--bg-2);
@@ -2175,7 +2221,7 @@ button:disabled {
 .main-menu-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  gap: var(--space-2);
   width: 100%;
 }
 
@@ -4114,8 +4160,8 @@ button:disabled {
 
   .main-menu-bird {
     width: auto;
-    height: clamp(100px, 17vh, 155px);
-    max-width: 80vw;
+    height: clamp(150px, 22vh, 210px);
+    max-width: 90vw;
     object-fit: contain;
   }
 
@@ -4131,7 +4177,7 @@ button:disabled {
 
   .main-menu-title {
     margin-top: 4px;
-    font-size: clamp(2.4rem, 8.5vw, 3.4rem);
+    font-size: clamp(3rem, 11vw, 4.2rem);
     justify-content: center;
   }
 
@@ -4144,13 +4190,23 @@ button:disabled {
     gap: 8px;
   }
 
+  .main-menu-difficulty {
+    width: min(100%, 340px);
+    min-height: 46px;
+  }
+
+  .main-menu-difficulty-btn {
+    min-height: 36px;
+    font-size: 0.68rem;
+  }
+
   .main-menu-start {
     width: 100%;
-    min-height: 96px;
+    min-height: 64px;
   }
 
   .main-menu-modes-btn {
-    min-height: 112px;
+    min-height: 72px;
     padding: 0 12px;
   }
 
@@ -4295,20 +4351,20 @@ button:disabled {
 /* ── Ultra-Compact Mobile Phones (Width <= 380px or Height <= 640px) ── */
 @media (max-width: 380px), (max-height: 640px) and (max-width: 768px) {
   .main-menu-title {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
   }
 
   .main-menu-bird {
-    height: clamp(80px, 14vh, 110px);
+    height: clamp(120px, 18vh, 150px);
   }
 
   .main-menu-start {
-    min-height: 96px;
+    min-height: 58px;
     font-size: 0.88rem;
   }
 
   .main-menu-modes-btn {
-    min-height: 112px;
+    min-height: 66px;
   }
 
   .main-menu-best {
@@ -4360,7 +4416,7 @@ button:disabled {
   }
 
   .main-menu-best {
-    margin: 14px 0 18px;
+    margin: 10px 0 12px;
   }
 
   .main-menu-actions {

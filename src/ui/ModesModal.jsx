@@ -8,14 +8,11 @@ import React, { useEffect } from 'react';
 import { useAudio } from '../hooks/useAudio';
 import { ClayIcon } from './ClayIcon';
 import { MAP_LIST } from '../config/mapConfig';
-import { GAME_MODES } from '../config/gameModeConfig';
 import { WalletDisplay } from './WalletDisplay';
 
 export function ModesModal({
   selectedMapId,
-  selectedGameModeId,
   onSelectMap,
-  onSelectGameMode,
   onStart,
   onClose,
   coins = 0,
@@ -40,11 +37,6 @@ export function ModesModal({
     onSelectMap(mapId);
   };
 
-  const handleSelectGameMode = (modeId) => {
-    playClick();
-    onSelectGameMode(modeId);
-  };
-
   const handleStartFlight = (e) => {
     e.stopPropagation();
     playClick();
@@ -58,7 +50,6 @@ export function ModesModal({
   };
 
   const selectedMap = MAP_LIST.find((m) => m.id === selectedMapId) || MAP_LIST[0];
-  const selectedGameMode = GAME_MODES.find((mode) => mode.id === selectedGameModeId) || GAME_MODES[0];
 
   return (
     <div className="modes-page-backdrop" id="modes-page-overlay" onClick={handleBack}>
@@ -79,8 +70,8 @@ export function ModesModal({
               <span>BACK</span>
             </button>
             <div className="modes-page-titles">
-              <h1 className="modes-page-title">GAME MODES</h1>
-              <p className="modes-page-subtitle">Choose your difficulty and flight environment</p>
+              <h1 className="modes-page-title">MAPS</h1>
+              <p className="modes-page-subtitle">Choose your flight environment</p>
             </div>
           </div>
 
@@ -91,36 +82,6 @@ export function ModesModal({
 
         {/* Modes Grid */}
         <div className="modes-grid-scroll-area">
-          <section className="modes-selection-section" aria-labelledby="difficulty-modes-heading">
-            <h2 className="modes-section-heading" id="difficulty-modes-heading">GAME MODE</h2>
-            <div className="difficulty-modes-grid">
-              {GAME_MODES.map((mode) => {
-                const isSelected = mode.id === selectedGameModeId;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    className={`mode-card difficulty-mode-card${isSelected ? ' is-active' : ''}`}
-                    onClick={() => handleSelectGameMode(mode.id)}
-                    aria-pressed={isSelected}
-                    aria-label={`Select ${mode.name}${mode.id === 'hari-special' ? ', extreme mode' : ''}`}
-                  >
-                    <span className="difficulty-mode-preview">
-                      <img src={mode.preview} alt="" className="difficulty-mode-preview-img" />
-                      <span className="difficulty-mode-preview-shade" />
-                      <span className="mode-card-theme-tag">{mode.badge}</span>
-                      {isSelected && <span className="mode-card-badge-selected"><ClayIcon name="check" size={12} /> ACTIVE</span>}
-                    </span>
-                    <span className="mode-card-body">
-                      <span className="mode-card-name">{mode.name}</span>
-                      <span className="mode-card-description">{mode.description}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
           <section className="modes-selection-section" aria-labelledby="environment-modes-heading">
             <h2 className="modes-section-heading" id="environment-modes-heading">MAP</h2>
             <div className="modes-cards-grid">
@@ -199,7 +160,7 @@ export function ModesModal({
         <footer className="modes-page-footer">
           <div className="modes-footer-info">
             <span className="modes-footer-label">SELECTED:</span>
-            <strong className="modes-footer-name">{selectedGameMode.name} · {selectedMap?.name}</strong>
+            <strong className="modes-footer-name">{selectedMap?.name}</strong>
           </div>
           <div className="modes-footer-buttons">
             <button
