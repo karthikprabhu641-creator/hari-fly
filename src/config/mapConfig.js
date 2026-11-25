@@ -6,11 +6,14 @@ import junglePreview from '../assets/maps/jungle.svg';
 import desertPreview from '../assets/maps/desert.svg';
 import oceanPreview from '../assets/maps/ocean.svg';
 import volcanoPreview from '../assets/maps/volcano.svg';
-import skylandPhoto from '../assets/maps-real/skyland.jpg';
-import sunsetPhoto from '../assets/maps-real/sunset-valley.jpg';
-import nightCityPhoto from '../assets/maps-real/night-city.jpg';
-import snowfallPhoto from '../assets/maps-real/snowfall.jpg';
-import junglePhoto from '../assets/maps-real/jungle.jpg';
+import skylandPhoto from '../assets/maps-real/skyland.webp';
+import sunsetPhoto from '../assets/maps-real/sunset-valley.webp';
+import nightCityPhoto from '../assets/maps-real/night-city.webp';
+import snowfallPhoto from '../assets/maps-real/snowfall.webp';
+import junglePhoto from '../assets/maps-real/jungle.webp';
+import desertPhoto from '../assets/maps-real/desert.webp';
+import oceanPhoto from '../assets/maps-real/ocean.webp';
+import volcanoPhoto from '../assets/maps-real/volcano.webp';
 import { safeStorage } from '../utils/storage';
 
 export const DEFAULT_MAP_ID = 'skyland';
@@ -128,6 +131,7 @@ export const MAPS = {
     description: 'Sun-baked canyons and golden sands',
     theme: 'desert',
     preview: desertPreview,
+    photo: desertPhoto,
     sky: ['#70b5c8', '#f0c77b', '#ffe4a3'],
     land: '#bd7644',
     ground: ['#e5b968', '#a85c37'],
@@ -148,6 +152,7 @@ export const MAPS = {
     description: 'A blue deep-sea flight through coral reefs',
     theme: 'ocean',
     preview: oceanPreview,
+    photo: oceanPhoto,
     sky: ['#087eaa', '#22b8b2', '#b5e7cc'],
     land: '#087e8b',
     ground: ['#62c7ae', '#087d88'],
@@ -168,6 +173,7 @@ export const MAPS = {
     description: 'Smoldering volcanic rock and glowing lava',
     theme: 'volcanic',
     preview: volcanoPreview,
+    photo: volcanoPhoto,
     sky: ['#281b35', '#8e3d42', '#f08345'],
     land: '#4b3038',
     ground: ['#6c4140', '#241e2a'],
