@@ -3603,7 +3603,6 @@ button:disabled {
   isolation: isolate;
   color: #fff;
   background: #050817;
-  animation: loadingFadeOut 5s linear both;
 }
 
 .loading-sky {
@@ -3841,11 +3840,6 @@ button:disabled {
   white-space: nowrap;
   animation: skipHintPulse 5s ease both;
   pointer-events: none;
-}
-
-@keyframes loadingFadeOut {
-  0%, 94% { opacity: 1; }
-  100% { opacity: 0; }
 }
 
 @keyframes skyBloom {

@@ -181,6 +181,28 @@ export class Obstacle {
           ctx.fill();
         }
       }
+      ctx.globalAlpha = 0.42;
+      ctx.strokeStyle = theme.highlight;
+      for (let grain = 0; grain < 3; grain += 1) {
+        const grainX = x + 12 + grain * 19;
+        ctx.beginPath();
+        ctx.moveTo(grainX, y);
+        ctx.bezierCurveTo(grainX - 3, y + height * 0.28, grainX + 4, y + height * 0.62, grainX, y + height);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    if (theme.pattern === 'cloud') {
+      for (let offset = 30; offset < height; offset += 62) {
+        const cloudX = x + (offset % 2 === 0 ? 20 : width - 19);
+        ctx.beginPath();
+        ctx.ellipse(cloudX, y + offset, 11, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(cloudX - 7, y + offset + 1, 6, 3, 0, 0, Math.PI * 2);
+        ctx.ellipse(cloudX + 7, y + offset + 1, 6, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
       return;
     }
 

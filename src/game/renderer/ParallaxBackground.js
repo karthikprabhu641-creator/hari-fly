@@ -10,6 +10,7 @@
 import { GAME_CONFIG } from '../../config/gameConfig';
 import { ENVIRONMENTS, EnvironmentSystem } from '../environment/EnvironmentSystem';
 import { DEFAULT_MAP_ID, getMap } from '../../config/mapConfig';
+import { AmbientLifeRenderer } from './AmbientLifeRenderer';
 
 export class ParallaxBackground {
   constructor() {
@@ -25,6 +26,7 @@ export class ParallaxBackground {
     this.mountainOffset = 0;
     this.groundOffset = 0;
     this.environmentSystem = new EnvironmentSystem();
+    this.ambientLife = new AmbientLifeRenderer();
     this.map = getMap(DEFAULT_MAP_ID);
 
     // Distant cloud definitions
@@ -47,6 +49,7 @@ export class ParallaxBackground {
 
   update(dt, speed) {
     this.environmentSystem.update(dt);
+    this.ambientLife.update(dt);
 
     // Parallax scroll updates
     this.cloudOffset = (this.cloudOffset + speed * GAME_CONFIG.WORLD.PARALLAX_CLOUDS * dt) % this.width;
@@ -359,26 +362,29 @@ export class ParallaxBackground {
   }
 
   renderMapDetails(ctx) {
-    if (this.map.id !== 'skyland') return;
-    const islands = [
-      { x: 58, y: this.groundY * 0.34, width: 34 },
-      { x: 286, y: this.groundY * 0.43, width: 25 },
-    ];
-    ctx.save();
-    islands.forEach(({ x, y, width }) => {
-      const driftX = (x - this.nearOffset + this.width * 2) % this.width;
-      ctx.fillStyle = '#71bd78';
-      ctx.beginPath();
-      ctx.ellipse(driftX, y, width, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#6c9a6b';
-      ctx.beginPath();
-      ctx.moveTo(driftX - width * 0.72, y + 4);
-      ctx.lineTo(driftX + width * 0.72, y + 4);
-      ctx.lineTo(driftX, y + 18);
-      ctx.closePath();
-      ctx.fill();
-    });
-    ctx.restore();
+    if (this.map.id === 'skyland') {
+      const islands = [
+        { x: 58, y: this.groundY * 0.34, width: 34 },
+        { x: 286, y: this.groundY * 0.43, width: 25 },
+      ];
+      ctx.save();
+      islands.forEach(({ x, y, width }) => {
+        const driftX = (x - this.nearOffset + this.width * 2) % this.width;
+        ctx.fillStyle = '#71bd78';
+        ctx.beginPath();
+        ctx.ellipse(driftX, y, width, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#6c9a6b';
+        ctx.beginPath();
+        ctx.moveTo(driftX - width * 0.72, y + 4);
+        ctx.lineTo(driftX + width * 0.72, y + 4);
+        ctx.lineTo(driftX, y + 18);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    this.ambientLife.render(ctx, this.map, this.width, this.groundY);
   }
 }
