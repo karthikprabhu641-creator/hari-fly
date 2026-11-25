@@ -3,6 +3,9 @@ import sunsetPreview from '../assets/maps/sunset-valley.svg';
 import nightCityPreview from '../assets/maps/night-city.svg';
 import snowfallPreview from '../assets/maps/snowfall.svg';
 import junglePreview from '../assets/maps/jungle.svg';
+import desertPreview from '../assets/maps/desert.svg';
+import oceanPreview from '../assets/maps/ocean.svg';
+import volcanoPreview from '../assets/maps/volcano.svg';
 import skylandPhoto from '../assets/maps-real/skyland.jpg';
 import sunsetPhoto from '../assets/maps-real/sunset-valley.jpg';
 import nightCityPhoto from '../assets/maps-real/night-city.jpg';
@@ -27,6 +30,13 @@ export const MAPS = {
     weather: ['clouds', 'rain', 'wind'],
     accent: '#2bb5f0',
     backdrop: ['#07141a', '#0c2a2a'],
+    pipeTheme: {
+      colors: ['#15803d', '#22c55e', '#16a34a', '#14532d'],
+      outline: '#052e16',
+      highlight: '#d9f99d',
+      detail: '#86efac',
+      pattern: 'cloud',
+    },
   },
   'sunset-valley': {
     id: 'sunset-valley',
@@ -41,6 +51,13 @@ export const MAPS = {
     weather: ['rain', 'wind'],
     accent: '#ffc21a',
     backdrop: ['#24101f', '#8a3d32'],
+    pipeTheme: {
+      colors: ['#9a482e', '#f28c45', '#d96337', '#652e36'],
+      outline: '#572a31',
+      highlight: '#ffe0a3',
+      detail: '#ffc27e',
+      pattern: 'bands',
+    },
   },
   'night-city': {
     id: 'night-city',
@@ -55,6 +72,13 @@ export const MAPS = {
     weather: ['rain', 'fog'],
     accent: '#ff5fa2',
     backdrop: ['#050711', '#17294f'],
+    pipeTheme: {
+      colors: ['#20244d', '#5546a8', '#393b82', '#11152f'],
+      outline: '#100e2b',
+      highlight: '#ff5fa2',
+      detail: '#9eeaff',
+      pattern: 'circuit',
+    },
   },
   snowfall: {
     id: 'snowfall',
@@ -69,6 +93,13 @@ export const MAPS = {
     weather: ['snow', 'wind'],
     accent: '#2bb5f0',
     backdrop: ['#07141a', '#0c2a2a'],
+    pipeTheme: {
+      colors: ['#5c91aa', '#dff7ff', '#9fd1e7', '#477b96'],
+      outline: '#38677f',
+      highlight: '#ffffff',
+      detail: '#eafaff',
+      pattern: 'ice',
+    },
   },
   jungle: {
     id: 'jungle',
@@ -83,6 +114,73 @@ export const MAPS = {
     weather: ['rain', 'fog', 'wind'],
     accent: '#b6f23a',
     backdrop: ['#071913', '#1d5361'],
+    pipeTheme: {
+      colors: ['#164b39', '#58a64d', '#347b3d', '#10382e'],
+      outline: '#0b3026',
+      highlight: '#d4f27a',
+      detail: '#b6f23a',
+      pattern: 'vines',
+    },
+  },
+  desert: {
+    id: 'desert',
+    name: 'Desert Dunes',
+    description: 'Sun-baked canyons and golden sands',
+    theme: 'desert',
+    preview: desertPreview,
+    sky: ['#70b5c8', '#f0c77b', '#ffe4a3'],
+    land: '#bd7644',
+    ground: ['#e5b968', '#a85c37'],
+    weather: ['wind'],
+    accent: '#ffcf70',
+    backdrop: ['#26171a', '#8e4a35'],
+    pipeTheme: {
+      colors: ['#8c4d35', '#e3a34f', '#c57a3e', '#713c32'],
+      outline: '#5e342d',
+      highlight: '#ffe0a3',
+      detail: '#f5c979',
+      pattern: 'sandstone',
+    },
+  },
+  ocean: {
+    id: 'ocean',
+    name: 'Coral Ocean',
+    description: 'A blue deep-sea flight through coral reefs',
+    theme: 'ocean',
+    preview: oceanPreview,
+    sky: ['#087eaa', '#22b8b2', '#b5e7cc'],
+    land: '#087e8b',
+    ground: ['#62c7ae', '#087d88'],
+    weather: ['rain', 'wind'],
+    accent: '#4be4d2',
+    backdrop: ['#041c37', '#087e8b'],
+    pipeTheme: {
+      colors: ['#075985', '#22b8b2', '#0e8e9b', '#063b63'],
+      outline: '#032f4d',
+      highlight: '#a7fff0',
+      detail: '#70f0dc',
+      pattern: 'bubbles',
+    },
+  },
+  volcano: {
+    id: 'volcano',
+    name: 'Volcano',
+    description: 'Smoldering volcanic rock and glowing lava',
+    theme: 'volcanic',
+    preview: volcanoPreview,
+    sky: ['#281b35', '#8e3d42', '#f08345'],
+    land: '#4b3038',
+    ground: ['#6c4140', '#241e2a'],
+    weather: ['fog', 'wind'],
+    accent: '#ff7445',
+    backdrop: ['#170f1d', '#5f2634'],
+    pipeTheme: {
+      colors: ['#28252d', '#66505a', '#49343e', '#1c1a22'],
+      outline: '#17151b',
+      highlight: '#ff8a45',
+      detail: '#ffc15e',
+      pattern: 'lava',
+    },
   },
 };
 

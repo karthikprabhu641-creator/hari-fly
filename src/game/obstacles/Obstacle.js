@@ -5,6 +5,7 @@
  */
 
 import { GAME_CONFIG } from '../../config/gameConfig';
+import { getMap } from '../../config/mapConfig';
 import { RectHitbox } from '../collision/Hitbox';
 
 export class Obstacle {
@@ -103,73 +104,131 @@ export class Obstacle {
   drawPipeBody(ctx, x, y, width, height) {
     if (height <= 0) return;
 
-    if (this.mapId === 'snowfall') {
-      const ice = ctx.createLinearGradient(x, 0, x + width, 0);
-      ice.addColorStop(0, '#75aeca');
-      ice.addColorStop(0.22, '#dff7ff');
-      ice.addColorStop(0.68, '#9fd1e7');
-      ice.addColorStop(1, '#5c91aa');
-      ctx.fillStyle = ice;
-      ctx.fillRect(x, y, width, height);
-      ctx.strokeStyle = '#dff7ff';
-      ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
-      ctx.strokeRect(x, y, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-      ctx.fillRect(x + 7, y, 6, height);
-      return;
-    }
+    const theme = getMap(this.mapId).pipeTheme;
+    const gradient = ctx.createLinearGradient(x, 0, x + width, 0);
+    theme.colors.forEach((color, index) => {
+      gradient.addColorStop(index / (theme.colors.length - 1), color);
+    });
 
-    // Linear gradient for 3D curved tube look
-    const grad = ctx.createLinearGradient(x, 0, x + width, 0);
-    grad.addColorStop(0, '#15803d');    // Dark green edge
-    grad.addColorStop(0.2, '#22c55e');  // Bright green highlight
-    grad.addColorStop(0.7, '#16a34a');  // Core green
-    grad.addColorStop(1, '#14532d');    // Deep green shadow
-
-    ctx.fillStyle = grad;
+    ctx.fillStyle = gradient;
     ctx.fillRect(x, y, width, height);
-
-    ctx.strokeStyle = '#052e16';
+    ctx.strokeStyle = theme.outline;
     ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
     ctx.strokeRect(x, y, width, height);
 
-    // Soft specular highlight stripe
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+    ctx.globalAlpha = 0.32;
+    ctx.fillStyle = theme.highlight;
     ctx.fillRect(x + 7, y, 6, height);
+    this.drawPipePattern(ctx, x, y, width, height, theme);
+    ctx.restore();
   }
 
   drawPipeLip(ctx, x, y, width, height) {
-    if (this.mapId === 'snowfall') {
-      const ice = ctx.createLinearGradient(x, 0, x + width, 0);
-      ice.addColorStop(0, '#5c91aa');
-      ice.addColorStop(0.25, '#dff7ff');
-      ice.addColorStop(0.75, '#9fd1e7');
-      ice.addColorStop(1, '#75aeca');
-      ctx.fillStyle = ice;
-      ctx.fillRect(x, y, width, height);
-      ctx.strokeStyle = '#eafaff';
-      ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
-      ctx.strokeRect(x, y, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      ctx.fillRect(x + 8, y, 7, height);
-      return;
-    }
-
-    const grad = ctx.createLinearGradient(x, 0, x + width, 0);
-    grad.addColorStop(0, '#166534');
-    grad.addColorStop(0.25, '#4ade80');
-    grad.addColorStop(0.75, '#16a34a');
-    grad.addColorStop(1, '#052e16');
-
-    ctx.fillStyle = grad;
+    const theme = getMap(this.mapId).pipeTheme;
+    const gradient = ctx.createLinearGradient(x, 0, x + width, 0);
+    gradient.addColorStop(0, theme.colors[0]);
+    gradient.addColorStop(0.25, theme.colors[1]);
+    gradient.addColorStop(0.75, theme.colors[2]);
+    gradient.addColorStop(1, theme.colors[theme.colors.length - 1]);
+    ctx.fillStyle = gradient;
     ctx.fillRect(x, y, width, height);
 
-    ctx.strokeStyle = '#052e16';
+    ctx.strokeStyle = theme.outline;
     ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
     ctx.strokeRect(x, y, width, height);
 
-    // Specular highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
-    ctx.fillRect(x + 8, y, 7, height);
+    ctx.save();
+    ctx.fillStyle = theme.highlight;
+    ctx.globalAlpha = 0.48;
+    ctx.fillRect(x + 8, y + 3, 7, Math.max(0, height - 6));
+    ctx.restore();
+  }
+
+  drawPipePattern(ctx, x, y, width, height, theme) {
+    ctx.strokeStyle = theme.detail;
+    ctx.fillStyle = theme.detail;
+    ctx.lineWidth = 2;
+
+    if (theme.pattern === 'vines') {
+      for (let side = 0; side < 2; side += 1) {
+        const vineX = x + (side === 0 ? 21 : width - 18);
+        ctx.beginPath();
+        ctx.moveTo(vineX, y);
+        for (let offset = 36; offset < height; offset += 36) {
+          ctx.quadraticCurveTo(
+            vineX + (side === 0 ? 12 : -12),
+            y + offset - 18,
+            vineX,
+            y + offset
+          );
+        }
+        ctx.stroke();
+        for (let offset = 28; offset < height; offset += 54) {
+          ctx.beginPath();
+          ctx.ellipse(
+            vineX + (side === 0 ? 7 : -7),
+            y + offset,
+            7,
+            3,
+            side === 0 ? -0.5 : 0.5,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+        }
+      }
+      return;
+    }
+
+    if (theme.pattern === 'circuit') {
+      for (let offset = 22; offset < height; offset += 42) {
+        const lineX = x + (offset % 2 === 0 ? 18 : width - 18);
+        ctx.beginPath();
+        ctx.moveTo(lineX, y + offset);
+        ctx.lineTo(x + width / 2, y + offset);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(lineX, y + offset, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return;
+    }
+
+    if (theme.pattern === 'ice' || theme.pattern === 'lava') {
+      const step = theme.pattern === 'ice' ? 58 : 72;
+      for (let offset = 18; offset < height; offset += step) {
+        ctx.beginPath();
+        ctx.moveTo(x + 17, y + offset);
+        ctx.lineTo(x + 26, y + offset + 10);
+        ctx.lineTo(x + 21, y + offset + 20);
+        ctx.lineTo(x + 34, y + offset + 30);
+        ctx.stroke();
+      }
+      return;
+    }
+
+    if (theme.pattern === 'bubbles') {
+      for (let offset = 24; offset < height; offset += 48) {
+        const bubbleX = x + (offset % 3 === 0 ? 22 : width - 20);
+        ctx.beginPath();
+        ctx.arc(bubbleX, y + offset, 4 + (offset % 2) * 2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      return;
+    }
+
+    const step = theme.pattern === 'sandstone' ? 30 : 44;
+    for (let offset = step; offset < height; offset += step) {
+      ctx.globalAlpha = theme.pattern === 'sandstone' ? 0.55 : 0.35;
+      ctx.beginPath();
+      ctx.moveTo(x + 2, y + offset);
+      ctx.lineTo(x + width - 2, y + offset);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   }
 }
