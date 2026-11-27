@@ -1,4 +1,18 @@
 import { safeStorage } from '../utils/storage';
+import birdImage from '../../image/bird-transparent.png';
+
+const skinImages = import.meta.glob('../../bird skins/*.webp', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+});
+
+const uploadedSkins = Object.entries(skinImages).map(([path, src]) => {
+  const fileName = path.split('/').pop().replace(/\.webp$/i, '').trim();
+  const id = fileName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  return { id, name: fileName.replace(/[-_]+/g, ' '), cost: 0, filter: 'none', src };
+});
 
 export const SKINS_STORAGE_KEY = 'hari_fly_unlocked_skins';
 export const SELECTED_SKIN_STORAGE_KEY = 'hari_fly_selected_skin';
@@ -8,7 +22,12 @@ export const SKINS = [
   { id: 'classic', name: 'Classic', cost: 0, filter: 'none' },
   { id: 'gold', name: 'Gold Pilot', cost: 3, filter: 'sepia(1) saturate(1.5) hue-rotate(355deg)' },
   { id: 'cyan', name: 'Cyan Pilot', cost: 5, filter: 'sepia(1) saturate(1.8) hue-rotate(145deg)' },
+  ...uploadedSkins,
 ];
+
+export function getSkinImage(skin) {
+  return skin?.src || birdImage;
+}
 
 export function getLocalDateKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -16,7 +35,10 @@ export function getLocalDateKey(date = new Date()) {
 
 export function getUnlockedSkins() {
   const stored = safeStorage.getItem(SKINS_STORAGE_KEY, ['classic']);
-  return Array.isArray(stored) ? Array.from(new Set(['classic', ...stored])) : ['classic'];
+  const freeSkins = SKINS.filter((skin) => skin.cost === 0).map((skin) => skin.id);
+  return Array.isArray(stored)
+    ? Array.from(new Set([...freeSkins, ...stored]))
+    : freeSkins;
 }
 
 export function unlockSkin(skinId) {

@@ -2337,6 +2337,13 @@ button:disabled {
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
 }
 
+.skin-preview img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
 .skin-option strong {
   font-size: 0.78rem;
 }

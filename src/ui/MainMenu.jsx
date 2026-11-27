@@ -87,6 +87,7 @@ export function MainMenu({
   const animatedBestScore = useAnimatedNumber(bestScore);
   const selectedSkinId = getSelectedSkin();
   const selectedSkin = SKINS.find((skin) => skin.id === selectedSkinId) || SKINS[0];
+  const selectedSkinFilter = selectedSkin.src ? 'none' : selectedSkin.filter;
   const [showModes, setShowModes] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSongSelection, setShowSongSelection] = useState(false);
@@ -449,7 +450,7 @@ export function MainMenu({
             onClick={handleFaceTap}
             aria-label="Tap your bird pilot"
           >
-            <img className="main-menu-bird" src={birdImage} alt="" aria-hidden="true" style={{ filter: `${selectedSkin.filter === 'none' ? 'drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))' : `${selectedSkin.filter} drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))`}` }} />
+            <img className="main-menu-bird" src={selectedSkin.src || birdImage} alt="" aria-hidden="true" style={{ filter: `${selectedSkinFilter === 'none' ? 'drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))' : `${selectedSkinFilter} drop-shadow(0 25px 35px rgba(0, 0, 0, 0.38))`}` }} />
             {faceParticles.map((particle) => (
               <span
                 key={particle.id}

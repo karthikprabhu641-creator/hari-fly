@@ -31,7 +31,7 @@ import { getSelectedGameModeId, GAME_MODES, saveSelectedGameMode } from '../../c
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../../utils/device';
 import { showToast } from '../../utils/toast';
 import { vibrate } from '../../utils/haptics';
-import { updateMissions } from '../../services/localProgressService';
+import { getSelectedSkin, getSkinImage, SKINS, updateMissions } from '../../services/localProgressService';
 
 export class GameEngine {
   constructor() {
@@ -56,7 +56,7 @@ export class GameEngine {
     this.continuesUsed = 0;
 
     this.player = new Player();
-    this.playerRenderer = new PlayerRenderer({ assetId: 'player.default' });
+    this.playerRenderer = new PlayerRenderer({ assetId: 'player.selected' });
     this.parallaxBg = new ParallaxBackground();
     this.selectedMapId = getSelectedMapId();
     this.selectedGameModeId = getSelectedGameModeId();
@@ -134,6 +134,9 @@ export class GameEngine {
         this.loadingProgress = progress;
         this.notifyUI();
       });
+      const selectedSkin = SKINS.find((skin) => skin.id === getSelectedSkin()) || SKINS[0];
+      const selectedImage = await assetManager.registerImage('player.selected', getSkinImage(selectedSkin));
+      if (!selectedImage) this.playerRenderer.setAssetId('player.default');
       // 5-second cinematic flight intro sequence
       const INTRO_DURATION_MS = 5000;
       const remainingLoadingTime = Math.max(0, INTRO_DURATION_MS - (performance.now() - loadingStartedAt));

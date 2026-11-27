@@ -6,9 +6,12 @@ import {
   saveSelectedSkin,
   unlockSkin,
   getMissions,
+  getSkinImage,
 } from '../services/localProgressService';
 import { useAudio } from '../hooks/useAudio';
 import { ClayIcon } from './ClayIcon';
+import { assetManager } from '../assets/AssetManager';
+import { showToast } from '../utils/toast';
 
 export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onClose }) {
   const { playClick } = useAudio();
@@ -26,11 +29,20 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
     onClose();
   };
 
-  const handleSkin = (skin) => {
+  const handleSkin = async (skin) => {
     playClick();
     if (!unlocked.includes(skin.id)) {
       if (keys < skin.cost) return;
       if (!onSpendKeys(skin.cost)) return;
+    }
+
+    const image = await assetManager.registerImage('player.selected', getSkinImage(skin));
+    if (!image) {
+      showToast(`Could not load ${skin.name}. Please try again.`);
+      return;
+    }
+
+    if (!unlocked.includes(skin.id)) {
       unlockSkin(skin.id);
       setUnlocked(getUnlockedSkins());
     }
@@ -54,7 +66,9 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
                   onClick={() => handleSkin(skin)}
                   disabled={!isUnlocked && keys < skin.cost}
                 >
-                  <span className="skin-preview" style={{ filter: skin.filter }}><span>H</span></span>
+                  <span className="skin-preview" style={{ filter: skin.src ? 'none' : skin.filter }}>
+                    {skin.src ? <img src={skin.src} alt="" /> : <span>H</span>}
+                  </span>
                   <strong>{skin.name}</strong>
                   <small>{isUnlocked ? (selected === skin.id ? 'EQUIPPED' : 'UNLOCKED') : `LOCKED · ${skin.cost} KEYS`}</small>
                 </button>
