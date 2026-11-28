@@ -63,11 +63,12 @@ export class PlayerRenderer {
    * Render custom avatar image cleanly cropped into a sleek circular token
    */
   renderImageAvatar(ctx, image, radius) {
-    ctx.save();
-
-    // Subtle drop shadow / outer glow
-    ctx.shadowColor = 'rgba(56, 189, 248, 0.45)';
-    ctx.shadowBlur = 10;
+    // Cheap translucent outer glow ring (avoids expensive per-frame shadowBlur)
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius - 1, 0, Math.PI * 2);
+    ctx.stroke();
 
     // Outer border
     ctx.strokeStyle = '#38bdf8';
@@ -87,8 +88,6 @@ export class PlayerRenderer {
       image,
       -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight
     );
-
-    ctx.restore();
   }
 
   /**

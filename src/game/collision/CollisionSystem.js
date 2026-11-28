@@ -43,10 +43,11 @@ export class CollisionSystem {
       // Soft clamp ceiling, does not kill player immediately unless configured
     }
 
-    // 3. Check Obstacle Collisions (Upper & Lower Pipes)
-    const activeObstacles = obstacleManager.getActiveObstacles();
-    for (let i = 0; i < activeObstacles.length; i++) {
-      const obstacle = activeObstacles[i];
+    // 3. Check Obstacle Collisions (Upper & Lower Pipes) - iterate pool directly to avoid array allocation
+    const pool = obstacleManager.pool;
+    for (let i = 0; i < pool.length; i++) {
+      const obstacle = pool[i];
+      if (!obstacle.active) continue;
 
       // Quick broadphase check: skip obstacles far behind or ahead
       if (

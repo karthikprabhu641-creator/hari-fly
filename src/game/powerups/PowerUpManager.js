@@ -40,6 +40,7 @@ export class PowerUpManager {
     this.uiUpdateTimer = 0;
     this.onChange = options.onChange || (() => {});
     this.onScoreMultiplierChange = options.onScoreMultiplierChange || (() => {});
+    this._tempRect = { x: 0, y: 0, width: 0, height: 0 };
   }
 
   createPowerUp() {
@@ -118,8 +119,9 @@ export class PowerUpManager {
     }
 
     const playerHitbox = player.getHitbox();
-    this.pool.forEach((powerUp) => {
-      if (!powerUp.active) return;
+    for (let i = 0; i < this.pool.length; i++) {
+      const powerUp = this.pool[i];
+      if (!powerUp.active) continue;
       powerUp.x -= obstacleSpeed * gameplayDt;
       powerUp.pulse += realDt * 5;
 
@@ -128,24 +130,24 @@ export class PowerUpManager {
         powerUp.active = false;
         powerUp.type = null;
         this.onChange();
-        return;
+        continue;
       }
 
       if (powerUp.x < -powerUp.radius) {
         powerUp.active = false;
         powerUp.type = null;
       }
-    });
+    }
   }
 
   isCollected(powerUp, playerHitbox) {
-    const powerUpRect = {
-      x: powerUp.x - powerUp.radius,
-      y: powerUp.y - powerUp.radius,
-      width: powerUp.radius * 2,
-      height: powerUp.radius * 2,
-    };
-    return checkCircleRectCollision(playerHitbox, powerUpRect);
+    const r = powerUp.radius;
+    const rect = this._tempRect;
+    rect.x = powerUp.x - r;
+    rect.y = powerUp.y - r;
+    rect.width = r * 2;
+    rect.height = r * 2;
+    return checkCircleRectCollision(playerHitbox, rect);
   }
 
   activate(type) {

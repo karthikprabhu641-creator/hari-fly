@@ -30,6 +30,7 @@ export class CollectibleManager {
     this.keys = safeStorage.getNumber(GAME_CONFIG.CURRENCY.KEYS_STORAGE_KEY, 0);
     this.pipesSeen = 0;
     this.onChange = options.onChange || (() => {});
+    this._tempBounds = { x: 0, y: 0, width: 0, height: 0 };
   }
 
   createCollectible() {
@@ -61,29 +62,30 @@ export class CollectibleManager {
 
   update(dt, player, obstacleSpeed = GAME_CONFIG.OBSTACLES.SPEED) {
     const playerHitbox = player.getHitbox();
-    this.pool.forEach((collectible) => {
-      if (!collectible.active) return;
+    const bounds = this._tempBounds;
+    for (let i = 0; i < this.pool.length; i++) {
+      const collectible = this.pool[i];
+      if (!collectible.active) continue;
       collectible.x -= obstacleSpeed * dt;
       collectible.pulse += dt * 5;
 
-      const bounds = {
-        x: collectible.x - collectible.radius,
-        y: collectible.y - collectible.radius,
-        width: collectible.radius * 2,
-        height: collectible.radius * 2,
-      };
+      const r = collectible.radius;
+      bounds.x = collectible.x - r;
+      bounds.y = collectible.y - r;
+      bounds.width = r * 2;
+      bounds.height = r * 2;
       if (checkCircleRectCollision(playerHitbox, bounds)) {
         this.collect(collectible.type);
         collectible.active = false;
         collectible.type = null;
-        return;
+        continue;
       }
 
-      if (collectible.x < -collectible.radius) {
+      if (collectible.x < -r) {
         collectible.active = false;
         collectible.type = null;
       }
-    });
+    }
   }
 
   collect(type) {
@@ -132,27 +134,27 @@ export class CollectibleManager {
   }
 
   render(ctx) {
-    this.pool.forEach((collectible) => {
-      if (!collectible.active) return;
+    ctx.save();
+    for (let i = 0; i < this.pool.length; i++) {
+      const collectible = this.pool[i];
+      if (!collectible.active) continue;
       const color = COLLECTIBLE_COLORS[collectible.type];
       const radius = collectible.radius + Math.sin(collectible.pulse) * 1.5;
 
-      ctx.save();
-      ctx.globalAlpha = 0.22;
+      ctx.globalAlpha = 0.24;
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(collectible.x, collectible.y, radius + 7, 0, Math.PI * 2);
       ctx.fill();
-      ctx.globalAlpha = 1;
+
       const image = assetManager.getImage(`collectible.${collectible.type}`);
       if (image) {
+        ctx.globalAlpha = 1;
         const size = radius * 2.5;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 6;
         ctx.drawImage(image, collectible.x - size / 2, collectible.y - size / 2, size, size);
       }
-      ctx.restore();
-    });
+    }
+    ctx.restore();
   }
 
   reset() {

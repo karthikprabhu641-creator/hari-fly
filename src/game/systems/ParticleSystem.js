@@ -141,11 +141,17 @@ export class ParticleSystem {
   }
 
   render(ctx) {
+    ctx.save();
     for (let i = 0; i < this.poolSize; i++) {
-      if (this.pool[i].active) {
-        this.pool[i].render(ctx);
-      }
+      const p = this.pool[i];
+      if (!p.active) continue;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
     }
+    ctx.restore();
   }
 
   reset() {

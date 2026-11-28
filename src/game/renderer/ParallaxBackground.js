@@ -28,6 +28,11 @@ export class ParallaxBackground {
     this.environmentSystem = new EnvironmentSystem();
     this.ambientLife = new AmbientLifeRenderer();
     this.map = getMap(DEFAULT_MAP_ID);
+    this._skyGradients = new Map();
+    this._groundGradients = new Map();
+    this._tintGradients = new Map();
+    this._moonHaloGrad = null;
+    this._moonBodyGrad = null;
 
     // Distant cloud definitions
     this.clouds = [
@@ -108,10 +113,14 @@ export class ParallaxBackground {
   renderGround(ctx) {
     ctx.save();
 
-    const dirtGrad = ctx.createLinearGradient(0, this.groundY, 0, this.height);
-    dirtGrad.addColorStop(0, this.map.ground[0]);
-    dirtGrad.addColorStop(0.15, this.map.ground[0]);
-    dirtGrad.addColorStop(1, this.map.ground[1]);
+    let dirtGrad = this._groundGradients.get(this.map.id);
+    if (!dirtGrad) {
+      dirtGrad = ctx.createLinearGradient(0, this.groundY, 0, this.height);
+      dirtGrad.addColorStop(0, this.map.ground[0]);
+      dirtGrad.addColorStop(0.15, this.map.ground[0]);
+      dirtGrad.addColorStop(1, this.map.ground[1]);
+      this._groundGradients.set(this.map.id, dirtGrad);
+    }
 
     ctx.fillStyle = dirtGrad;
     ctx.fillRect(0, this.groundY, this.width, this.groundHeight);
@@ -153,22 +162,30 @@ export class ParallaxBackground {
   }
 
   renderSky(ctx, environment) {
-    const sky = ctx.createLinearGradient(0, 0, 0, this.groundY);
-    sky.addColorStop(0, this.map.sky[0]);
-    sky.addColorStop(0.58, this.map.sky[1]);
-    sky.addColorStop(1, this.map.sky[2]);
+    let sky = this._skyGradients.get(this.map.id);
+    if (!sky) {
+      sky = ctx.createLinearGradient(0, 0, 0, this.groundY);
+      sky.addColorStop(0, this.map.sky[0]);
+      sky.addColorStop(0.58, this.map.sky[1]);
+      sky.addColorStop(1, this.map.sky[2]);
+      this._skyGradients.set(this.map.id, sky);
+    }
 
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, this.width, this.groundY);
 
     if (environment !== ENVIRONMENTS.MORNING) {
-      const tint = ctx.createLinearGradient(0, 0, 0, this.groundY);
-      if (environment === ENVIRONMENTS.NIGHT) {
-        tint.addColorStop(0, 'rgba(5, 10, 38, 0.68)');
-        tint.addColorStop(1, 'rgba(19, 29, 59, 0.26)');
-      } else {
-        tint.addColorStop(0, 'rgba(69, 24, 83, 0.2)');
-        tint.addColorStop(1, 'rgba(255, 135, 99, 0.2)');
+      let tint = this._tintGradients.get(environment);
+      if (!tint) {
+        tint = ctx.createLinearGradient(0, 0, 0, this.groundY);
+        if (environment === ENVIRONMENTS.NIGHT) {
+          tint.addColorStop(0, 'rgba(5, 10, 38, 0.68)');
+          tint.addColorStop(1, 'rgba(19, 29, 59, 0.26)');
+        } else {
+          tint.addColorStop(0, 'rgba(69, 24, 83, 0.2)');
+          tint.addColorStop(1, 'rgba(255, 135, 99, 0.2)');
+        }
+        this._tintGradients.set(environment, tint);
       }
       ctx.fillStyle = tint;
       ctx.fillRect(0, 0, this.width, this.groundY);
@@ -178,39 +195,51 @@ export class ParallaxBackground {
   renderNightDetails(ctx) {
     ctx.save();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.82)';
-    this.stars.forEach((star) => {
-      ctx.beginPath();
+    ctx.beginPath();
+    for (let i = 0; i < this.stars.length; i++) {
+      const star = this.stars[i];
+      ctx.moveTo(star.x + star.r, star.y);
       ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
+    }
+    ctx.fill();
 
     const moonX = this.width - 72;
     const moonY = 96;
     const moonRadius = 27;
 
-    ctx.shadowColor = 'rgba(255, 244, 190, 0.55)';
-    ctx.shadowBlur = 28;
-    const moonGlow = ctx.createRadialGradient(
-      moonX - 7,
-      moonY - 8,
-      3,
-      moonX,
-      moonY,
-      moonRadius
-    );
-    moonGlow.addColorStop(0, '#fffdf0');
-    moonGlow.addColorStop(0.75, '#fef3c7');
-    moonGlow.addColorStop(1, '#e8dca7');
-    ctx.fillStyle = moonGlow;
+    if (!this._moonHaloGrad) {
+      this._moonHaloGrad = ctx.createRadialGradient(
+        moonX, moonY, moonRadius * 0.8,
+        moonX, moonY, moonRadius * 2.1
+      );
+      this._moonHaloGrad.addColorStop(0, 'rgba(255, 244, 190, 0.42)');
+      this._moonHaloGrad.addColorStop(1, 'rgba(255, 244, 190, 0)');
+    }
+    ctx.fillStyle = this._moonHaloGrad;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, moonRadius * 2.1, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (!this._moonBodyGrad) {
+      this._moonBodyGrad = ctx.createRadialGradient(
+        moonX - 7, moonY - 8, 3,
+        moonX, moonY, moonRadius
+      );
+      this._moonBodyGrad.addColorStop(0, '#fffdf0');
+      this._moonBodyGrad.addColorStop(0.75, '#fef3c7');
+      this._moonBodyGrad.addColorStop(1, '#e8dca7');
+    }
+    ctx.fillStyle = this._moonBodyGrad;
     ctx.beginPath();
     ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
     ctx.fill();
-    ctx.shadowBlur = 0;
 
     ctx.fillStyle = 'rgba(177, 168, 125, 0.18)';
     ctx.beginPath();
     ctx.arc(moonX - 9, moonY - 8, 5.5, 0, Math.PI * 2);
+    ctx.moveTo(moonX + 12, moonY + 7);
     ctx.arc(moonX + 8, moonY + 7, 4, 0, Math.PI * 2);
+    ctx.moveTo(moonX + 12.8, moonY - 10);
     ctx.arc(moonX + 10, moonY - 10, 2.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();

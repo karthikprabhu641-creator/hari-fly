@@ -157,6 +157,7 @@ export function MainMenu({
     gameplayMode,
     favoriteTrack,
     playClick,
+    playMusic,
     vibrationEnabled,
   } = useAudio();
 
@@ -182,6 +183,7 @@ export function MainMenu({
   const handleStart = (e) => {
     e.stopPropagation();
     playClick();
+    playMusic();
     if (isMobileDevice() && !isFullscreen()) {
       requestFullscreen();
     }

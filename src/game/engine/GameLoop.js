@@ -18,6 +18,7 @@ export class GameLoop {
     this.isPaused = false;
 
     this.maxDelta = GAME_CONFIG.ENGINE.MAX_DELTA_TIME; // Clamp at 80ms
+    this.needsPausedRender = false;
     this.boundTick = this.tick.bind(this);
   }
 
@@ -25,12 +26,14 @@ export class GameLoop {
     if (this.isRunning) return;
     this.isRunning = true;
     this.isPaused = false;
+    this.needsPausedRender = false;
     this.lastTime = performance.now();
     this.rafId = requestAnimationFrame(this.boundTick);
   }
 
   pause() {
     this.isPaused = true;
+    this.needsPausedRender = true;
   }
 
   resume() {
@@ -39,12 +42,20 @@ export class GameLoop {
       return;
     }
     this.isPaused = false;
+    this.needsPausedRender = false;
     this.lastTime = performance.now(); // Reset time to prevent delta jump on resume
+  }
+
+  requestRender() {
+    if (this.isPaused) {
+      this.needsPausedRender = true;
+    }
   }
 
   stop() {
     this.isRunning = false;
     this.isPaused = false;
+    this.needsPausedRender = false;
     if (this.rafId) {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
@@ -57,6 +68,14 @@ export class GameLoop {
     // Schedule next frame immediately
     this.rafId = requestAnimationFrame(this.boundTick);
 
+    if (this.isPaused) {
+      if (this.needsPausedRender) {
+        this.needsPausedRender = false;
+        this.renderFn();
+      }
+      return;
+    }
+
     // Delta-time in seconds
     let rawDt = (currentTime - this.lastTime) / 1000;
     if (this.onFrameTime) this.onFrameTime(rawDt);
@@ -68,12 +87,10 @@ export class GameLoop {
       dt = this.maxDelta;
     }
 
-    // 1. Simulation Step (if not paused)
-    if (!this.isPaused) {
-      this.updateFn(dt);
-    }
+    // 1. Simulation Step
+    this.updateFn(dt, currentTime);
 
-    // 2. Render Step (always render so screen remains crisp and reflects UI changes)
+    // 2. Render Step
     this.renderFn();
   }
 }

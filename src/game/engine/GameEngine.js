@@ -107,7 +107,7 @@ export class GameEngine {
     // Setup Game Loop
     if (!this.loop) {
       this.loop = new GameLoop(
-        (dt) => this.update(dt),
+        (dt, now) => this.update(dt, now),
         () => this.render()
       );
       this.loop.onFrameTime = (rawDt) => {
@@ -417,8 +417,9 @@ export class GameEngine {
     return ok;
   }
 
-  update(dt) {
+  update(dt, now = performance.now()) {
     const state = this.fsm.getState();
+    if (state === GAME_STATE.LOADING) return;
 
     // 1. Update visual effects & particles (always active)
     this.canvasRenderer.updateVFX(dt);
@@ -428,7 +429,7 @@ export class GameEngine {
 
     if (state === GAME_STATE.MAIN_MENU) {
       // Gentle idle hover animation on main menu
-      this.player.y = GAME_CONFIG.PLAYER.START_Y + Math.sin(performance.now() * 0.0035) * 8;
+      this.player.y = GAME_CONFIG.PLAYER.START_Y + Math.sin(now * 0.0035) * 8;
       this.player.hitbox.update(this.player.x, this.player.y);
       this.parallaxBg.update(dt, audioManager.reduceMotion ? 0 : GAME_CONFIG.OBSTACLES.SPEED * 0.5);
       return;
@@ -454,7 +455,7 @@ export class GameEngine {
     }
 
     if (state === GAME_STATE.GAME_OVER) {
-      if (this.deathFreezeUntil && performance.now() < this.deathFreezeUntil) {
+      if (this.deathFreezeUntil && now < this.deathFreezeUntil) {
         return;
       }
       // Fall down to ground after collision if not already at ground
@@ -467,7 +468,7 @@ export class GameEngine {
   }
 
   render() {
-    if (!this.canvasRenderer) return;
+    if (!this.canvasRenderer || this.fsm.is(GAME_STATE.LOADING)) return;
     this.canvasRenderer.render(
       this.player,
       this.obstacleManager,
@@ -478,6 +479,9 @@ export class GameEngine {
   resize(width, height) {
     if (this.viewport) {
       this.viewport.resize(width, height);
+    }
+    if (this.loop) {
+      this.loop.requestRender();
     }
   }
 

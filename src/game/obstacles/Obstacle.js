@@ -8,6 +8,28 @@ import { GAME_CONFIG } from '../../config/gameConfig';
 import { getMap } from '../../config/mapConfig';
 import { RectHitbox } from '../collision/Hitbox';
 
+const pipeGradientCache = new Map();
+
+function getCachedPipeGradients(ctx, mapId, theme, bodyWidth, lipWidth) {
+  let entry = pipeGradientCache.get(mapId);
+  if (entry) return entry;
+
+  const bodyGrad = ctx.createLinearGradient(0, 0, bodyWidth, 0);
+  theme.colors.forEach((color, index) => {
+    bodyGrad.addColorStop(index / (theme.colors.length - 1), color);
+  });
+
+  const lipGrad = ctx.createLinearGradient(0, 0, lipWidth, 0);
+  lipGrad.addColorStop(0, theme.colors[0]);
+  lipGrad.addColorStop(0.25, theme.colors[1]);
+  lipGrad.addColorStop(0.75, theme.colors[2]);
+  lipGrad.addColorStop(1, theme.colors[theme.colors.length - 1]);
+
+  entry = { bodyGrad, lipGrad };
+  pipeGradientCache.set(mapId, entry);
+  return entry;
+}
+
 export class Obstacle {
   constructor() {
     this.x = 0;
@@ -17,6 +39,7 @@ export class Obstacle {
     this.passed = false;
     this.active = false;
     this.mapId = 'skyland';
+    this.pipeTheme = getMap(this.mapId).pipeTheme;
 
     this.groundY = GAME_CONFIG.VIEWPORT.HEIGHT - GAME_CONFIG.WORLD.GROUND_HEIGHT;
 
@@ -29,7 +52,10 @@ export class Obstacle {
     this.x = x;
     this.gapTopY = gapTopY;
     this.gapSize = gapSize;
-    this.mapId = mapId;
+    if (this.mapId !== mapId) {
+      this.mapId = mapId;
+      this.pipeTheme = getMap(mapId).pipeTheme;
+    }
     this.passed = false;
     this.active = true;
 
@@ -104,47 +130,44 @@ export class Obstacle {
   drawPipeBody(ctx, x, y, width, height) {
     if (height <= 0) return;
 
-    const theme = getMap(this.mapId).pipeTheme;
-    const gradient = ctx.createLinearGradient(x, 0, x + width, 0);
-    theme.colors.forEach((color, index) => {
-      gradient.addColorStop(index / (theme.colors.length - 1), color);
-    });
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, width, height);
-    ctx.strokeStyle = theme.outline;
-    ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
-    ctx.strokeRect(x, y, width, height);
+    const theme = this.pipeTheme;
+    const lipWidth = this.width + GAME_CONFIG.OBSTACLES.LIP_OVERHANG * 2;
+    const { bodyGrad } = getCachedPipeGradients(ctx, this.mapId, theme, this.width, lipWidth);
 
     ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = bodyGrad;
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = theme.outline;
+    ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
+    ctx.strokeRect(0, 0, width, height);
+
     ctx.beginPath();
-    ctx.rect(x, y, width, height);
+    ctx.rect(0, 0, width, height);
     ctx.clip();
     ctx.globalAlpha = 0.32;
     ctx.fillStyle = theme.highlight;
-    ctx.fillRect(x + 7, y, 6, height);
-    this.drawPipePattern(ctx, x, y, width, height, theme);
+    ctx.fillRect(7, 0, 6, height);
+    this.drawPipePattern(ctx, 0, 0, width, height, theme);
     ctx.restore();
   }
 
   drawPipeLip(ctx, x, y, width, height) {
-    const theme = getMap(this.mapId).pipeTheme;
-    const gradient = ctx.createLinearGradient(x, 0, x + width, 0);
-    gradient.addColorStop(0, theme.colors[0]);
-    gradient.addColorStop(0.25, theme.colors[1]);
-    gradient.addColorStop(0.75, theme.colors[2]);
-    gradient.addColorStop(1, theme.colors[theme.colors.length - 1]);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, width, height);
+    const theme = this.pipeTheme;
+    const { lipGrad } = getCachedPipeGradients(ctx, this.mapId, theme, this.width, width);
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = lipGrad;
+    ctx.fillRect(0, 0, width, height);
 
     ctx.strokeStyle = theme.outline;
     ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
-    ctx.strokeRect(x, y, width, height);
+    ctx.strokeRect(0, 0, width, height);
 
-    ctx.save();
     ctx.fillStyle = theme.highlight;
     ctx.globalAlpha = 0.48;
-    ctx.fillRect(x + 8, y + 3, 7, Math.max(0, height - 6));
+    ctx.fillRect(8, 3, 7, Math.max(0, height - 6));
     ctx.restore();
   }
 
