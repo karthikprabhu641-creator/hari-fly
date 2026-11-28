@@ -11,6 +11,7 @@ import { GAME_CONFIG } from '../../config/gameConfig';
 import { ENVIRONMENTS, EnvironmentSystem } from '../environment/EnvironmentSystem';
 import { DEFAULT_MAP_ID, getMap } from '../../config/mapConfig';
 import { AmbientLifeRenderer } from './AmbientLifeRenderer';
+import { assetManager } from '../../assets/AssetManager';
 
 export class ParallaxBackground {
   constructor(options = {}) {
@@ -94,6 +95,9 @@ export class ParallaxBackground {
 
   setMap(mapId) {
     this.map = getMap(mapId);
+    this.backgroundImage = this.map.backgroundAssetId
+      ? assetManager.getImage(this.map.backgroundAssetId)
+      : null;
   }
 
   reset(score = 0) {
@@ -107,6 +111,31 @@ export class ParallaxBackground {
   }
 
   renderEnvironment(ctx, environment) {
+    if (this.map.backgroundAssetId) {
+      this.backgroundImage = this.backgroundImage
+        || assetManager.getImage(this.map.backgroundAssetId);
+      if (this.backgroundImage) {
+        const scale = Math.max(
+          this.width / this.backgroundImage.width,
+          this.height / this.backgroundImage.height
+        );
+        const sourceWidth = this.width / scale;
+        const sourceHeight = this.height / scale;
+        ctx.drawImage(
+          this.backgroundImage,
+          (this.backgroundImage.width - sourceWidth) / 2,
+          (this.backgroundImage.height - sourceHeight) / 2,
+          sourceWidth,
+          sourceHeight,
+          0,
+          0,
+          this.width,
+          this.height
+        );
+        return;
+      }
+    }
+
     this.renderSky(ctx, environment);
 
     if (environment === ENVIRONMENTS.NIGHT || this.map.theme === 'night') {

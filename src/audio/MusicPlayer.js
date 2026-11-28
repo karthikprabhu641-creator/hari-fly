@@ -27,6 +27,7 @@ export class MusicPlayer {
     this.isPlaying = false;
     this.mode = GAMEPLAY_MUSIC_MODES.FAVORITE;
     this.favoriteTrackId = this.playlist[0]?.id || null;
+    this.forcedTrackId = null;
     this.gapTimer = null;
     this.playbackGeneration = 0;
     this.loadedSrc = '';
@@ -44,6 +45,9 @@ export class MusicPlayer {
   }
 
   getCurrentTrack() {
+    const forcedTrack = this.playlist.find((track) => track.id === this.forcedTrackId);
+    if (forcedTrack && isTrackUnlocked(forcedTrack)) return forcedTrack;
+
     const track = this.playlist[this.currentIndex];
     if (track && isTrackUnlocked(track)) return track;
     // Find first unlocked track
@@ -153,6 +157,19 @@ export class MusicPlayer {
       mode: GAMEPLAY_MUSIC_MODES.FAVORITE,
       favoriteTrackId: this.playlist[index].id,
     });
+  }
+
+  setForcedTrack(trackId) {
+    const nextTrackId = this.playlist.some((track) => track.id === trackId)
+      ? trackId
+      : null;
+    if (nextTrackId === this.forcedTrackId) return;
+
+    this.forcedTrackId = nextTrackId;
+    if (this.isPlaying) {
+      this.stop();
+      this.play();
+    }
   }
 
   nextTrack() {

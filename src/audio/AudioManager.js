@@ -218,6 +218,11 @@ class AudioManager {
     this.notify();
   }
 
+  setGameplayMusicOverride(trackId) {
+    this.music.setForcedTrack(trackId);
+    this.notify();
+  }
+
   setGameplayMusicPreferences({ mode, favoriteTrackId }) {
     this.music.configure({ mode, favoriteTrackId });
     safeStorage.setItem(GAME_CONFIG.AUDIO.STORAGE_KEY_GAMEPLAY_MODE, this.music.getMode());

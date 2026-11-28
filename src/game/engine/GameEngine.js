@@ -72,6 +72,7 @@ export class GameEngine {
     this.parallaxBg = new ParallaxBackground({ width: this.logicalWidth });
     this.selectedMapId = getSelectedMapId();
     this.selectedGameModeId = getSelectedGameModeId();
+    audioManager.setGameplayMusicOverride(getMap(this.selectedMapId).exclusiveTrackId || null);
     this.parallaxBg.setMap(this.selectedMapId);
     this.weatherSystem.setMap(this.selectedMapId);
     this.obstacleManager = new ObstacleManager({
@@ -417,6 +418,7 @@ export class GameEngine {
   setMap(mapId) {
     this.selectedMapId = saveSelectedMap(mapId);
     const map = getMap(this.selectedMapId);
+    audioManager.setGameplayMusicOverride(map.exclusiveTrackId || null);
     if (typeof document !== 'undefined' && map) {
       document.documentElement.style.setProperty('--bg-0', map.backdrop[0]);
       document.documentElement.style.setProperty('--bg-1', map.backdrop[1]);

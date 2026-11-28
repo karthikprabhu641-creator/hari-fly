@@ -6,6 +6,7 @@ import junglePreview from '../assets/maps/jungle.svg';
 import desertPreview from '../assets/maps/desert.svg';
 import oceanPreview from '../assets/maps/ocean.svg';
 import volcanoPreview from '../assets/maps/volcano.svg';
+import christmasPreview from '../assets/maps-real/christmas.svg';
 import skylandPhoto from '../assets/maps-real/skyland.webp';
 import sunsetPhoto from '../assets/maps-real/sunset-valley.webp';
 import nightCityPhoto from '../assets/maps-real/night-city.webp';
@@ -186,6 +187,29 @@ export const MAPS = {
       highlight: '#ff8a45',
       detail: '#ffc15e',
       pattern: 'lava',
+    },
+  },
+  christmas: {
+    id: 'christmas',
+    name: 'Christmas',
+    description: 'A snowy Nativity scene with festive lights and exclusive Yesappa music',
+    theme: 'christmas',
+    preview: christmasPreview,
+    photo: christmasPreview,
+    backgroundAssetId: 'background.christmas',
+    exclusiveTrackId: 'yesappa',
+    sky: ['#07142d', '#173a5b', '#a9cfdf'],
+    land: '#d9edf4',
+    ground: ['#f8fdff', '#b9dbe8'],
+    weather: ['snow', 'wind'],
+    accent: '#e8c85b',
+    backdrop: ['#07142d', '#173a5b'],
+    pipeTheme: {
+      colors: ['#a51d35', '#f4e9d1', '#22835d', '#702138'],
+      outline: '#592034',
+      highlight: '#fff5db',
+      detail: '#e8c85b',
+      pattern: 'bands',
     },
   },
 };

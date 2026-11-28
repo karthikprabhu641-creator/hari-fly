@@ -8,6 +8,7 @@
 import birdImage from '../../image/bird-transparent.png';
 import coinImage from '../../image/coin.png';
 import keyImage from '../../image/key.png';
+import christmasBackground from '../assets/maps-real/christmas.svg';
 
 export const ASSET_MANIFEST = {
   images: {
@@ -40,6 +41,15 @@ export const ASSET_MANIFEST = {
       width: 48,
       height: 48,
       hasAlpha: true,
+    },
+    'background.christmas': {
+      id: 'background.christmas',
+      name: 'Christmas Nativity background',
+      src: christmasBackground,
+      type: 'image',
+      format: 'svg',
+      width: 1280,
+      height: 844,
     },
     // Placeholders for future sprite sheets or obstacle custom textures
     'obstacle.pipe_body': {
