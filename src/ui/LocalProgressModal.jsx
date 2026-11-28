@@ -47,11 +47,12 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
       setUnlocked(getUnlockedSkins());
     }
     setSelected(saveSelectedSkin(skin.id));
+    onClose();
   };
 
   return (
     <div className="modal-backdrop local-progress-backdrop" onClick={handleClose}>
-      <div className="local-progress-card" role="dialog" aria-modal="true" aria-label={mode === 'skins' ? 'Skins' : 'Daily missions'} onClick={(event) => event.stopPropagation()}>
+      <div className={`local-progress-card${mode === 'skins' ? ' skin-picker-card' : ''}`} role="dialog" aria-modal="true" aria-label={mode === 'skins' ? 'Skins' : 'Daily missions'} onClick={(event) => event.stopPropagation()}>
         <button type="button" className="settings-close-btn" onClick={handleClose} aria-label={`Close ${mode}`}><ClayIcon name="close" size={18} /></button>
         <h2 className="settings-title">{mode === 'skins' ? 'SKINS' : 'MISSIONS'}</h2>
         {mode === 'skins' ? (
@@ -67,7 +68,7 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
                   disabled={!isUnlocked && keys < skin.cost}
                 >
                   <span className="skin-preview" style={{ filter: skin.src ? 'none' : skin.filter }}>
-                    {skin.src ? <img src={skin.src} alt="" /> : <span>H</span>}
+                    <img src={getSkinImage(skin)} alt="" />
                   </span>
                   <strong>{skin.name}</strong>
                   <small>{isUnlocked ? (selected === skin.id ? 'EQUIPPED' : 'UNLOCKED') : `LOCKED · ${skin.cost} KEYS`}</small>

@@ -20,8 +20,6 @@ export const MISSIONS_STORAGE_KEY = 'hari_fly_daily_missions';
 
 export const SKINS = [
   { id: 'classic', name: 'Classic', cost: 0, filter: 'none' },
-  { id: 'gold', name: 'Gold Pilot', cost: 3, filter: 'sepia(1) saturate(1.5) hue-rotate(355deg)' },
-  { id: 'cyan', name: 'Cyan Pilot', cost: 5, filter: 'sepia(1) saturate(1.8) hue-rotate(145deg)' },
   ...uploadedSkins,
 ];
 
