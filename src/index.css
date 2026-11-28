@@ -129,6 +129,13 @@ button,
   -webkit-tap-highlight-color: transparent;
 }
 
+img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 button:focus-visible,
 [role='button']:focus-visible,
 a:focus-visible,
@@ -1708,6 +1715,106 @@ button:disabled {
   border-radius: 50%;
   background: #bef264;
   box-shadow: 0 0 12px rgba(190, 242, 100, 0.8);
+}
+
+.asset-download-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #f8fafc;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(56, 189, 248, 0.18), transparent 42%),
+    linear-gradient(160deg, #07141a, #0c2a2a 58%, #10172a);
+}
+
+.asset-download-card {
+  width: min(100%, 440px);
+  padding: clamp(24px, 6vw, 40px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  background: rgba(15, 27, 45, 0.88);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.asset-download-eyebrow {
+  color: #b6f23a;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.asset-download-card h1 {
+  margin-top: 16px;
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.asset-download-card p {
+  margin-top: 10px;
+  color: #b8c4cc;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.asset-download-progress {
+  height: 12px;
+  margin-top: 28px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.asset-download-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2bb5f0, #b6f23a);
+  box-shadow: 0 0 18px rgba(182, 242, 58, 0.45);
+  transition: width 180ms ease-out;
+}
+
+.asset-download-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #b8c4cc;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.asset-download-progress-label strong {
+  color: #b6f23a;
+}
+
+.asset-download-errors {
+  margin: 18px 0;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  list-style: none;
+}
+
+.asset-download-retry {
+  min-height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #b6f23a;
+  color: #0a1a05;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.asset-download-retry:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .main-menu-topbar-right {

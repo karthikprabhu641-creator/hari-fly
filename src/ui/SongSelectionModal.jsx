@@ -2,7 +2,7 @@
  * Song Selection Modal Component
  * UI for selecting gameplay music modes (Favorite vs Play All),
  * picking favorite track, auditioning/previewing songs, and selecting Game Over music.
- * Locked songs (price > 0) require 30 coins to unlock.
+ * All gameplay songs are free to select and play.
  */
 
 import React, { useState, useEffect, useRef } from 'react';

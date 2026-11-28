@@ -13,6 +13,7 @@ import { PauseMenu } from '../ui/PauseMenu';
 import { GameOverModal } from '../ui/GameOverModal';
 import { AudioSettingsModal } from '../ui/AudioSettingsModal';
 import { LoadingScreen } from '../ui/LoadingScreen';
+import { AssetDownloadScreen } from '../ui/AssetDownloadScreen';
 import { isMobileDevice, isFullscreen, requestFullscreen } from '../utils/device';
 import { ToastViewport } from '../ui/ToastViewport';
 
@@ -25,6 +26,7 @@ export function GameView() {
 
   // Audio settings modal state
   const [showSettings, setShowSettings] = useState(false);
+  const [assetsDownloaded, setAssetsDownloaded] = useState(false);
   const [startCountdown, setStartCountdown] = useState(null);
   const [isStarting, setIsStarting] = useState(false);
   const startTimersRef = React.useRef([]);
@@ -86,10 +88,23 @@ export function GameView() {
   }, []);
 
   return (
-    <div className="game-viewport-container">
+    <div
+      className="game-viewport-container"
+      onContextMenu={(event) => {
+        if (event.target instanceof Element && event.target.closest('img, canvas')) {
+          event.preventDefault();
+        }
+      }}
+      onDragStart={(event) => {
+        if (event.target instanceof HTMLImageElement) {
+          event.preventDefault();
+        }
+      }}
+    >
       <ToastViewport />
       {/* 2D Canvas Gameplay Renderer — always present */}
-      <GameCanvas engine={engine} />
+      {assetsDownloaded && <GameCanvas engine={engine} />}
+      {!assetsDownloaded && <AssetDownloadScreen onComplete={() => setAssetsDownloaded(true)} />}
       {startCountdown && (
         <div className="start-countdown" role="status" aria-live="assertive">
           <span key={startCountdown}>{startCountdown}</span>
@@ -97,7 +112,7 @@ export function GameView() {
       )}
 
       {/* Cinematic Flight Intro — shown during LOADING state */}
-      {gameState === 'LOADING' && (
+      {assetsDownloaded && gameState === 'LOADING' && (
         <LoadingScreen
           progress={loadingProgress}
           onSkip={() => engine.skipIntro()}

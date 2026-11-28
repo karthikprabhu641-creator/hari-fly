@@ -1,7 +1,6 @@
 /**
  * Central audio catalog. Gameplay tracks are discovered from the music folder.
- * price: 0  = free (always unlocked)
- * price: 30 = costs 30 coins to unlock
+ * All gameplay tracks are free and always unlocked.
  */
 
 export const GAMEPLAY_MUSIC_MODES = {
@@ -47,7 +46,7 @@ export const GAMEPLAY_SONGS = Object.entries(songFiles)
       name: existingSongNames[fileName] || fileName.replace(/\s+/g, ' '),
       artist: 'Gameplay Music',
       src,
-      price: id === 'blue-eyes' ? 0 : 30,
+      price: 0,
     };
   })
   .sort((a, b) => {
