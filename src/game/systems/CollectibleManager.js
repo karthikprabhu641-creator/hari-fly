@@ -97,6 +97,7 @@ export class CollectibleManager {
     } else if (type === COLLECTIBLE_TYPES.KEY) {
       this.keys += 1;
       safeStorage.setNumber(GAME_CONFIG.CURRENCY.KEYS_STORAGE_KEY, this.keys);
+      eventBus.emit(GAME_EVENTS.KEY_COLLECTED, { keyDelta: 1 });
     }
     this.onChange();
   }

@@ -18,6 +18,14 @@ export const SKINS_STORAGE_KEY = 'hari_fly_unlocked_skins';
 export const SELECTED_SKIN_STORAGE_KEY = 'hari_fly_selected_skin';
 export const MISSIONS_STORAGE_KEY = 'hari_fly_daily_missions';
 
+export const DAILY_MISSIONS = [
+  { id: 'score10', label: 'Score 10 in one run', target: 10, reward: { coins: 5, keys: 0 }, rewardLabel: '5 coins' },
+  { id: 'score25', label: 'Score 25 in one run', target: 25, reward: { coins: 10, keys: 1 }, rewardLabel: '10 coins + 1 key' },
+  { id: 'score50', label: 'Score 50 in one run', target: 50, reward: { coins: 20, keys: 2 }, rewardLabel: '20 coins + 2 keys' },
+  { id: 'coins20', label: 'Collect 20 coins', target: 20, reward: { coins: 10, keys: 1 }, rewardLabel: '10 coins + 1 key' },
+  { id: 'keys3', label: 'Collect 3 keys', target: 3, reward: { coins: 15, keys: 0 }, rewardLabel: '15 coins' },
+];
+
 export const SKINS = [
   { id: 'classic', name: 'Classic', cost: 0, filter: 'none' },
   ...uploadedSkins,
@@ -67,18 +75,43 @@ export function getMissions() {
     const fresh = {
       date: today,
       score10: 0,
+      score25: 0,
+      score50: 0,
       coins20: 0,
+      keys3: 0,
+      claimed: [],
     };
     safeStorage.setItem(MISSIONS_STORAGE_KEY, fresh);
     return fresh;
   }
-  return stored;
+
+  return {
+    date: today,
+    score10: Number(stored.score10) || 0,
+    score25: Number(stored.score25) || 0,
+    score50: Number(stored.score50) || 0,
+    coins20: Number(stored.coins20) || 0,
+    keys3: Number(stored.keys3) || 0,
+    claimed: Array.isArray(stored.claimed) ? stored.claimed : [],
+  };
 }
 
-export function updateMissions({ score = 0, coinDelta = 0 }) {
+export function updateMissions({ score = 0, coinDelta = 0, keyDelta = 0 }) {
   const missions = getMissions();
-  missions.score10 = Math.max(0, missions.score10, Number(score) || 0);
+  const scoreProgress = Math.max(0, Number(score) || 0);
+  missions.score10 = Math.max(missions.score10, scoreProgress);
+  missions.score25 = Math.max(missions.score25, scoreProgress);
+  missions.score50 = Math.max(missions.score50, scoreProgress);
   missions.coins20 = Math.max(0, missions.coins20 + (Number(coinDelta) || 0));
+  missions.keys3 = Math.max(0, missions.keys3 + (Number(keyDelta) || 0));
+
+  const rewards = DAILY_MISSIONS
+    .filter((mission) => missions[mission.id] >= mission.target && !missions.claimed.includes(mission.id))
+    .map((mission) => {
+      missions.claimed.push(mission.id);
+      return mission.reward;
+    });
+
   safeStorage.setItem(MISSIONS_STORAGE_KEY, missions);
-  return missions;
+  return { missions, rewards };
 }

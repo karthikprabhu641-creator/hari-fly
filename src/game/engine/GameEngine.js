@@ -181,6 +181,23 @@ export class GameEngine {
   }
 
   setupEventListeners() {
+    const applyMissionProgress = (progress) => {
+      const { rewards } = updateMissions(progress);
+      const reward = rewards.reduce((total, item) => ({
+        coins: total.coins + item.coins,
+        keys: total.keys + item.keys,
+      }), { coins: 0, keys: 0 });
+
+      if (reward.coins === 0 && reward.keys === 0) return;
+
+      this.collectibleManager.addReward(reward);
+      const rewardText = [
+        reward.coins > 0 ? `${reward.coins} coins` : '',
+        reward.keys > 0 ? `${reward.keys} ${reward.keys === 1 ? 'key' : 'keys'}` : '',
+      ].filter(Boolean).join(' and ');
+      showToast(`Daily mission reward: ${rewardText}`);
+    };
+
     // 1. Collision Handler
     const unsubCollide = eventBus.on(GAME_EVENTS.PLAYER_COLLIDED, (data) => {
       if (!this.fsm.is(GAME_STATE.PLAYING)) return;
@@ -220,15 +237,19 @@ export class GameEngine {
       this.parallaxBg.setScore(data.score);
       audioManager.playScore();
       this.particleSystem.emitScoreSparkles(this.player.x, this.player.y);
-      updateMissions({ score: data.score });
+      applyMissionProgress({ score: data.score });
       this.notifyUI();
     });
 
     const unsubCoin = eventBus.on(GAME_EVENTS.COIN_COLLECTED, (data) => {
-      updateMissions({ coinDelta: data.coinDelta });
+      applyMissionProgress({ coinDelta: data.coinDelta });
     });
 
-    this.unsubscribers.push(unsubCollide, unsubFlap, unsubScore, unsubCoin);
+    const unsubKey = eventBus.on(GAME_EVENTS.KEY_COLLECTED, (data) => {
+      applyMissionProgress({ keyDelta: data.keyDelta });
+    });
+
+    this.unsubscribers.push(unsubCollide, unsubFlap, unsubScore, unsubCoin, unsubKey);
   }
 
   handleFlapInput() {

@@ -454,8 +454,9 @@ button:disabled {
 
 /* Dedicated game-over card — dark glassmorphism + cyan theme */
 .game-over-backdrop {
-  align-items: flex-end;
-  padding: 0;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
   background: rgba(3, 7, 18, 0.72);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -463,10 +464,10 @@ button:disabled {
 
 .game-over-card {
   position: relative;
-  width: 100%;
-  max-width: 380px;
-  max-height: calc(100dvh - 16px);
-  overflow: auto;
+  width: min(100%, 400px);
+  max-height: calc(100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px 20px 20px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 28px 28px 18px 18px;
@@ -734,6 +735,7 @@ button:disabled {
 
 .game-over-retry-button {
   min-height: 56px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -789,6 +791,61 @@ button:disabled {
 
 .game-over-hint {
   display: none;
+}
+
+@media (max-height: 720px) {
+  .game-over-card {
+    padding: 8px 18px 14px;
+  }
+
+  .game-over-drag-handle {
+    margin-bottom: 6px;
+  }
+
+  .game-over-hero {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .game-over-avatar-frame {
+    width: 64px;
+    height: 64px;
+  }
+
+  .game-over-title {
+    font-size: clamp(1.65rem, 7vw, 2.2rem);
+  }
+
+  .game-over-score-panel {
+    margin-bottom: 10px;
+  }
+
+  .game-over-score-main,
+  .game-over-best-stat {
+    padding-block: 9px;
+  }
+
+  .game-over-score-value {
+    font-size: 2.1rem;
+  }
+
+  .game-over-wallet {
+    margin-bottom: 8px;
+  }
+
+  .game-over-retry-button {
+    min-height: 50px;
+    box-shadow: 0 5px 0 var(--lime-600), 0 10px 22px rgba(143, 224, 31, 0.2);
+  }
+
+  .game-over-retry-button:hover {
+    box-shadow: 0 7px 0 var(--lime-600), 0 14px 28px rgba(143, 224, 31, 0.24);
+  }
+
+  .game-over-menu-button {
+    margin-top: 4px;
+  }
 }
 
 /* Hero Title */
@@ -2531,6 +2588,10 @@ button:disabled {
   background: var(--bg-3);
 }
 
+.mission-row.is-complete {
+  border-color: rgba(143, 224, 31, 0.35);
+}
+
 .mission-row > span {
   display: flex;
   justify-content: space-between;
@@ -2542,6 +2603,17 @@ button:disabled {
 .mission-row small {
   color: var(--gold);
   font-variant-numeric: tabular-nums;
+}
+
+.mission-row > .mission-reward {
+  color: var(--text-2);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.mission-row.is-complete > .mission-reward {
+  color: var(--lime-400);
 }
 
 .mission-progress {

@@ -101,7 +101,7 @@ export const GAME_CONFIG = {
     DEFAULT_SFX_VOLUME: 0.75,
     STORAGE_KEY_BGM: 'hraifly_bgm_vol',
     STORAGE_KEY_SFX: 'hraifly_sfx_vol',
-    STORAGE_KEY_MUTE: 'hraifly_audio_mute',
+    STORAGE_KEY_MUTE: 'hraifly_audio_mute_v2',
     STORAGE_KEY_GAMEPLAY_MODE: 'hraifly_gameplay_music_mode',
     STORAGE_KEY_FAVORITE_TRACK: 'hraifly_favorite_gameplay_track',
     STORAGE_KEY_GAME_OVER_TRACK: 'hraifly_game_over_track',

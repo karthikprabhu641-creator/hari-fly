@@ -7,6 +7,7 @@ import {
   unlockSkin,
   getMissions,
   getSkinImage,
+  DAILY_MISSIONS,
 } from '../services/localProgressService';
 import { useAudio } from '../hooks/useAudio';
 import { ClayIcon } from './ClayIcon';
@@ -78,14 +79,24 @@ export function LocalProgressModal({ mode = 'skins', keys = 0, onSpendKeys, onCl
           </div>
         ) : (
           <div className="mission-list">
-            <div className="mission-row">
-              <span><strong>Score 10</strong><small>{Math.min(missions.score10 || 0, 10)} / 10</small></span>
-              <div className="mission-progress"><i style={{ width: `${Math.min(100, ((missions.score10 || 0) / 10) * 100)}%` }} /></div>
-            </div>
-            <div className="mission-row">
-              <span><strong>Collect 20 coins</strong><small>{Math.min(missions.coins20 || 0, 20)} / 20</small></span>
-              <div className="mission-progress"><i style={{ width: `${Math.min(100, ((missions.coins20 || 0) / 20) * 100)}%` }} /></div>
-            </div>
+            {DAILY_MISSIONS.map((mission) => {
+              const progress = Math.min(missions[mission.id] || 0, mission.target);
+              const isComplete = progress >= mission.target;
+              return (
+                <div className={`mission-row${isComplete ? ' is-complete' : ''}`} key={mission.id}>
+                  <span>
+                    <strong>{mission.label}</strong>
+                    <small>{progress} / {mission.target}</small>
+                  </span>
+                  <div className="mission-progress">
+                    <i style={{ width: `${Math.min(100, (progress / mission.target) * 100)}%` }} />
+                  </div>
+                  <small className="mission-reward">
+                    {isComplete ? 'REWARD EARNED' : `Reward: ${mission.rewardLabel}`}
+                  </small>
+                </div>
+              );
+            })}
             <p className="mission-reset-note">Resets at local midnight</p>
           </div>
         )}
