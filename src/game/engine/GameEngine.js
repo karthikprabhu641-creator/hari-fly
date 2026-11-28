@@ -35,6 +35,13 @@ import { getSelectedSkin, getSkinImage, SKINS, updateMissions } from '../../serv
 
 export class GameEngine {
   constructor() {
+    const isDesktopLandscape =
+      typeof window !== 'undefined' &&
+      window.innerWidth >= 900 &&
+      window.innerWidth > window.innerHeight;
+    this.logicalWidth = isDesktopLandscape
+      ? Math.round(GAME_CONFIG.VIEWPORT.HEIGHT * 1.5)
+      : GAME_CONFIG.VIEWPORT.WIDTH;
     this.canvas = null;
     this.viewport = null;
     this.loop = null;
@@ -45,8 +52,9 @@ export class GameEngine {
     this.particleSystem = new ParticleSystem();
     this.physicsSystem = new PhysicsSystem();
     this.collisionSystem = new CollisionSystem();
-    this.weatherSystem = new WeatherSystem();
+    this.weatherSystem = new WeatherSystem({ width: this.logicalWidth });
     this.powerUpManager = new PowerUpManager({
+      viewportWidth: this.logicalWidth,
       onChange: () => this.notifyUI(),
       onScoreMultiplierChange: (multiplier) => this.scoreSystem.setMultiplier(multiplier),
     });
@@ -55,14 +63,19 @@ export class GameEngine {
     });
     this.continuesUsed = 0;
 
-    this.player = new Player();
+    this.player = new Player({
+      startX: isDesktopLandscape
+        ? this.logicalWidth * 0.22
+        : GAME_CONFIG.PLAYER.START_X,
+    });
     this.playerRenderer = new PlayerRenderer({ assetId: 'player.selected' });
-    this.parallaxBg = new ParallaxBackground();
+    this.parallaxBg = new ParallaxBackground({ width: this.logicalWidth });
     this.selectedMapId = getSelectedMapId();
     this.selectedGameModeId = getSelectedGameModeId();
     this.parallaxBg.setMap(this.selectedMapId);
     this.weatherSystem.setMap(this.selectedMapId);
     this.obstacleManager = new ObstacleManager({
+      viewportWidth: this.logicalWidth,
       onScore: (obstacle) => this.handleScoreTrigger(obstacle),
       onSpawn: (obstacle) => this.collectibleManager.onObstacleSpawned(obstacle),
     });
@@ -85,7 +98,7 @@ export class GameEngine {
    */
   async init(canvas) {
     this.canvas = canvas;
-    this.viewport = new Viewport(canvas);
+    this.viewport = new Viewport(canvas, this.logicalWidth);
     this.canvasRenderer = new CanvasRenderer(
       this.viewport,
       this.playerRenderer,
@@ -265,6 +278,7 @@ export class GameEngine {
       audioManager.playMusic();
       this.continuesUsed = 0;
       this.collectibleManager.startNewRun();
+      this.obstacleManager.startNewRun(this.player.x);
       this.fsm.transitionTo(GAME_STATE.PLAYING);
       this.player.flap();
       this.notifyUI();
@@ -329,7 +343,7 @@ export class GameEngine {
     // Complete reset of simulation without reloading webpage
     this.scoreSystem.reset();
     this.player.reset();
-    this.obstacleManager.reset();
+    this.obstacleManager.startNewRun(this.player.x);
     this.particleSystem.reset();
     this.parallaxBg.reset();
     this.powerUpManager.reset();
@@ -362,7 +376,7 @@ export class GameEngine {
     this.continuesUsed += 1;
     this.gameOverTime = 0;
     this.player.reset();
-    this.obstacleManager.reset();
+    this.obstacleManager.startNewRun(this.player.x);
     this.powerUpManager.reset();
     this.powerUpManager.grantCollisionGrace(GAME_CONFIG.CURRENCY.CONTINUE_PROTECTION_DURATION);
     this.collectibleManager.startNewRun();

@@ -9,8 +9,8 @@ import { CircleHitbox } from '../collision/Hitbox';
 import { eventBus, GAME_EVENTS } from '../systems/EventBus';
 
 export class Player {
-  constructor() {
-    this.startX = GAME_CONFIG.PLAYER.START_X;
+  constructor(options = {}) {
+    this.startX = options.startX ?? GAME_CONFIG.PLAYER.START_X;
     this.startY = GAME_CONFIG.PLAYER.START_Y;
 
     this.x = this.startX;

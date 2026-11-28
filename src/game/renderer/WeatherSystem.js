@@ -8,8 +8,8 @@ import { randomRange } from '../../utils/math';
 import { DEFAULT_MAP_ID, getMap } from '../../config/mapConfig';
 
 export class WeatherSystem {
-  constructor() {
-    this.width = GAME_CONFIG.VIEWPORT.WIDTH;
+  constructor(options = {}) {
+    this.width = options.width || GAME_CONFIG.VIEWPORT.WIDTH;
     this.height = GAME_CONFIG.VIEWPORT.HEIGHT;
     this.groundY = this.height - GAME_CONFIG.WORLD.GROUND_HEIGHT;
     this.rainDrops = Array.from(

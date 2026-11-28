@@ -9,7 +9,7 @@ export const GAME_CONFIG = {
   VIEWPORT: {
     WIDTH: 390,          // Logical canvas width (mobile portrait baseline)
     HEIGHT: 844,         // Logical canvas height (standard modern iPhone/Android aspect)
-    MAX_DPR: 2.0,        // Cap DPR to prevent mobile thermal throttling & battery drain
+    MAX_DPR: 1.5,        // Limit canvas pixel workload on high-density laptop and mobile screens
     MIN_ASPECT: 0.45,
     MAX_ASPECT: 0.65,
   },

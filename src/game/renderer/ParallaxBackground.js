@@ -13,8 +13,8 @@ import { DEFAULT_MAP_ID, getMap } from '../../config/mapConfig';
 import { AmbientLifeRenderer } from './AmbientLifeRenderer';
 
 export class ParallaxBackground {
-  constructor() {
-    this.width = GAME_CONFIG.VIEWPORT.WIDTH;
+  constructor(options = {}) {
+    this.width = options.width || GAME_CONFIG.VIEWPORT.WIDTH;
     this.height = GAME_CONFIG.VIEWPORT.HEIGHT;
     this.groundHeight = GAME_CONFIG.WORLD.GROUND_HEIGHT;
     this.groundY = this.height - this.groundHeight;
@@ -35,13 +35,13 @@ export class ParallaxBackground {
     this._moonBodyGrad = null;
 
     // Distant cloud definitions
-    this.clouds = [
+    const cloudTemplates = [
       { x: 40, y: 110, w: 80, h: 28, speed: 0.72 },
       { x: 190, y: 70, w: 110, h: 36, speed: 1 },
       { x: 330, y: 140, w: 75, h: 24, speed: 1.28 },
     ];
 
-    this.stars = [
+    const starTemplates = [
       { x: 34, y: 78, r: 1.2 },
       { x: 86, y: 142, r: 0.9 },
       { x: 145, y: 62, r: 1.1 },
@@ -50,6 +50,14 @@ export class ParallaxBackground {
       { x: 342, y: 92, r: 1 },
       { x: 370, y: 164, r: 0.8 },
     ];
+    const repeats = Math.ceil(this.width / GAME_CONFIG.VIEWPORT.WIDTH);
+    this.clouds = [];
+    this.stars = [];
+    for (let repeat = 0; repeat < repeats; repeat++) {
+      const offset = repeat * GAME_CONFIG.VIEWPORT.WIDTH;
+      this.clouds.push(...cloudTemplates.map((cloud) => ({ ...cloud, x: cloud.x + offset })));
+      this.stars.push(...starTemplates.map((star) => ({ ...star, x: star.x + offset })));
+    }
   }
 
   update(dt, speed) {

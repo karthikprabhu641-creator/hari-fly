@@ -8,11 +8,11 @@ import { GAME_CONFIG } from '../../config/gameConfig';
 import { getDevicePixelRatio } from '../../utils/device';
 
 export class Viewport {
-  constructor(canvas) {
+  constructor(canvas, logicalWidth = GAME_CONFIG.VIEWPORT.WIDTH) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
 
-    this.logicalWidth = GAME_CONFIG.VIEWPORT.WIDTH;
+    this.logicalWidth = logicalWidth;
     this.logicalHeight = GAME_CONFIG.VIEWPORT.HEIGHT;
 
     this.scale = 1;

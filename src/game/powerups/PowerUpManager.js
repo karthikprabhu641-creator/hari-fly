@@ -27,6 +27,7 @@ const POWER_UP_LABELS = {
 
 export class PowerUpManager {
   constructor(options = {}) {
+    this.viewportWidth = options.viewportWidth || GAME_CONFIG.VIEWPORT.WIDTH;
     this.pool = Array.from(
       { length: GAME_CONFIG.POWERUPS.POOL_SIZE },
       () => this.createPowerUp()
@@ -70,7 +71,7 @@ export class PowerUpManager {
     powerUp.active = true;
     powerUp.type = this.getRandomType();
     powerUp.x = Math.min(
-      GAME_CONFIG.VIEWPORT.WIDTH - 40,
+      this.viewportWidth - 40,
       Math.max(
         playerX + 35,
         (obstacle?.x || playerX) + (obstacle?.width || 0) + 20

@@ -8,10 +8,17 @@ import { GAME_CONFIG } from '../../config/gameConfig';
 import { getMap } from '../../config/mapConfig';
 import { RectHitbox } from '../collision/Hitbox';
 
-const pipeGradientCache = new Map();
+const pipeGradientCache = new WeakMap();
+const pipeBodyTextureCache = new Map();
 
 function getCachedPipeGradients(ctx, mapId, theme, bodyWidth, lipWidth) {
-  let entry = pipeGradientCache.get(mapId);
+  let gradients = pipeGradientCache.get(ctx);
+  if (!gradients) {
+    gradients = new Map();
+    pipeGradientCache.set(ctx, gradients);
+  }
+
+  let entry = gradients.get(mapId);
   if (entry) return entry;
 
   const bodyGrad = ctx.createLinearGradient(0, 0, bodyWidth, 0);
@@ -26,8 +33,46 @@ function getCachedPipeGradients(ctx, mapId, theme, bodyWidth, lipWidth) {
   lipGrad.addColorStop(1, theme.colors[theme.colors.length - 1]);
 
   entry = { bodyGrad, lipGrad };
-  pipeGradientCache.set(mapId, entry);
+  gradients.set(mapId, entry);
   return entry;
+}
+
+function getCachedPipeBodyTexture(obstacle) {
+  let texture = pipeBodyTextureCache.get(obstacle.mapId);
+  if (texture) return texture;
+
+  const maxHeight = obstacle.groundY;
+  const canvas = typeof OffscreenCanvas !== 'undefined'
+    ? new OffscreenCanvas(obstacle.width, maxHeight)
+    : document.createElement('canvas');
+  canvas.width = obstacle.width;
+  canvas.height = maxHeight;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  const lipWidth = obstacle.width + GAME_CONFIG.OBSTACLES.LIP_OVERHANG * 2;
+  const { bodyGrad } = getCachedPipeGradients(
+    ctx,
+    obstacle.mapId,
+    obstacle.pipeTheme,
+    obstacle.width,
+    lipWidth
+  );
+  ctx.fillStyle = bodyGrad;
+  ctx.fillRect(0, 0, obstacle.width, maxHeight);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, obstacle.width, maxHeight);
+  ctx.clip();
+  ctx.globalAlpha = 0.32;
+  ctx.fillStyle = obstacle.pipeTheme.highlight;
+  ctx.fillRect(7, 0, 6, maxHeight);
+  obstacle.drawPipePattern(ctx, 0, 0, obstacle.width, maxHeight, obstacle.pipeTheme);
+  ctx.restore();
+
+  pipeBodyTextureCache.set(obstacle.mapId, canvas);
+  return canvas;
 }
 
 export class Obstacle {
@@ -131,24 +176,30 @@ export class Obstacle {
     if (height <= 0) return;
 
     const theme = this.pipeTheme;
-    const lipWidth = this.width + GAME_CONFIG.OBSTACLES.LIP_OVERHANG * 2;
-    const { bodyGrad } = getCachedPipeGradients(ctx, this.mapId, theme, this.width, lipWidth);
+    const texture = getCachedPipeBodyTexture(this);
 
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillStyle = bodyGrad;
-    ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = theme.outline;
     ctx.lineWidth = GAME_CONFIG.OBSTACLES.BORDER_WIDTH;
+    if (texture) {
+      ctx.drawImage(texture, 0, 0, width, height, 0, 0, width, height);
+    } else {
+      const lipWidth = this.width + GAME_CONFIG.OBSTACLES.LIP_OVERHANG * 2;
+      const { bodyGrad } = getCachedPipeGradients(ctx, this.mapId, theme, this.width, lipWidth);
+      ctx.fillStyle = bodyGrad;
+      ctx.fillRect(0, 0, width, height);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, width, height);
+      ctx.clip();
+      ctx.globalAlpha = 0.32;
+      ctx.fillStyle = theme.highlight;
+      ctx.fillRect(7, 0, 6, height);
+      this.drawPipePattern(ctx, 0, 0, width, height, theme);
+      ctx.restore();
+    }
     ctx.strokeRect(0, 0, width, height);
-
-    ctx.beginPath();
-    ctx.rect(0, 0, width, height);
-    ctx.clip();
-    ctx.globalAlpha = 0.32;
-    ctx.fillStyle = theme.highlight;
-    ctx.fillRect(7, 0, 6, height);
-    this.drawPipePattern(ctx, 0, 0, width, height, theme);
     ctx.restore();
   }
 

@@ -12,6 +12,7 @@ export class ObstacleManager {
   constructor(options = {}) {
     this.onScore = options.onScore || (() => {});
     this.onSpawn = options.onSpawn || (() => {});
+    this.viewportWidth = options.viewportWidth || GAME_CONFIG.VIEWPORT.WIDTH;
     this.poolSize = GAME_CONFIG.OBSTACLES.MAX_POOL_SIZE;
     this.pool = Array.from({ length: this.poolSize }, () => new Obstacle());
 
@@ -38,7 +39,7 @@ export class ObstacleManager {
     return null;
   }
 
-  spawn() {
+  spawn(x = this.viewportWidth + 20) {
     const obstacle = this.getAvailableObstacle();
     if (!obstacle) return;
 
@@ -48,10 +49,24 @@ export class ObstacleManager {
     const maxTop = this.groundY - gapSize - minBottom;
 
     const gapTopY = randomRange(minTop, maxTop);
-    const spawnX = GAME_CONFIG.VIEWPORT.WIDTH + 20;
-
-    obstacle.init(spawnX, gapTopY, gapSize, this.mapId);
+    obstacle.init(x, gapTopY, gapSize, this.mapId);
     this.onSpawn(obstacle);
+  }
+
+  startNewRun(playerX) {
+    this.reset();
+    if (this.viewportWidth <= GAME_CONFIG.VIEWPORT.WIDTH) return;
+
+    const rightEdge = this.viewportWidth + 20;
+    const spacing = this.speed * this.spawnInterval;
+    const obstacleCount = Math.min(
+      this.poolSize,
+      Math.max(2, Math.round((rightEdge - playerX - spacing) / spacing) + 1)
+    );
+
+    for (let index = obstacleCount - 1; index >= 0; index--) {
+      this.spawn(rightEdge - index * spacing);
+    }
   }
 
   update(dt, playerX) {
