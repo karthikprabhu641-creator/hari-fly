@@ -132,6 +132,10 @@ export class ParallaxBackground {
           this.width,
           this.height
         );
+        if (this.map.id === 'christmas') {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          ctx.fillRect(0, 0, this.width, this.height);
+        }
         return;
       }
     }
